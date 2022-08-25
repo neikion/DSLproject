@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">DSL</string>
+    <string name="ScheduleNotiChannelName">TSNC</string>
+    <string name="ScheduleNotiChannelDescription">Time_Schedule_Notification_Channel</string>
+</resources>
