@@ -119,24 +119,27 @@ public class TSListAdaptor extends RecyclerView.Adapter<TSListAdaptor.TSListView
         void enableWatcher() {
             int id = view.getId();
             if (id == R.id.ts_list_first_item_layout) {
+                sub.setText(datalist.get(0).datas[0]);
                 sub.addTextChangedListener(this);
 
-                sub.setText(datalist.get(0).datas[0]);
-
-                pro.addTextChangedListener(this);
                 pro.setText(datalist.get(0).datas[1]);
+                pro.addTextChangedListener(this);
             } else if (id == R.id.ts_list_item_layout) {
-                daybt.setOnClickListener(this);
                 today.setText(getmiddleValue(getAdapterPosition(),0));
+                daybt.setOnClickListener(this);
 
-                start.setOnClickListener(this);
+
                 start.setText(getmiddleValue(getAdapterPosition(),1));
+                start.setOnClickListener(this);
 
-                end.setOnClickListener(this);
+
                 end.setText(getmiddleValue(getAdapterPosition(),2));
+                end.setOnClickListener(this);
 
-                place.addTextChangedListener(this);
+
                 place.setText(datalist.get(getAdapterPosition()).datas[3]);
+                place.addTextChangedListener(this);
+
 
                 del.setOnClickListener(this);
             } else if (id == R.id.ts_list_last_item_layout) {
@@ -212,6 +215,7 @@ public class TSListAdaptor extends RecyclerView.Adapter<TSListAdaptor.TSListView
         public void afterTextChanged(Editable s) {
             if(view.getId()==R.id.ts_list_first_item_layout){
                 if (s.hashCode()==sub.getText().hashCode()) {
+
                     datalist.get(getAdapterPosition()).datas[0] = s.toString();
                 }else{
                     datalist.get(getAdapterPosition()).datas[1] = s.toString();

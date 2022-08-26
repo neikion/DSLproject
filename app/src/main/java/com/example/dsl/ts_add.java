@@ -11,17 +11,13 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
-import android.os.Handler;
 import android.util.DisplayMetrics;
 import android.util.TypedValue;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.widget.GridLayout;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-
-import org.w3c.dom.Text;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -55,8 +51,8 @@ public class ts_add extends AppCompatActivity implements View.OnClickListener, V
         //test();
     }
     public void test(){
-        int getid=getIntent().getIntExtra("BaseTableID",0);
-        //((TextView)UITable.getChildAt(0)).setText("ddd");
+        //todo
+        // 스티커 완성 후 스케쥴에 값 전해주기
         setResult(Activity.RESULT_OK,new Intent());
         finish();
 
@@ -129,7 +125,7 @@ public class ts_add extends AppCompatActivity implements View.OnClickListener, V
 
         }
     }
-    private void BaseLayoutSetting(GridLayout grid){
+    private void initBaseLayout(GridLayout grid){
         View v;
         //cell setting init
         for(int rowc=0;rowc<TableRowCount;rowc++){
@@ -137,7 +133,6 @@ public class ts_add extends AppCompatActivity implements View.OnClickListener, V
                 v=new View(this);
                 v.setBackground(getItemsBGWithBorder(getItemsRadius(rowc,colc)));
                 ItemsAdd(v, grid, rowc, colc);
-
             }
         }
     }
@@ -223,7 +218,7 @@ public class ts_add extends AppCompatActivity implements View.OnClickListener, V
 //            Cell_Height=(int)DPtoPX(75);
             Cell_Height=(int)DPtoPX(50);
         }
-        BaseLayoutSetting(BaseTable);
+        initBaseLayout(BaseTable);
         UILayoutSetting(UITable);
     }
 
@@ -242,8 +237,19 @@ public class ts_add extends AppCompatActivity implements View.OnClickListener, V
             String place=list.get(i).datas[3];
             if(strday!=null){
                 day=Integer.parseInt(strday)+1;
+                print(day);
             }else{
                 day=1;
+            }
+            if(day>5&&TableColCount-1<day){
+                for(int add=TableColCount-1;add<day;add++){
+                    addColumnBaseLayout();
+                }
+                UITableReset();
+            }else if(day<6&&TableColCount-1>day){
+                //noti
+                // 레이아웃 삭제 만들고 여기다 삭제 적용하기
+                UITableReset();
             }
             if(strstart!=null){
                 start=Integer.parseInt(strstart);
@@ -274,34 +280,27 @@ public class ts_add extends AppCompatActivity implements View.OnClickListener, V
                     ((TextView) UITable.getChildAt(CellStart+bonusday)).setText(list.get(i1).datas[3]);
                     v.add((TextView)UITable.getChildAt(CellStart+bonusday));},3000);*/
 
-            }else if(start>=900 && start<=1800){
-/*                int bonusday=TableColCount*day+1;
+            }else if(start>=900 && end<=1800){
+
+                int bonusday=TableColCount*day+1;
                 int cellbasic=(Cell_Height/((60/TIME_INTERVAL)-1));
                 int cell=(end-start);
                 int cellminute=cell%100;
                 int cellhour=cell/100;
                 int cellsize=((cellbasic*((cellminute/TIME_INTERVAL)))+(cellhour*Cell_Height));
                 int CellStart=((start-900)/100);
-                TableRowCount+=1;
-                UITable.setRowCount(TableRowCount);
-                TableColCount+=1;
-                UITable.setColumnCount(TableColCount);
+              
+                //fixme
+                // 일요일만 날짜 변경시 스티커 위치가 이상함
+                //작동함. 날짜변경 테스트를 위한 비활성화
+                UITable.getChildAt(CellStart+bonusday).setBackground(getItemsBGWithoutBorder(getItemsRadius(CellStart+cellhour,day),Color.rgb(163,204,163)));
+                GridLayout.LayoutParams edit=new GridLayout.LayoutParams(GridLayout.spec(CellStart+1,cellhour),GridLayout.spec(day,1));
+                edit.height=cellsize;
+                edit.width=Cell_Width;
+                UITable.getChildAt(CellStart+bonusday).setLayoutParams(edit);
+                ((TextView) UITable.getChildAt(CellStart+bonusday)).setText(list.get(i).datas[3]);
+                v.add((TextView)UITable.getChildAt(CellStart+bonusday));
 
-                TextView e=new TextView(this);
-                e.setText("test");
-                GridLayout.Spec row,col;
-                row=GridLayout.spec(11,1);
-                col=GridLayout.spec(6,1);
-                GridLayout.LayoutParams gridChildparams=new GridLayout.LayoutParams(row,col);
-                gridChildparams.width=Cell_Width;
-                gridChildparams.height=Cell_Height;
-                UITable.addView(e,gridChildparams);
-                Cell_Width=TableWidth/TableColCount;
-                for(int i2=0;i2<BaseTable.getChildCount();i2++){
-                    GridLayout.LayoutParams ee=(GridLayout.LayoutParams)BaseTable.getChildAt(i2).getLayoutParams();
-                    ee.width=Cell_Width;
-                    BaseTable.getChildAt(i2).setLayoutParams(ee);
-                }*/
                 //addLayout(25,6,9);
 /*                new Handler().postDelayed(()->{
                     for(int i1=1;i1<TableRowCount;i1++){
@@ -311,15 +310,8 @@ public class ts_add extends AppCompatActivity implements View.OnClickListener, V
 
                 },1000);*/
 
-                /*((TextView)UITable.getChildAt(CellStart+bonusday)).setBackground(getItemsBGWithoutBorder(getItemsRadius(CellStart+cellhour,day),Color.rgb(163,204,163)));
-                GridLayout.LayoutParams edit=new GridLayout.LayoutParams(GridLayout.spec(CellStart+1,cellhour),GridLayout.spec(day,1));
-                edit.height=cellsize;
-                edit.width=Cell_Width;
-                UITable.getChildAt(CellStart+bonusday).setLayoutParams(edit);
-                ((TextView) UITable.getChildAt(CellStart+bonusday)).setText(list.get(i).datas[3]);
-                v.add((TextView)UITable.getChildAt(CellStart+bonusday));*/
-                /*
-                int bonusday=TableColCount*day+1;
+
+/*                int bonusday=TableColCount*day+1;
                     int cellbasic=(Cell_Height/((60/TIME_INTERVAL)-1));
                     int cell=(end-start);
                     int cellminute=cell%100;
@@ -340,6 +332,80 @@ public class ts_add extends AppCompatActivity implements View.OnClickListener, V
 
 
 
+        }
+
+
+        BaseTableUpdate();
+    }
+    private void removecol(){
+        //todo
+        // 레이아웃 삭제 만들기
+    }
+    private void addRowBaseLayout(){
+        TableRowCount+=1;
+        UITable.setRowCount(TableRowCount);
+        BaseTable.setRowCount(TableRowCount);
+        for(int i=0;i<TableColCount;i++){
+            View e=new View(this);
+            BaseTable.addView(e,((TableRowCount-1)*TableColCount)+i,getItemLayoutParams(TableRowCount-1,i));
+        }
+    }
+    private void addColumnBaseLayout(){
+        TableColCount+=1;
+        UITable.setColumnCount(TableColCount);
+        BaseTable.setColumnCount(TableColCount);
+        for(int i=0;i<TableRowCount;i++){
+            View e=new View(this);
+            BaseTable.addView(e,(TableColCount*(i+1))-1,getItemLayoutParams(i,TableColCount-1));
+        }
+    }
+    public GridLayout.LayoutParams getItemLayoutParams(int rowindex, int colindex){
+        GridLayout.LayoutParams gridChildparams=new GridLayout.LayoutParams(GridLayout.spec(rowindex,1),GridLayout.spec(colindex,1));
+        gridChildparams.width=Cell_Width;
+        gridChildparams.height=Cell_Height;
+        return gridChildparams;
+    }
+    public void BaseTableUpdate(){
+        Cell_Width=TableWidth/TableColCount;
+        View v;
+        for(int i=0;i<BaseTable.getChildCount();i++){
+            v=BaseTable.getChildAt(i);
+            v.getLayoutParams().width=Cell_Width;
+            if(v.getBackground()!=null){
+                if(i==0){
+                    ((GradientDrawable)v.getBackground()).setCornerRadii(getItemsRadius(0,0));
+                }else if(i==TableColCount-1){
+                    ((GradientDrawable)v.getBackground()).setCornerRadii(getItemsRadius(0,TableColCount-1));
+                }else if(i==(TableRowCount-1)*TableColCount){
+                    ((GradientDrawable)v.getBackground()).setCornerRadii(getItemsRadius(TableRowCount-1,0));
+                }else if(i==(TableRowCount*TableColCount)-1){
+                    ((GradientDrawable)v.getBackground()).setCornerRadii(getItemsRadius(TableRowCount-1,TableColCount-1));
+                }else{
+                    ((GradientDrawable)v.getBackground()).setCornerRadii(getItemsRadius(1,1));
+                }
+            }else{
+                if(i==0){
+                    v.setBackground(getItemsBGWithBorder(getItemsRadius(0,0)));
+                }else if(i==TableColCount-1){
+                    v.setBackground(getItemsBGWithBorder(getItemsRadius(0,TableColCount-1)));
+                }else if(i==(TableRowCount-1)*TableColCount){
+                    v.setBackground(getItemsBGWithBorder(getItemsRadius(TableRowCount-1,0)));
+                }else if(i==(TableRowCount*TableColCount)-1){
+                    v.setBackground(getItemsBGWithBorder(getItemsRadius(TableRowCount-1,TableColCount-1)));
+                }else{
+                    v.setBackground(getItemsBGWithBorder(getItemsRadius(1,1)));
+                }
+            }
+
+        }
+
+    }
+    public void UITableReset(){
+        Cell_Width=TableWidth/TableColCount;
+        for(int i=0;i<UITable.getChildCount();i++){
+            GridLayout.LayoutParams ee=(GridLayout.LayoutParams)UITable.getChildAt(i).getLayoutParams();
+            ee.width=Cell_Width;
+            UITable.getChildAt(i).setLayoutParams(ee);
         }
     }
     List<TextView> v= new LinkedList<>();
