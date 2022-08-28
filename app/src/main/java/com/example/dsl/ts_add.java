@@ -38,8 +38,8 @@ public class ts_add extends AppCompatActivity implements View.OnClickListener, V
     LinearLayout BaseTablePosition;
     LinearLayout UITablePosition;
     int TIME_INTERVAL=5;
-    final int DEFALUT_COL=11;
-    final int DEFALUT_ROW=6;
+    final int DEFALUT_COL=6;
+    final int DEFALUT_ROW=11;
     int colstart =0;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -227,35 +227,47 @@ public class ts_add extends AppCompatActivity implements View.OnClickListener, V
 
         //첫번째와 마지막은 시간과 관련 없음
         Clear();
+        int lastrecodeday=-1;
+        int day;
+        int start;
+        int end;
         for(int i=1;i<list.size()-1;i++){
             String strday=list.get(i).datas[0];
             String strstart=list.get(i).datas[1];
             String strend=list.get(i).datas[2];
-            int day;
-            int start;
-            int end;
             String place=list.get(i).datas[3];
+
+            //day
             if(strday!=null){
                 day=Integer.parseInt(strday)+1;
-                print(day);
             }else{
                 day=1;
             }
-            if(day>5&&TableColCount-1<day){
-                for(int add=TableColCount-1;add<day;add++){
+            if(lastrecodeday<day){
+                lastrecodeday=day;
+            }
+            if(lastrecodeday>5&&TableColCount-1<lastrecodeday){
+                for(int i2=TableColCount-1;i2<lastrecodeday;i2++){
                     addColumnBaseLayout();
                 }
                 UITableReset();
-            }else if(day<6&&TableColCount-1>day){
-                //noti
-                // 레이아웃 삭제 만들고 여기다 삭제 적용하기
+            }else if(5<TableColCount-1&&lastrecodeday<TableColCount-1){
+                for(int i2=TableColCount-1;lastrecodeday<i2&&i2>5;i2--){
+                    removeColBaseLayout();
+                }
                 UITableReset();
             }
+
+
+
+            //start time
             if(strstart!=null){
                 start=Integer.parseInt(strstart);
             }else{
                 start=900;
             }
+
+            //end time
             if(strend!=null){
                 end=Integer.parseInt(strend);
             }else{
@@ -263,6 +275,18 @@ public class ts_add extends AppCompatActivity implements View.OnClickListener, V
             }
 
             if(start<900){
+                int limit=DEFALUT_ROW+(9-(start/100))-TableRowCount;
+                if(limit>0){
+                    for(int i2=0;i2<limit;i2++){
+                        addRowBaseLayout();
+                    }
+                }else if(limit<0){
+                    for(int i2=limit;i2<0;i2++){
+                        removeRowBaseLayout();
+                    }
+                }
+                //todo 행 추가로 인한 시간 추가 기능 구현 할 것
+
 
 /*                new Handler().postDelayed((int col,int i1)->{
                     int bonusday=TableColCount*day+1;
@@ -281,7 +305,11 @@ public class ts_add extends AppCompatActivity implements View.OnClickListener, V
                     v.add((TextView)UITable.getChildAt(CellStart+bonusday));},3000);*/
 
             }else if(start>=900 && end<=1800){
-
+                if(TableRowCount>DEFALUT_ROW){
+                    for(int i2=0, limit=TableRowCount-DEFALUT_ROW;i2<limit;i2++){
+                        removeRowBaseLayout();
+                    }
+                }
                 int bonusday=TableColCount*day+1;
                 int cellbasic=(Cell_Height/((60/TIME_INTERVAL)-1));
                 int cell=(end-start);
@@ -326,7 +354,6 @@ public class ts_add extends AppCompatActivity implements View.OnClickListener, V
                     ((TextView) UITable.getChildAt(CellStart+bonusday)).setText(list.get(i1).datas[3]);
                     v.add((TextView)UITable.getChildAt(CellStart+bonusday));*/
             }else if(start>1800){
-
             }
 
 
@@ -337,10 +364,21 @@ public class ts_add extends AppCompatActivity implements View.OnClickListener, V
 
         BaseTableUpdate();
     }
-    private void removecol(){
-        //todo
-        // 레이아웃 삭제 만들기
+    private void removeColBaseLayout(){
+        for(int i=TableRowCount;i>0;i--){
+            BaseTable.removeViewAt((TableColCount*(i))-1);
+        }
+        TableColCount-=1;
+        BaseTable.setColumnCount(TableColCount);
     }
+    private void removeRowBaseLayout(){
+        for(int i=1;i<TableColCount+1;i++){
+            BaseTable.removeViewAt((TableRowCount*TableColCount)-i);
+        }
+        TableRowCount-=1;
+        BaseTable.setRowCount(TableRowCount);
+    }
+
     private void addRowBaseLayout(){
         TableRowCount+=1;
         UITable.setRowCount(TableRowCount);
