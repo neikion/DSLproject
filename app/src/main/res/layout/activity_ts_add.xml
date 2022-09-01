@@ -6,6 +6,7 @@
     android:layout_height="match_parent"
     tools:context=".ts_add"
     android:orientation="vertical"
+
     >
     <RelativeLayout
         android:layout_width="match_parent"
@@ -50,20 +51,24 @@
             android:id="@+id/ts_add_frame"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:padding="5dp"
+            android:padding="7.5dp"
             >
-        <LinearLayout
-            android:id="@+id/ts_add_base_table"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="vertical"
-            >
-
-
-        </LinearLayout>
             <LinearLayout
+                android:id="@+id/ts_add_base_table"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
                 android:orientation="vertical"
+                android:gravity="center"
+                android:layout_gravity="center"
+                >
+
+
+            </LinearLayout>
+            <LinearLayout
+                android:orientation="horizontal"
                 android:id="@+id/ts_add_ui_table"
+                android:gravity="center"
+                android:layout_gravity="center"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent">
             </LinearLayout>

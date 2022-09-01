@@ -13,6 +13,7 @@ import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
 import android.util.TypedValue;
+import android.view.Gravity;
 import android.view.View;
 import android.view.ViewTreeObserver;
 import android.widget.GridLayout;
@@ -32,7 +33,6 @@ public class ts_add extends AppCompatActivity implements View.OnClickListener, V
     int Cell_Width=0;
     int TableColCount;
     int TableRowCount;
-    float RowCellDivdeNum=5f;
     GridLayout BaseTable;
     GridLayout UITable;
     LinearLayout BaseTablePosition;
@@ -41,6 +41,7 @@ public class ts_add extends AppCompatActivity implements View.OnClickListener, V
     final int DEFALUT_COL=6;
     final int DEFALUT_ROW=11;
     int colstart =0;
+    List<TextView> stikerlist = new LinkedList<>();
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -97,32 +98,33 @@ public class ts_add extends AppCompatActivity implements View.OnClickListener, V
         gridParam.setMargins(0,0,0,0);
         grid.setLayoutParams(gridParam);
         grid.setOrientation(GridLayout.VERTICAL);
+        grid.setAlignmentMode(GridLayout.ALIGN_BOUNDS);
         return grid;
     }
     private void UILayoutSetting(GridLayout grid){
         TextView v;
+        int time;
         for(int rowc=0;rowc<TableRowCount;rowc++){
             for(int colc=0;colc<TableColCount;colc++){
                 v=new TextView(this);
-                v.setPadding((int)DPtoPX(10),(int)DPtoPX(0),5,5);
+                v.setBackground(getItemsBGWithoutBorder(getItemsRadius(rowc,colc)));
+                GridLayout.LayoutParams params= getItemLayoutParams(rowc,colc);
+                params.setGravity(Gravity.CENTER);
                 if(rowc==0 && colc>0){
                     v.setText(ta.dayarray[colc-1]);
+                    v.setGravity(Gravity.CENTER);
+                    UITable.addView(v,params);
+                }else if(rowc>0&&colc==0){
+                    time=(rowc+(colstart-1))%12;
+                    if(time==0){
+                        time=12;
+                    }
+                    v.setText(Integer.toString(time));
+                    v.setGravity(Gravity.TOP|Gravity.RIGHT);
+                    v.setPadding(0,(int)DPtoPX(5),(int)DPtoPX(5),0);
+                    UITable.addView(v,params);
                 }
-/*                if(rowc>0&&colc==0){
-                    v.setText(rowc+8+"");
-                }*/
-                //test
-                int time=(rowc+(colstart-1))%12;
-                if(time==0){
-                    time=12;
-                }
-                if(rowc>0&&colc==0){
-                    v.setText(time+"");
-                }
-                v.setBackground(getItemsBGWithoutBorder(getItemsRadius(rowc,colc)));
-                ItemsAdd(v, grid, rowc, colc);
             }
-
         }
     }
     private void initBaseLayout(GridLayout grid){
@@ -132,11 +134,17 @@ public class ts_add extends AppCompatActivity implements View.OnClickListener, V
             for(int colc=0;colc<TableColCount;colc++){
                 v=new View(this);
                 v.setBackground(getItemsBGWithBorder(getItemsRadius(rowc,colc)));
-                ItemsAdd(v, grid, rowc, colc);
+                additems(v, grid, rowc, colc);
             }
         }
     }
-    private void ItemsAdd(View Items,GridLayout grid,int rowcount,int colcount){
+    public GridLayout.LayoutParams getItemLayoutParams(int rowindex, int colindex){
+        GridLayout.LayoutParams gridChildparams=new GridLayout.LayoutParams(GridLayout.spec(rowindex,1),GridLayout.spec(colindex,1));
+        gridChildparams.width=Cell_Width;
+        gridChildparams.height=Cell_Height;
+        return gridChildparams;
+    }
+    private void additems(View Items, GridLayout grid, int rowcount, int colcount){
         GridLayout.Spec row,col;
         row=GridLayout.spec(rowcount,1);
         col=GridLayout.spec(colcount,1);
@@ -210,13 +218,14 @@ public class ts_add extends AppCompatActivity implements View.OnClickListener, V
         TableHeight=BaseTable.getHeight();
         TableWidth=BaseTable.getWidth();
         if(Cell_Width==0){
-            Cell_Width=TableWidth/TableColCount;
+            Cell_Width=getCell_Width();;
         }
         if(Cell_Height==0){
-            Cell_Height=TableHeight/TableRowCount;
+            Cell_Height=TableHeight/DEFALUT_ROW;
         }else if(Cell_Height==-1){
 //            Cell_Height=(int)DPtoPX(75);
-            Cell_Height=(int)DPtoPX(50);
+//            Cell_Height=(int)DPtoPX(50);
+            Cell_Height=TableHeight/4;
         }
         initBaseLayout(BaseTable);
         UILayoutSetting(UITable);
@@ -246,16 +255,19 @@ public class ts_add extends AppCompatActivity implements View.OnClickListener, V
             if(lastrecodeday<day){
                 lastrecodeday=day;
             }
+
             if(lastrecodeday>5&&TableColCount-1<lastrecodeday){
                 for(int i2=TableColCount-1;i2<lastrecodeday;i2++){
                     addColumnBaseLayout();
                 }
                 UITableReset();
+                BaseTableUpdate();
             }else if(5<TableColCount-1&&lastrecodeday<TableColCount-1){
                 for(int i2=TableColCount-1;lastrecodeday<i2&&i2>5;i2--){
                     removeColBaseLayout();
                 }
                 UITableReset();
+
             }
 
 
@@ -273,6 +285,15 @@ public class ts_add extends AppCompatActivity implements View.OnClickListener, V
             }else{
                 end=1000;
             }
+            int cellbasic=(Cell_Height/((60/TIME_INTERVAL)-1));
+            int cell=end-start;
+            int cellminute=cell%100;
+            int cellhour=cell/100;
+            int cellsize=((cellbasic*((cellminute/TIME_INTERVAL)))+(cellhour*Cell_Height));
+            //시간 0부터 시작하여 1시간 오를때마다 1씩 증가
+            int CellStart=0;
+
+
 
             if(start<900){
                 int limit=DEFALUT_ROW+(9-(start/100))-TableRowCount;
@@ -285,7 +306,11 @@ public class ts_add extends AppCompatActivity implements View.OnClickListener, V
                         removeRowBaseLayout();
                     }
                 }
+                
+                //시간 0부터 시작하여 1시간 오를때마다 1씩 증가
+                CellStart=((start-900)/100);
                 //todo 행 추가로 인한 시간 추가 기능 구현 할 것
+                //todo 행 삭제 시 sticker있는지 확인 
 
 
 /*                new Handler().postDelayed((int col,int i1)->{
@@ -304,107 +329,103 @@ public class ts_add extends AppCompatActivity implements View.OnClickListener, V
                     ((TextView) UITable.getChildAt(CellStart+bonusday)).setText(list.get(i1).datas[3]);
                     v.add((TextView)UITable.getChildAt(CellStart+bonusday));},3000);*/
 
-            }else if(start>=900 && end<=1800){
+            }else if(start>=900 && end<=1900){
                 if(TableRowCount>DEFALUT_ROW){
                     for(int i2=0, limit=TableRowCount-DEFALUT_ROW;i2<limit;i2++){
                         removeRowBaseLayout();
                     }
                 }
-                int bonusday=TableColCount*day+1;
-                int cellbasic=(Cell_Height/((60/TIME_INTERVAL)-1));
-                int cell=(end-start);
-                int cellminute=cell%100;
-                int cellhour=cell/100;
-                int cellsize=((cellbasic*((cellminute/TIME_INTERVAL)))+(cellhour*Cell_Height));
-                int CellStart=((start-900)/100);
-              
-                //fixme
-                // 일요일만 날짜 변경시 스티커 위치가 이상함
-                //작동함. 날짜변경 테스트를 위한 비활성화
-                UITable.getChildAt(CellStart+bonusday).setBackground(getItemsBGWithoutBorder(getItemsRadius(CellStart+cellhour,day),Color.rgb(163,204,163)));
-                GridLayout.LayoutParams edit=new GridLayout.LayoutParams(GridLayout.spec(CellStart+1,cellhour),GridLayout.spec(day,1));
-                edit.height=cellsize;
-                edit.width=Cell_Width;
-                UITable.getChildAt(CellStart+bonusday).setLayoutParams(edit);
-                ((TextView) UITable.getChildAt(CellStart+bonusday)).setText(list.get(i).datas[3]);
-                v.add((TextView)UITable.getChildAt(CellStart+bonusday));
-
-                //addLayout(25,6,9);
-/*                new Handler().postDelayed(()->{
-                    for(int i1=1;i1<TableRowCount;i1++){
-
-                        ((TextView) UITable.getChildAt(TableColCount*(i1))).setText(time+"");
-                    }
-
-                },1000);*/
+                cellbasic=(Cell_Height/((60/TIME_INTERVAL)-1));
+                cell=(end-start);
+                cellminute=cell%100;
+                cellhour=cell/100;
+                cellsize=((cellbasic*((cellminute/TIME_INTERVAL)))+(cellhour*Cell_Height));
+                //시간 0부터 시작하여 1시간 오를때마다 1씩 증가
+                CellStart=((start-900)/100);
 
 
-/*                int bonusday=TableColCount*day+1;
-                    int cellbasic=(Cell_Height/((60/TIME_INTERVAL)-1));
-                    int cell=(end-start);
-                    int cellminute=cell%100;
-                    int cellhour=cell/100;
-                    int cellsize=((cellbasic*((cellminute/TIME_INTERVAL)))+(cellhour*Cell_Height));
-                    int CellStart=((start-col)/100);
-                    ((TextView)UITable.getChildAt(CellStart+bonusday)).setBackground(getItemsBGWithoutBorder(getItemsRadius(CellStart+cellhour,day),Color.rgb(163,204,163)));
-                    GridLayout.LayoutParams edit=new GridLayout.LayoutParams(GridLayout.spec(CellStart+1,cellhour),GridLayout.spec(day,1));
-                    edit.height=cellsize;
-                    edit.width=Cell_Width;
-                    UITable.getChildAt(CellStart+bonusday).setLayoutParams(edit);
-                    ((TextView) UITable.getChildAt(CellStart+bonusday)).setText(list.get(i1).datas[3]);
-                    v.add((TextView)UITable.getChildAt(CellStart+bonusday));*/
             }else if(start>1800){
-            }
 
+            }
+            TextView stiker=new TextView(this);
+            stiker.setBackground(getItemsBGWithoutBorder(getItemsRadius(CellStart+cellhour,day),Color.rgb(163,204,163)));
+            GridLayout.LayoutParams edit= new GridLayout.LayoutParams(GridLayout.spec(CellStart+1,cellhour),GridLayout.spec(day,1));
+            edit.width=Cell_Width;
+            edit.height=cellsize;
+            stiker.setLayoutParams(edit);
+            stiker.setText(list.get(i).datas[3]);
+            UITable.addView(stiker);
+            stikerlist.add(stiker);
 
 
 
         }
-
+        //todo sticker 값 담기
 
         BaseTableUpdate();
+
     }
+
     private void removeColBaseLayout(){
         for(int i=TableRowCount;i>0;i--){
             BaseTable.removeViewAt((TableColCount*(i))-1);
         }
+        UITable.removeViewAt(TableColCount-1);
         TableColCount-=1;
+        UITable.setColumnCount(TableColCount);
         BaseTable.setColumnCount(TableColCount);
+        Cell_Width=getCell_Width();
     }
     private void removeRowBaseLayout(){
         for(int i=1;i<TableColCount+1;i++){
             BaseTable.removeViewAt((TableRowCount*TableColCount)-i);
         }
         TableRowCount-=1;
+        UITable.setRowCount(TableRowCount);
         BaseTable.setRowCount(TableRowCount);
+        Cell_Width=getCell_Width();
     }
 
     private void addRowBaseLayout(){
         TableRowCount+=1;
         UITable.setRowCount(TableRowCount);
         BaseTable.setRowCount(TableRowCount);
+        Cell_Width=getCell_Width();
         for(int i=0;i<TableColCount;i++){
             View e=new View(this);
+
             BaseTable.addView(e,((TableRowCount-1)*TableColCount)+i,getItemLayoutParams(TableRowCount-1,i));
         }
+
     }
     private void addColumnBaseLayout(){
         TableColCount+=1;
         UITable.setColumnCount(TableColCount);
         BaseTable.setColumnCount(TableColCount);
+        Cell_Width=getCell_Width();
+
         for(int i=0;i<TableRowCount;i++){
             View e=new View(this);
             BaseTable.addView(e,(TableColCount*(i+1))-1,getItemLayoutParams(i,TableColCount-1));
+
         }
+
+        //UITABLE에 textview 새로 만들시 column추가
+        TextView tv=new TextView(this);
+        tv.setText(ta.dayarray[TableColCount-2]);
+        tv.setGravity(Gravity.CENTER);
+        GridLayout.LayoutParams params=getItemLayoutParams(0,TableColCount-1);
+        UITable.addView(tv,TableColCount-1,params);
+/*        UITABLE에 textview 재활용시 column추가
+        for(int i=1;i<TableRowCount;i++){
+            TextView e=new TextView(this);
+            e.setGravity(Gravity.CENTER);
+            addUIitems(e,UITable,i,TableColCount-1,(TableColCount*(i+1))-1);
+        }*/
     }
-    public GridLayout.LayoutParams getItemLayoutParams(int rowindex, int colindex){
-        GridLayout.LayoutParams gridChildparams=new GridLayout.LayoutParams(GridLayout.spec(rowindex,1),GridLayout.spec(colindex,1));
-        gridChildparams.width=Cell_Width;
-        gridChildparams.height=Cell_Height;
-        return gridChildparams;
-    }
+
     public void BaseTableUpdate(){
-        Cell_Width=TableWidth/TableColCount;
+        Cell_Width=getCell_Width();
         View v;
         for(int i=0;i<BaseTable.getChildCount();i++){
             v=BaseTable.getChildAt(i);
@@ -436,25 +457,22 @@ public class ts_add extends AppCompatActivity implements View.OnClickListener, V
             }
 
         }
-
     }
     public void UITableReset(){
-        Cell_Width=TableWidth/TableColCount;
         for(int i=0;i<UITable.getChildCount();i++){
             GridLayout.LayoutParams ee=(GridLayout.LayoutParams)UITable.getChildAt(i).getLayoutParams();
-            ee.width=Cell_Width;
+            ee.width=getCell_Width();
             UITable.getChildAt(i).setLayoutParams(ee);
         }
     }
-    List<TextView> v= new LinkedList<>();
+
     public void Clear(){
-        for(int i=0;i<v.size();i++){
-            v.get(i).setBackground(null);
-            v.get(i).setText("");
-            GridLayout.LayoutParams edit=new GridLayout.LayoutParams(GridLayout.spec(GridLayout.UNDEFINED,1),GridLayout.spec(GridLayout.UNDEFINED,1));
-            edit.height=Cell_Height;
-            edit.width=Cell_Width;
-            v.get(i).setLayoutParams(edit);
+        for(int i = 0; i< stikerlist.size(); i++){
+            UITable.removeView(stikerlist.get(i));
         }
+    }
+    private int getCell_Width(){
+        Cell_Width=(TableWidth/TableColCount);
+        return Cell_Width;
     }
 }
