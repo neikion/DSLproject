@@ -47,3 +47,10 @@ google-services.json
 
 # Android Profiling
 *.hprof
+
+#custom android setting
+/build.gradle
+/gradle.properties
+/gradlew
+/gradlew.bat
+/settings.gradle
