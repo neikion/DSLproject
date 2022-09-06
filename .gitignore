@@ -54,3 +54,4 @@ google-services.json
 /gradlew
 /gradlew.bat
 /settings.gradle
+/gradle/wrapper/gradle-wrapper.properties

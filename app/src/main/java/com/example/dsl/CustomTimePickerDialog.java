@@ -40,6 +40,11 @@ public class CustomTimePickerDialog extends TimePickerDialog {
     }
 
     @Override
+    public void updateTime(int hourOfDay, int minuteOfHour) {
+        super.updateTime(hourOfDay, minuteOfHour/TIME_PICKER_INTERVAL);
+    }
+
+    @Override
     public void onAttachedToWindow() {
         super.onAttachedToWindow();
         mTimePicker = findViewById(Resources.getSystem().getIdentifier("timePicker", "id", "android"));

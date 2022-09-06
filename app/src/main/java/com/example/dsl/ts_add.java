@@ -21,6 +21,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
@@ -99,10 +100,10 @@ public class ts_add extends AppCompatActivity implements View.OnClickListener, V
         gridParam.setMargins(0,0,0,0);
         grid.setLayoutParams(gridParam);
         grid.setOrientation(GridLayout.VERTICAL);
-        grid.setAlignmentMode(GridLayout.ALIGN_BOUNDS);
+        //각 셀마다 MARGIN이 따로 적용됨
+        grid.setAlignmentMode(GridLayout.ALIGN_MARGINS);
         return grid;
     }
-    //fixme 시간을 늘릴때마다 UI도 같이 늘어남
     private void initUILayout(GridLayout grid){
         TextView v;
         int time;
@@ -239,7 +240,9 @@ public class ts_add extends AppCompatActivity implements View.OnClickListener, V
         //첫번째와 마지막은 시간과 관련 없음
         Clear();
         int lastrecodeday=-1;
-        int firststart= colstart *100;
+        //초기 시작시간부터 행이 생성되기 위함
+        int firststart=colstart*100;
+        //초기 시작시간에서 기본 행만큼 시작되기 위함
         int lastend=(DEFALUT_ROW-1+ colstart)*100;
         int day;
         int start;
@@ -247,6 +250,7 @@ public class ts_add extends AppCompatActivity implements View.OnClickListener, V
         for(int i=1;i<list.size()-1;i++){
             String strstart=list.get(i).datas[1];
             String strend=list.get(i).datas[2];
+            //starttime
             if(strstart!=null){
                 start=Integer.parseInt(strstart);
             }else{
@@ -256,12 +260,11 @@ public class ts_add extends AppCompatActivity implements View.OnClickListener, V
                 firststart=start;
             }
 
-
             //end time
             if(strend!=null){
                 end=Integer.parseInt(strend);
             }else{
-                end=start+100;
+                end=(colstart*100)+100;
             }
             if(lastend<end){
                 lastend=end;
@@ -310,44 +313,26 @@ public class ts_add extends AppCompatActivity implements View.OnClickListener, V
             if(strend!=null){
                 end=Integer.parseInt(strend);
             }else{
-                end=start+100;
+                end=(colstart*100)+100;
             }
             int cellbasic=(Cell_Height/((60/TIME_INTERVAL)-1));
             int cell=end-start;
+            print(" cell "+cell);
             int cellminute=cell%100;
             int cellhour=cell/100;
-            int cellsize=((cellbasic*((cellminute/TIME_INTERVAL)))+(cellhour*Cell_Height));
+            print(" cellhour "+cellhour);
+            int Customcellsize=((cellbasic*((cellminute/TIME_INTERVAL)))+(cellhour*Cell_Height));
+            int cellgridheight=cellhour;
             //시간 0부터 시작하여 1시간 오를때마다 1씩 증가
             int CellStart=0;
 
-
-            print("start : "+start+"fiststart : "+firststart+" Cell start : "+(start-firststart)/100);
-            if(firststart<900){
-/*                int limit=DEFALUT_ROW+(colstart -(start/100))-TableRowCount;
-                if(limit>0){
-                    for(int i2=0;i2<limit;i2++){
-                        addRowBaseLayout();
-                    }
-                }
-                else if(limit<0){
-                    for(int i2=limit;i2<0;i2++){
-                        removeRowBaseLayout();
-                    }
-                }*/
-                //todo 행 추가로 인한 시간 추가 기능 구현 할 것
-                //todo 행 삭제 시 sticker있는지 확인
-            }else if(firststart>=900 &&firststart<=1800 && lastend>=900&&lastend<=1900){
-/*                print("middle");
-                print(firststart);
-                if(TableRowCount>DEFALUT_ROW){
-                    for(int i2=0, limit=TableRowCount-DEFALUT_ROW;i2<limit;i2++){
-                        removeRowBaseLayout();
-                    }
-                }*/
-            }else if(lastend>1900){
-
+            print("start : "+start+" end "+end+" fiststart : "+firststart+" lastend : "+lastend+" Cell start : "+(start-firststart)/100);
+            int needMinute=(lastend%100)-(firststart%100);
+            print("needMinute "+needMinute);
+            int needcol=(lastend/100)-(firststart/100);
+            if(needMinute>0){
+                needcol+=1;
             }
-            int needcol=(((lastend/100))-(firststart/100));
             int limit=needcol-(TableRowCount-1);
             print("limit:"+limit+" lastend "+lastend+" need col "+needcol);
             if(limit>0){
@@ -362,17 +347,24 @@ public class ts_add extends AppCompatActivity implements View.OnClickListener, V
             }
 
             CellStart=(start-firststart)/100;
-            TextView stiker=new TextView(this);
-            stiker.setBackground(getItemsBGWithoutBorder(getItemsRadius(CellStart+cellhour,day),Color.rgb(163,204,163)));
 
-            GridLayout.LayoutParams params= new GridLayout.LayoutParams(GridLayout.spec(CellStart+1,cellhour),GridLayout.spec(day,1));
+            if(cellminute>0){
+                cellgridheight+=1;
+            }
+            TextView stiker=new TextView(this);
+            stiker.setBackground(getItemsBGWithoutBorder(getItemsRadius(CellStart+cellgridheight,day),Color.rgb(163,204,163)));
+            print(" Cellstart "+(CellStart+1)+" cellsize "+(cellgridheight)+"");
+            GridLayout.LayoutParams params= new GridLayout.LayoutParams(GridLayout.spec(CellStart+1,cellgridheight),GridLayout.spec(day,1));
             params.width=Cell_Width-2;
-            params.height=cellsize-2;
+            params.height=Customcellsize;
+            if(((start%100)/TIME_INTERVAL)!=0){
+                params.setMargins(0,(cellbasic*(((start%100)/TIME_INTERVAL))),0,0);
+            }
             stiker.setLayoutParams(params);
-            stiker.setText(list.get(i).datas[3]);
+            stiker.setText("testtitle");
+//            stiker.setText(list.get(i).datas[3]);
             UITable.addView(stiker,UITable.getChildCount());
             stikerlist.add(stiker);
-
 
 
         }
@@ -385,14 +377,19 @@ public class ts_add extends AppCompatActivity implements View.OnClickListener, V
 
     private void UITimeUpdate(int starttime){
         for(int i2=TableColCount-1;i2<TableRowCount+TableColCount-2;i2++){
-            ((TextView)UITable.getChildAt(i2)).setText((i2-TableColCount+1)+starttime+"");
+            int time=(i2-TableColCount+1)+starttime;
+            time=time%12;
+            if(time==0){
+                time=12;
+            }
+            ((TextView)UITable.getChildAt(i2)).setText(time+"");
         }
     }
     private void removeColBaseLayout(){
         for(int i=TableRowCount;i>0;i--){
             BaseTable.removeViewAt((TableColCount*(i))-1);
         }
-        UITable.removeViewAt(TableColCount-1);
+        UITable.removeViewAt(TableColCount-2);
         TableColCount-=1;
         UITable.setColumnCount(TableColCount);
         BaseTable.setColumnCount(TableColCount);
@@ -406,7 +403,6 @@ public class ts_add extends AppCompatActivity implements View.OnClickListener, V
         TableRowCount-=1;
         UITable.setRowCount(TableRowCount);
         BaseTable.setRowCount(TableRowCount);
-//        Cell_Width=getCell_Width();
     }
 
     private void addRowBaseLayout(){
@@ -436,17 +432,18 @@ public class ts_add extends AppCompatActivity implements View.OnClickListener, V
         for(int i=0;i<TableRowCount;i++){
             View e=new View(this);
             BaseTable.addView(e,(TableColCount*(i+1))-1,getItemLayoutParams(i,TableColCount-1));
-
+            print((TableColCount*(i+1))-1+"");
         }
 
         //UITABLE에 textview 새로 만들시 column추가
         TextView tv=new TextView(this);
         tv.setText(ta.dayarray[TableColCount-2]);
+        print(TableColCount);
         GridLayout.LayoutParams params=getItemLayoutParams(0,TableColCount-1);
         params.setGravity(Gravity.CENTER);
-        tv.setWidth(Cell_Width);
         tv.setGravity(Gravity.CENTER);
-        UITable.addView(tv,TableColCount-1,params);
+        tv.setWidth(Cell_Width);
+        UITable.addView(tv,TableColCount-2,params);
     }
 
     public void BaseTableUpdate(){

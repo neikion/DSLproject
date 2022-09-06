@@ -69,33 +69,44 @@ public class TSListAdaptor extends RecyclerView.Adapter<TSListAdaptor.TSListView
                         end.setText(String.format(Locale.getDefault(),"%02d:%02d",endc.get(Calendar.HOUR_OF_DAY),endc.get(Calendar.MINUTE)));
                     }
                     start.setText(String.format(Locale.getDefault(),"%02d:%02d",hourOfDay,minute));
+                    startpicker.updateTime(hourOfDay,minute);
                     datalist.get(getAdapterPosition()).datas[1]=String.format(Locale.getDefault(),"%02d%02d",hourOfDay,minute);
                     listener.ChangeListener(datalist);
                 }
             },initstartvalue,0);
-            endpicker=createTimePickerDialog((view, hourOfDay, minute) -> {
-                endc.set(Calendar.HOUR_OF_DAY,hourOfDay);
-                endc.set(Calendar.MINUTE,minute);
-                int intstart;
-                if(datalist.get(getAdapterPosition()).datas[1]!=null){
-                    intstart=Integer.parseInt(datalist.get(getAdapterPosition()).datas[1]);
-                }else{
-                    intstart=initstartvalue*100;
+            endpicker=createTimePickerDialog(new TimePickerDialog.OnTimeSetListener() {
+                @Override
+                public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
+                    DSLUtil.print(minute);
+                    if(hourOfDay==0&&minute==0){
+                        hourOfDay=23;
+                        minute=55;
+                        endpicker.updateTime(23,11);
+                    }
+                    endc.set(Calendar.HOUR_OF_DAY,hourOfDay);
+                    endc.set(Calendar.MINUTE,minute);
+                    int intstart;
+                    if(datalist.get(getAdapterPosition()).datas[1]!=null){
+                        intstart=Integer.parseInt(datalist.get(getAdapterPosition()).datas[1]);
+                    }else{
+                        intstart=initstartvalue*100;
+                    }
+                    startc.set(Calendar.HOUR_OF_DAY,intstart/100);
+                    startc.set(Calendar.MINUTE,intstart%100);
+                    if(startc.compareTo(endc)>=0){
+                        startc.set(Calendar.HOUR_OF_DAY,endc.get(Calendar.HOUR_OF_DAY));
+                        startc.set(Calendar.MINUTE,endc.get(Calendar.MINUTE));
+                        startc.add(Calendar.HOUR_OF_DAY,-1);
+                        startpicker.updateTime(startc.get(Calendar.HOUR_OF_DAY),startc.get(Calendar.MINUTE));
+                        start.setText(String.format(Locale.getDefault(),"%02d:%02d",startc.get(Calendar.HOUR_OF_DAY),startc.get(Calendar.MINUTE)));
+                        datalist.get(getAdapterPosition()).datas[1]=String.format(Locale.getDefault(),"%02d%02d",startc.get(Calendar.HOUR_OF_DAY),startc.get(Calendar.MINUTE));
+                    }
+                    end.setText(String.format(Locale.getDefault(),"%02d:%02d",hourOfDay,minute));
+                    endpicker.updateTime(endc.get(Calendar.HOUR_OF_DAY),endc.get(Calendar.MINUTE));
+                    datalist.get(getAdapterPosition()).datas[2]=String.format(Locale.getDefault(),"%02d%02d",hourOfDay,minute);
+                    listener.ChangeListener(datalist);
                 }
-                startc.set(Calendar.HOUR_OF_DAY,intstart/100);
-                startc.set(Calendar.MINUTE,intstart%100);
-                if(startc.compareTo(endc)>=0){
-                    startc.set(Calendar.HOUR_OF_DAY,endc.get(Calendar.HOUR_OF_DAY));
-                    startc.set(Calendar.MINUTE,endc.get(Calendar.MINUTE));
-                    startc.add(Calendar.HOUR_OF_DAY,-1);
-                    startpicker.updateTime(startc.get(Calendar.HOUR_OF_DAY),startc.get(Calendar.MINUTE));
-                    start.setText(String.format(Locale.getDefault(),"%02d:%02d",startc.get(Calendar.HOUR_OF_DAY),startc.get(Calendar.MINUTE)));
-                    datalist.get(getAdapterPosition()).datas[1]=String.format(Locale.getDefault(),"%02d%02d",startc.get(Calendar.HOUR_OF_DAY),startc.get(Calendar.MINUTE));
-                }
-                end.setText(String.format(Locale.getDefault(),"%02d:%02d",hourOfDay,minute));
-                datalist.get(getAdapterPosition()).datas[2]=String.format(Locale.getDefault(),"%02d%02d",hourOfDay,minute);
-                listener.ChangeListener(datalist);
-            },initendvalue,0);
+            }, initendvalue, 0);
         }
         private void initViewID(@NonNull View itemView){
             int id = itemView.getId();
@@ -123,7 +134,7 @@ public class TSListAdaptor extends RecyclerView.Adapter<TSListAdaptor.TSListView
         }
         //timepicker 만들기
         public TimePickerDialog createTimePickerDialog(TimePickerDialog.OnTimeSetListener listener,int hour, int minute){
-            TimePickerDialog result= new CustomTimePickerDialog(context, android.R.style.Theme_Holo_Light_Dialog_NoActionBar_MinWidth,listener,hour,minute,true,5);
+            TimePickerDialog result= new CustomTimePickerDialog(context, android.R.style.Theme_Holo_Light_Dialog_NoActionBar_MinWidth,listener,hour,minute,true,TIME_PICKER_INTERVAL);
             result.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
             return result;
         }
@@ -254,6 +265,7 @@ public class TSListAdaptor extends RecyclerView.Adapter<TSListAdaptor.TSListView
     private final String initdayvalue;
     private final int initstartvalue;
     private final int initendvalue;
+    private final int TIME_PICKER_INTERVAL=5;
     private TSListener listener;
     public TSListAdaptor(Context context,String initdayvalue, int initstartvalue, int initendvalue,TSListener listener){
         datalist=new ArrayList<>();
