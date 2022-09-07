@@ -50,6 +50,9 @@ public class TSListAdaptor extends RecyclerView.Adapter<TSListAdaptor.TSListView
             startpicker=createTimePickerDialog(new TimePickerDialog.OnTimeSetListener() {
                 @Override
                 public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
+                    if(hourOfDay==23&&minute==55){
+                        minute=50;
+                    }
                     startc.set(Calendar.HOUR_OF_DAY,hourOfDay);
                     startc.set(Calendar.MINUTE,minute);
                     int intend;
@@ -62,8 +65,12 @@ public class TSListAdaptor extends RecyclerView.Adapter<TSListAdaptor.TSListView
                     endc.set(Calendar.MINUTE,intend%100);
                     if(startc.compareTo(endc)>=0){
                         endc.set(Calendar.HOUR_OF_DAY,startc.get(Calendar.HOUR_OF_DAY));
-                        endc.set(Calendar.MINUTE,startc.get(Calendar.MINUTE));
-                        endc.add(Calendar.HOUR_OF_DAY,1);
+                        if(endc.get(Calendar.HOUR_OF_DAY)==23){
+                            endc.set(Calendar.MINUTE,55);
+                        }else{
+                            endc.set(Calendar.MINUTE,startc.get(Calendar.MINUTE));
+                            endc.add(Calendar.HOUR_OF_DAY,1);
+                        }
                         endpicker.updateTime(endc.get(Calendar.HOUR_OF_DAY),endc.get(Calendar.MINUTE));
                         datalist.get(getAdapterPosition()).datas[2]=String.format(Locale.getDefault(),"%02d%02d",endc.get(Calendar.HOUR_OF_DAY),endc.get(Calendar.MINUTE));
                         end.setText(String.format(Locale.getDefault(),"%02d:%02d",endc.get(Calendar.HOUR_OF_DAY),endc.get(Calendar.MINUTE)));
@@ -77,7 +84,6 @@ public class TSListAdaptor extends RecyclerView.Adapter<TSListAdaptor.TSListView
             endpicker=createTimePickerDialog(new TimePickerDialog.OnTimeSetListener() {
                 @Override
                 public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
-                    DSLUtil.print(minute);
                     if(hourOfDay==0&&minute==0){
                         hourOfDay=23;
                         minute=55;
@@ -94,9 +100,15 @@ public class TSListAdaptor extends RecyclerView.Adapter<TSListAdaptor.TSListView
                     startc.set(Calendar.HOUR_OF_DAY,intstart/100);
                     startc.set(Calendar.MINUTE,intstart%100);
                     if(startc.compareTo(endc)>=0){
+
                         startc.set(Calendar.HOUR_OF_DAY,endc.get(Calendar.HOUR_OF_DAY));
-                        startc.set(Calendar.MINUTE,endc.get(Calendar.MINUTE));
-                        startc.add(Calendar.HOUR_OF_DAY,-1);
+                        if(startc.get(Calendar.HOUR)==0){
+                            startc.set(Calendar.MINUTE,0);
+                        }else{
+                            startc.set(Calendar.MINUTE,endc.get(Calendar.MINUTE));
+                            startc.add(Calendar.HOUR_OF_DAY,-1);
+                        }
+
                         startpicker.updateTime(startc.get(Calendar.HOUR_OF_DAY),startc.get(Calendar.MINUTE));
                         start.setText(String.format(Locale.getDefault(),"%02d:%02d",startc.get(Calendar.HOUR_OF_DAY),startc.get(Calendar.MINUTE)));
                         datalist.get(getAdapterPosition()).datas[1]=String.format(Locale.getDefault(),"%02d%02d",startc.get(Calendar.HOUR_OF_DAY),startc.get(Calendar.MINUTE));

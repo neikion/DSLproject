@@ -308,13 +308,13 @@ public class ts_add extends AppCompatActivity implements View.OnClickListener, V
                 start= colstart *100;
             }
 
-
             //end time
             if(strend!=null){
                 end=Integer.parseInt(strend);
             }else{
                 end=(colstart*100)+100;
             }
+
             int cellbasic=(Cell_Height/((60/TIME_INTERVAL)-1));
             int cell=end-start;
             print(" cell "+cell);
@@ -361,8 +361,7 @@ public class ts_add extends AppCompatActivity implements View.OnClickListener, V
                 params.setMargins(0,(cellbasic*(((start%100)/TIME_INTERVAL))),0,0);
             }
             stiker.setLayoutParams(params);
-            stiker.setText("testtitle");
-//            stiker.setText(list.get(i).datas[3]);
+            stiker.setText(list.get(i).datas[3]);
             UITable.addView(stiker,UITable.getChildCount());
             stikerlist.add(stiker);
 
