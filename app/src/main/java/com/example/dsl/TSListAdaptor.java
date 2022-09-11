@@ -16,6 +16,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.recyclerview.widget.RecyclerView;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Locale;
@@ -136,6 +137,11 @@ public class TSListAdaptor extends RecyclerView.Adapter<TSListAdaptor.TSListView
                 additem = itemView.findViewById(R.id.list_add_item);
             }
         }
+        private void initMiddleItem(int position){
+            datalist.get(position).datas[0]=String.valueOf(initdayvalue);
+            datalist.get(position).datas[1]=String.format(Locale.getDefault(),"%02d00",initstartvalue);
+            datalist.get(position).datas[2]=String.format(Locale.getDefault(),"%02d00",initendvalue);
+        }
         public void createDayPickerDialog(Context context){
             daypicker=new AlertDialog.Builder(context);
             daypicker.setItems(dayarray, (dialog, which) -> {
@@ -184,7 +190,7 @@ public class TSListAdaptor extends RecyclerView.Adapter<TSListAdaptor.TSListView
             if(datalist.get(layoutpos).datas[datapos]==null) {
                 switch (datapos) {
                     case 0:
-                        return (initdayvalue);
+                        return dayarray[initdayvalue];
                     case 1:
                         return String.format(Locale.getDefault(),"%02d:00",initstartvalue);
                     case 2:
@@ -230,6 +236,7 @@ public class TSListAdaptor extends RecyclerView.Adapter<TSListAdaptor.TSListView
             } else if (id == R.id.list_add_item) {
                 setArrayData();
                 notifyItemInserted(getItemCount()-1);
+                initMiddleItem(getItemCount()-2);
                 listener.ChangeListener(datalist);
             }
 
@@ -263,7 +270,8 @@ public class TSListAdaptor extends RecyclerView.Adapter<TSListAdaptor.TSListView
     }
 
 
-    public class AdaptorDataSet{
+    //todo static class에서 일반 class로 바꿔주기
+    public static class AdaptorDataSet implements Serializable {
         public String[] datas;
         public AdaptorDataSet(){
             datas =new String[4];
@@ -274,12 +282,12 @@ public class TSListAdaptor extends RecyclerView.Adapter<TSListAdaptor.TSListView
     private final ArrayList<AdaptorDataSet> datalist;
     private final Context context;
     public final String[] dayarray=new String[]{"월요일","화요일","수요일","목요일","금요일","토요일","일요일"};
-    private final String initdayvalue;
+    private final int initdayvalue;
     private final int initstartvalue;
     private final int initendvalue;
     private final int TIME_PICKER_INTERVAL=5;
     private TSListener listener;
-    public TSListAdaptor(Context context,String initdayvalue, int initstartvalue, int initendvalue,TSListener listener){
+    public TSListAdaptor(Context context,int initdayvalue, int initstartvalue, int initendvalue,TSListener listener){
         datalist=new ArrayList<>();
         this.context =context;
         this.initdayvalue= initdayvalue;
@@ -333,6 +341,8 @@ public class TSListAdaptor extends RecyclerView.Adapter<TSListAdaptor.TSListView
     public void setArrayData(){
         datalist.add(new AdaptorDataSet());
     }
+
+    public ArrayList<AdaptorDataSet> getArrayData(){return datalist;}
 
     @Override
     public void onViewAttachedToWindow(@NonNull TSListViewHolder holder) {
