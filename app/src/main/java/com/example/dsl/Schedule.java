@@ -66,6 +66,7 @@ public class Schedule extends AppCompatActivity implements View.OnClickListener 
     private AlarmManager alarmmanager;
     private List<PendingIntent> alarmList=new LinkedList<>();
     TimeTable table;
+    ArrayList<TSListAdaptor.AdaptorDataSet> stickers;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -162,7 +163,9 @@ public class Schedule extends AppCompatActivity implements View.OnClickListener 
         switch (v.getId()){
             case R.id.AddAlarm:
                 Intent i=new Intent(this,ts_add.class);
-                i.putExtra("BaseTableID",BaseTableID);
+                if(stickers!=null){
+                    i.putExtra("LegacySticker",stickers);
+                }
                 ActivityLuncher.launch(i);
                 break;
             case R.id.movemenu:
@@ -177,10 +180,13 @@ public class Schedule extends AppCompatActivity implements View.OnClickListener 
         public void onActivityResult(ActivityResult result) {
             print("onActivityResult");
             if(result.getResultCode()== Activity.RESULT_OK){
+                print("RESULT_OK");
                 Intent ReIntent=result.getData();
-                ArrayList<TSListAdaptor.AdaptorDataSet> list = (ArrayList<TSListAdaptor.AdaptorDataSet>)ReIntent.getSerializableExtra("Result_Value");
-                table.ChangeListener(list);
+                stickers = (ArrayList<TSListAdaptor.AdaptorDataSet>)ReIntent.getSerializableExtra("Result_Value");
+                table.ChangeListener(stickers);
                 //todo 넘어온 시간에 맞춰 알람 설정
+            }else if(result.getResultCode()==Activity.RESULT_CANCELED){
+                print("RESULT_CANCELED");
             }
         }
     });

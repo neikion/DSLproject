@@ -38,19 +38,31 @@ public class TimeTable implements ViewTreeObserver.OnGlobalLayoutListener, TSLis
     Context context;
     List<TextView> stikerlist = new LinkedList<>();
     public final String[] dayarray=new String[]{"월요일","화요일","수요일","목요일","금요일","토요일","일요일"};
+    private ArrayList<TSListAdaptor.AdaptorDataSet> LegacyStickers;
     public TimeTable(Context context,LinearLayout BaseTablePosition,LinearLayout UITablePosition){
         this.context=context;
         this.BaseTablePosition=BaseTablePosition;
         this.UITablePosition=UITablePosition;
-        //todo 이미 설정했던 값 가져오기
         //todo 중복은 설정 안되게 하기
         //todo 입력 받은 설정에 따라 셀 크기 조정하기
         init(9);
     }
+    public void setLegacyStickers(ArrayList<TSListAdaptor.AdaptorDataSet> list){
+        LegacyStickers=list;
+    }
+
+    public ArrayList<TSListAdaptor.AdaptorDataSet> getLefacyStickers(){
+        return LegacyStickers;
+    }
+    private void onReady(){
+        if(LegacyStickers!=null){
+            ChangeListener(new ArrayList<>());
+        }
+    }
     public void init(int timestart){
         addLayout(11,6,timestart);
     }
-    public void addLayout(int rowcount,int colcount,int timestart){
+    private void addLayout(int rowcount,int colcount,int timestart){
         this.colstart =timestart;
         TableRowCount=rowcount;
         TableColCount=colcount;
@@ -115,7 +127,7 @@ public class TimeTable implements ViewTreeObserver.OnGlobalLayoutListener, TSLis
             }
         }
     }
-    public GridLayout.LayoutParams getItemLayoutParams(int rowindex, int colindex){
+    private GridLayout.LayoutParams getItemLayoutParams(int rowindex, int colindex){
         GridLayout.LayoutParams gridChildparams=new GridLayout.LayoutParams(GridLayout.spec(rowindex,1),GridLayout.spec(colindex,1));
         gridChildparams.width=Cell_Width;
         gridChildparams.height=Cell_Height;
@@ -152,24 +164,24 @@ public class TimeTable implements ViewTreeObserver.OnGlobalLayoutListener, TSLis
         }
         return radi;
     }
-    public float DPtoPX(float dipValue) {
+    private float DPtoPX(float dipValue) {
         DisplayMetrics metrics = context.getResources().getDisplayMetrics();
         return TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dipValue, metrics);
     }
-    public GradientDrawable getItemsBGWithBorder(float[] radius) {
+    private GradientDrawable getItemsBGWithBorder(float[] radius) {
         GradientDrawable gdDefault = new GradientDrawable();
         gdDefault.setShape(GradientDrawable.RECTANGLE);
         gdDefault.setStroke((int)DPtoPX(1), Color.BLACK);
         gdDefault.setCornerRadii(radius);
         return gdDefault;
     }
-    public GradientDrawable getItemsBGWithoutBorder(float[] radius){
+    private GradientDrawable getItemsBGWithoutBorder(float[] radius){
         GradientDrawable gdDefault = new GradientDrawable();
         gdDefault.setShape(GradientDrawable.RECTANGLE);
         gdDefault.setCornerRadii(radius);
         return gdDefault;
     }
-    public GradientDrawable getItemsBGWithoutBorder(float[] radius,int color){
+    private GradientDrawable getItemsBGWithoutBorder(float[] radius,int color){
         GradientDrawable gdDefault = new GradientDrawable();
         gdDefault.setShape(GradientDrawable.RECTANGLE);
         gdDefault.setCornerRadii(radius);
@@ -188,10 +200,10 @@ public class TimeTable implements ViewTreeObserver.OnGlobalLayoutListener, TSLis
         Cell_Height=TableHeight/4;
         initBaseLayout(BaseTable);
         initUILayout(UITable);
+        onReady();
     }
     @Override
     public void ChangeListener(ArrayList<TSListAdaptor.AdaptorDataSet> list) {
-
         //첫번째와 마지막은 시간과 관련 없음
         Clear();
         int lastrecodeday=-1;
@@ -203,6 +215,7 @@ public class TimeTable implements ViewTreeObserver.OnGlobalLayoutListener, TSLis
         int start=0;
         int end=0;
         for(int i=1;i<list.size()-1;i++){
+            String strday=list.get(i).datas[0];
             String strstart=list.get(i).datas[1];
             String strend=list.get(i).datas[2];
             //starttime
@@ -215,35 +228,119 @@ public class TimeTable implements ViewTreeObserver.OnGlobalLayoutListener, TSLis
             if(lastend<end){
                 lastend=end;
             }
+            day=Integer.parseInt(strday)+1;
+            if(lastrecodeday<day){
+                lastrecodeday=day;
+            }
+        }
+        if(LegacyStickers!=null){
+            for(int i=1;i<LegacyStickers.size()-1;i++){
+                String strday=LegacyStickers.get(i).datas[0];
+                String strstart=LegacyStickers.get(i).datas[1];
+                String strend=LegacyStickers.get(i).datas[2];
+                //starttime
+                start=Integer.parseInt(strstart);
+                if(firststart>start){
+                    firststart=start;
+                }
+                //end time
+                end=Integer.parseInt(strend);
+                if(lastend<end){
+                    lastend=end;
+                }
+                day=Integer.parseInt(strday)+1;
+                if(lastrecodeday<day){
+                    lastrecodeday=day;
+                }
+            }
+        }
+        if(lastrecodeday>5&&TableColCount-1<lastrecodeday){
+            for(int i2=TableColCount-1;i2<lastrecodeday;i2++){
+                addColumnBaseLayout();
+            }
+            UITableReset();
+            BaseTableUpdate();
+        }else if(5<TableColCount-1&&lastrecodeday<TableColCount-1){
+            for(int i2=TableColCount-1;lastrecodeday<i2&&i2>5;i2--){
+                removeColBaseLayout();
+            }
+            UITableReset();
+        }
+
+
+        if(LegacyStickers!=null){
+            for(int i=1;i<LegacyStickers.size()-1;i++){
+                String strday=LegacyStickers.get(i).datas[0];
+                String strstart=LegacyStickers.get(i).datas[1];
+                String strend=LegacyStickers.get(i).datas[2];
+                String place=LegacyStickers.get(i).datas[3];
+                //day
+                day=Integer.parseInt(strday)+1;
+                //start time
+                start=Integer.parseInt(strstart);
+                //end time
+                end=Integer.parseInt(strend);
+
+                int cellbasic=(Cell_Height/((60/TIME_INTERVAL)-1));
+                int cell=end-start;
+//            print(" cell "+cell);
+                int cellminute=cell%100;
+                int cellhour=cell/100;
+//            print(" cellhour "+cellhour);
+                int Customcellsize=((cellbasic*((cellminute/TIME_INTERVAL)))+(cellhour*Cell_Height));
+                int cellgridheight=cellhour;
+                //시간 0부터 시작하여 1시간 오를때마다 1씩 증가
+                int CellStart=0;
+
+//            print("start : "+start+" end "+end+" fiststart : "+firststart+" lastend : "+lastend+" Cell start : "+(start-firststart)/100);
+                int needMinute=(lastend%100)-(firststart%100);
+//            print("needMinute "+needMinute);
+                int needcol=(lastend/100)-(firststart/100);
+                if(needMinute>0){
+                    needcol+=1;
+                }
+                int limit=needcol-(TableRowCount-1);
+//            print("limit:"+limit+" lastend "+lastend+" need col "+needcol);
+                if(limit>0){
+                    for(int i2=0;i2<limit;i2++){
+                        addRowBaseLayout();
+                    }
+                }
+                if(limit<0){
+                    for(int i2=limit;i2<0;i2++){
+                        removeRowBaseLayout();
+                    }
+                }
+
+                CellStart=(start-firststart)/100;
+
+                if(cellminute>0){
+                    cellgridheight+=1;
+                }
+                TextView stiker=new TextView(context);
+                stiker.setBackground(getItemsBGWithoutBorder(getItemsRadius(CellStart+cellgridheight,day),Color.rgb(163,204,163)));
+//            print(" Cellstart "+(CellStart+1)+" cellsize "+(cellgridheight)+"");
+                GridLayout.LayoutParams params= new GridLayout.LayoutParams(GridLayout.spec(CellStart+1,cellgridheight),GridLayout.spec(day,1));
+                params.width=Cell_Width-2;
+                params.height=Customcellsize;
+                if(((start%100)/TIME_INTERVAL)!=0){
+                    params.setMargins(0,(cellbasic*(((start%100)/TIME_INTERVAL))),0,0);
+                }
+                stiker.setLayoutParams(params);
+                stiker.setText(place);
+                UITable.addView(stiker,UITable.getChildCount());
+                stikerlist.add(stiker);
+            }
         }
         for(int i=1;i<list.size()-1;i++){
             String strday=list.get(i).datas[0];
             String strstart=list.get(i).datas[1];
             String strend=list.get(i).datas[2];
             String place=list.get(i).datas[3];
-
             //day
             day=Integer.parseInt(strday)+1;
-            if(lastrecodeday<day){
-                lastrecodeday=day;
-            }
-            if(lastrecodeday>5&&TableColCount-1<lastrecodeday){
-                for(int i2=TableColCount-1;i2<lastrecodeday;i2++){
-                    addColumnBaseLayout();
-                }
-                UITableReset();
-                BaseTableUpdate();
-            }else if(5<TableColCount-1&&lastrecodeday<TableColCount-1){
-                for(int i2=TableColCount-1;lastrecodeday<i2&&i2>5;i2--){
-                    removeColBaseLayout();
-                }
-                UITableReset();
-
-            }
-
             //start time
             start=Integer.parseInt(strstart);
-
             //end time
             end=Integer.parseInt(strend);
 
@@ -293,7 +390,7 @@ public class TimeTable implements ViewTreeObserver.OnGlobalLayoutListener, TSLis
                 params.setMargins(0,(cellbasic*(((start%100)/TIME_INTERVAL))),0,0);
             }
             stiker.setLayoutParams(params);
-            stiker.setText(list.get(i).datas[3]);
+            stiker.setText(place);
             UITable.addView(stiker,UITable.getChildCount());
             stikerlist.add(stiker);
 
@@ -359,13 +456,13 @@ public class TimeTable implements ViewTreeObserver.OnGlobalLayoutListener, TSLis
         for(int i=0;i<TableRowCount;i++){
             View e=new View(context);
             BaseTable.addView(e,(TableColCount*(i+1))-1,getItemLayoutParams(i,TableColCount-1));
-            print((TableColCount*(i+1))-1+"");
+//            print((TableColCount*(i+1))-1+"");
         }
 
         //UITABLE에 textview 새로 만들시 column추가
         TextView tv=new TextView(context);
         tv.setText(dayarray[TableColCount-2]);
-        print(TableColCount);
+//        print(TableColCount);
         GridLayout.LayoutParams params=getItemLayoutParams(0,TableColCount-1);
         params.setGravity(Gravity.CENTER);
         tv.setGravity(Gravity.CENTER);
@@ -373,7 +470,7 @@ public class TimeTable implements ViewTreeObserver.OnGlobalLayoutListener, TSLis
         UITable.addView(tv,TableColCount-2,params);
     }
 
-    public void BaseTableUpdate(){
+    private void BaseTableUpdate(){
         Cell_Width=getCell_Width();
         View v;
         for(int i=0;i<BaseTable.getChildCount();i++){
@@ -407,7 +504,7 @@ public class TimeTable implements ViewTreeObserver.OnGlobalLayoutListener, TSLis
 
         }
     }
-    public void UITableReset(){
+    private void UITableReset(){
         for(int i=0;i<UITable.getChildCount();i++){
             GridLayout.LayoutParams ee=(GridLayout.LayoutParams)UITable.getChildAt(i).getLayoutParams();
             ee.width=getCell_Width();
@@ -416,7 +513,7 @@ public class TimeTable implements ViewTreeObserver.OnGlobalLayoutListener, TSLis
         }
     }
 
-    public void Clear(){
+    private void Clear(){
         for(int i = 0; i< stikerlist.size(); i++){
             UITable.removeView(stikerlist.get(i));
         }
