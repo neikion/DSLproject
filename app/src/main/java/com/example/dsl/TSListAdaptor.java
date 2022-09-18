@@ -8,7 +8,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.CompoundButton;
 import android.widget.EditText;
+import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.TimePicker;
 
@@ -27,7 +29,7 @@ public class TSListAdaptor extends RecyclerView.Adapter<TSListAdaptor.TSListView
     interface TSListener{
         void ChangeListener(ArrayList<AdaptorDataSet> list);
     }
-    public class TSListViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener,TextWatcher{
+    public class TSListViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener,TextWatcher, CompoundButton.OnCheckedChangeListener {
         private final View view;
         EditText sub;
         EditText pro;
@@ -38,6 +40,8 @@ public class TSListAdaptor extends RecyclerView.Adapter<TSListAdaptor.TSListView
         EditText place;
         TextView additem;
         Button del;
+        Switch vibrateSwitch;
+        Switch soundSwitch;
         Calendar startc=Calendar.getInstance();
         Calendar endc=Calendar.getInstance();
         private AlertDialog.Builder daypicker;
@@ -133,6 +137,8 @@ public class TSListAdaptor extends RecyclerView.Adapter<TSListAdaptor.TSListView
                 end = itemView.findViewById(R.id.endtime);
                 place = itemView.findViewById(R.id.place);
                 del = itemView.findViewById(R.id.list_delete);
+                vibrateSwitch=itemView.findViewById(R.id.vibrateSwitch);
+                soundSwitch=itemView.findViewById(R.id.soundSwitch);
             } else if (id == R.id.ts_list_last_item_layout) {
                 additem = itemView.findViewById(R.id.list_add_item);
             }
@@ -180,6 +186,11 @@ public class TSListAdaptor extends RecyclerView.Adapter<TSListAdaptor.TSListView
                 place.setText(datalist.get(getAdapterPosition()).datas[3]);
                 place.addTextChangedListener(this);
 
+                soundSwitch.setChecked(datalist.get(getAdapterPosition()).soundSwitch);
+                soundSwitch.setOnCheckedChangeListener(this);
+
+                vibrateSwitch.setChecked(datalist.get(getAdapterPosition()).vibrateSwitch);
+                vibrateSwitch.setOnCheckedChangeListener(this);
 
                 del.setOnClickListener(this);
             } else if (id == R.id.ts_list_last_item_layout) {
@@ -213,6 +224,8 @@ public class TSListAdaptor extends RecyclerView.Adapter<TSListAdaptor.TSListView
                 start.setOnClickListener(null);
                 end.setOnClickListener(null);
                 place.removeTextChangedListener(this);
+                soundSwitch.setOnCheckedChangeListener(null);
+                vibrateSwitch.setOnCheckedChangeListener(null);
             } else if (id == R.id.ts_list_last_item_layout) {
                 additem.setOnClickListener(null);
             }
@@ -256,7 +269,6 @@ public class TSListAdaptor extends RecyclerView.Adapter<TSListAdaptor.TSListView
         public void afterTextChanged(Editable s) {
             if(view.getId()==R.id.ts_list_first_item_layout){
                 if (s.hashCode()==sub.getText().hashCode()) {
-
                     datalist.get(getAdapterPosition()).datas[0] = s.toString();
                 }else{
                     datalist.get(getAdapterPosition()).datas[1] = s.toString();
@@ -267,19 +279,37 @@ public class TSListAdaptor extends RecyclerView.Adapter<TSListAdaptor.TSListView
             }
             listener.ChangeListener(datalist);
         }
+
+        @Override
+        public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+            if(buttonView.isPressed()){
+                if(buttonView.equals(soundSwitch)){
+                    datalist.get(getAdapterPosition()).soundSwitch=isChecked;
+                }
+                if(buttonView.equals(vibrateSwitch)){
+                    datalist.get(getAdapterPosition()).vibrateSwitch=isChecked;
+                }
+            }
+
+        }
     }
 
 
     //todo static class에서 일반 class로 바꿔주기
     public static class AdaptorDataSet implements Serializable {
         public String[] datas;
+        //first 0 subject 1 professor
+        //middle 0 day 1 start 2 end 3 place 4 sound 5 vibe
+        //last
         public AdaptorDataSet(){
             datas =new String[4];
         }
+        public boolean soundSwitch=false;
+        public boolean vibrateSwitch=false;
     }
 
 
-    private final ArrayList<AdaptorDataSet> datalist;
+    private ArrayList<AdaptorDataSet> datalist;
     private final Context context;
     public final String[] dayarray=new String[]{"월요일","화요일","수요일","목요일","금요일","토요일","일요일"};
     private final int initdayvalue;
@@ -340,6 +370,12 @@ public class TSListAdaptor extends RecyclerView.Adapter<TSListAdaptor.TSListView
 
     public void setArrayData(){
         datalist.add(new AdaptorDataSet());
+    }
+    public void setArrayData(int position, AdaptorDataSet dataset){
+        datalist.add(position,dataset);
+    }
+    public void clearArrayData(){
+        datalist.clear();
     }
 
     public ArrayList<AdaptorDataSet> getArrayData(){return datalist;}

@@ -80,7 +80,7 @@ public class Schedule extends AppCompatActivity implements View.OnClickListener 
         findViewById(R.id.AddAlarm).setOnClickListener(this);
         findViewById(R.id.movemenu).setOnClickListener(this);
         //todo 데이터베이스에서 값 받아오기
-        table=new TimeTable(this,BaseTablePosition,UITablePosition);
+        table=new TimeTable(this,BaseTablePosition,UITablePosition,9);
         findViewById(R.id.gomainactivity).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -142,7 +142,6 @@ public class Schedule extends AppCompatActivity implements View.OnClickListener 
 
     /*알람*/
     public void initalarm(){
-        //todo 진동 알람도 같이 울리기
         //todo 알람 종류 선택가능하도록 하기
         //todo 알림 화면 만들기
         alarmmanager= (AlarmManager) getApplicationContext().getSystemService(Context.ALARM_SERVICE);
@@ -151,12 +150,42 @@ public class Schedule extends AppCompatActivity implements View.OnClickListener 
         PendingIntent Alarmintent=PendingIntent.getBroadcast(this,1,intent,PendingIntent.FLAG_IMMUTABLE);
         Calendar c=Calendar.getInstance();
         c.setTimeInMillis(System.currentTimeMillis());
-        c.add(Calendar.SECOND,5);
+        c.add(Calendar.SECOND,20);
         alarmmanager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, c.getTimeInMillis(),Alarmintent);
         Log.i("DSL","\n\n 현재시각 "+ new Date(System.currentTimeMillis())+"\n 알람 예약 시간 "+new Date(c.getTimeInMillis()));
 
+
+/*                //noti it is alarm test code it's right work
+                new Handler().postDelayed(()->{
+                    AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
+                    Intent myIntent = new Intent(getApplicationContext(), TimeScheduleAlarmReceiver.class);
+                    PendingIntent pendingIntent = PendingIntent.getBroadcast(
+                            getApplicationContext(), 1, myIntent,
+                            PendingIntent.FLAG_UPDATE_CURRENT|PendingIntent.FLAG_IMMUTABLE);
+
+                    alarmManager.cancel(pendingIntent);
+                    print("dd");
+                },10000);*/
     }
 
+    private void setonclick(){
+        for(int i=table.TableColCount+table.TableRowCount-2;i<table.UITable.getChildCount();i++){
+            int setid = i-(table.TableColCount+table.TableRowCount-2);
+            ((TextView)table.UITable.getChildAt(i)).setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    Intent go=new Intent(getApplicationContext(),ts_add.class);
+                    if(stickers!=null){
+//                        TSListAdaptor.AdaptorDataSet set =stickers.get(setid);
+                        go.putExtra("LegacySticker",stickers);
+                        go.putExtra("addLegacySticker",setid);
+                    }
+                    ActivityLuncher.launch(go);
+                }
+            });
+        }
+
+    }
 
     @Override
     public void onClick(View v) {
@@ -170,6 +199,8 @@ public class Schedule extends AppCompatActivity implements View.OnClickListener 
                 break;
             case R.id.movemenu:
                 initalarm();
+
+
                 break;
         }
     }
@@ -178,13 +209,15 @@ public class Schedule extends AppCompatActivity implements View.OnClickListener 
     ActivityResultLauncher<Intent> ActivityLuncher=registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), new ActivityResultCallback<ActivityResult>() {
         @Override
         public void onActivityResult(ActivityResult result) {
-            print("onActivityResult");
+//            print("onActivityResult");
             if(result.getResultCode()== Activity.RESULT_OK){
-                print("RESULT_OK");
+//                print("RESULT_OK");
                 Intent ReIntent=result.getData();
                 stickers = (ArrayList<TSListAdaptor.AdaptorDataSet>)ReIntent.getSerializableExtra("Result_Value");
                 table.ChangeListener(stickers);
+                setonclick();
                 //todo 넘어온 시간에 맞춰 알람 설정
+                //todo 설정값에 따라 수업, 교수, 장소 표기해주기
             }else if(result.getResultCode()==Activity.RESULT_CANCELED){
                 print("RESULT_CANCELED");
             }

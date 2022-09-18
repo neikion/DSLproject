@@ -28,6 +28,7 @@ public class TimeTable implements ViewTreeObserver.OnGlobalLayoutListener, TSLis
     int Cell_Width=0;
     int TableColCount;
     int TableRowCount;
+    int CellHeightWeight=0;
     GridLayout BaseTable;
     GridLayout UITable;
     LinearLayout BaseTablePosition;
@@ -37,28 +38,37 @@ public class TimeTable implements ViewTreeObserver.OnGlobalLayoutListener, TSLis
     int colstart =0;
     Context context;
     List<TextView> stikerlist = new LinkedList<>();
+    private ArrayList<TSListAdaptor.AdaptorDataSet> initStickers;
     public final String[] dayarray=new String[]{"월요일","화요일","수요일","목요일","금요일","토요일","일요일"};
     private ArrayList<TSListAdaptor.AdaptorDataSet> LegacyStickers;
     public TimeTable(Context context,LinearLayout BaseTablePosition,LinearLayout UITablePosition){
         this.context=context;
         this.BaseTablePosition=BaseTablePosition;
         this.UITablePosition=UITablePosition;
-        //todo 중복은 설정 안되게 하기
-        //todo 입력 받은 설정에 따라 셀 크기 조정하기
+        init(9);
+    }
+    public TimeTable(Context context,LinearLayout BaseTablePosition,LinearLayout UITablePosition, int CellHeightWeight){
+        this.context=context;
+        this.BaseTablePosition=BaseTablePosition;
+        this.UITablePosition=UITablePosition;
+        this.CellHeightWeight=CellHeightWeight;
         init(9);
     }
     public void setLegacyStickers(ArrayList<TSListAdaptor.AdaptorDataSet> list){
         LegacyStickers=list;
     }
-
+    public void setOnReadyStickers(ArrayList<TSListAdaptor.AdaptorDataSet> list){
+        initStickers=list;
+    }
     public ArrayList<TSListAdaptor.AdaptorDataSet> getLefacyStickers(){
         return LegacyStickers;
     }
     private void onReady(){
         if(LegacyStickers!=null){
-            ChangeListener(new ArrayList<>());
+            ChangeListener(initStickers);
         }
     }
+
     public void init(int timestart){
         addLayout(11,6,timestart);
     }
@@ -81,11 +91,11 @@ public class TimeTable implements ViewTreeObserver.OnGlobalLayoutListener, TSLis
         GridLayout.LayoutParams gridParam=new GridLayout.LayoutParams();
         gridParam.height=GridLayout.LayoutParams.MATCH_PARENT;
         gridParam.width=GridLayout.LayoutParams.MATCH_PARENT;
+        //각 셀마다 MARGIN이 따로 적용됨
+        grid.setAlignmentMode(GridLayout.ALIGN_MARGINS);
         gridParam.setMargins(0,0,0,0);
         grid.setLayoutParams(gridParam);
         grid.setOrientation(GridLayout.VERTICAL);
-        //각 셀마다 MARGIN이 따로 적용됨
-        grid.setAlignmentMode(GridLayout.ALIGN_MARGINS);
         return grid;
     }
     private void initUILayout(GridLayout grid){
@@ -197,7 +207,11 @@ public class TimeTable implements ViewTreeObserver.OnGlobalLayoutListener, TSLis
         if(Cell_Width==0){
             Cell_Width=getCell_Width();
         }
-        Cell_Height=TableHeight/4;
+        if(CellHeightWeight==0){
+            Cell_Height=TableHeight/DEFALUT_ROW;
+        }else{
+            Cell_Height=TableHeight/CellHeightWeight;
+        }
         initBaseLayout(BaseTable);
         initUILayout(UITable);
         onReady();
@@ -318,7 +332,8 @@ public class TimeTable implements ViewTreeObserver.OnGlobalLayoutListener, TSLis
                     cellgridheight+=1;
                 }
                 TextView stiker=new TextView(context);
-                stiker.setBackground(getItemsBGWithoutBorder(getItemsRadius(CellStart+cellgridheight,day),Color.rgb(163,204,163)));
+
+                stiker.setBackground(getItemsBGWithoutBorder(getItemsRadius(CellStart+cellgridheight,day),Color.argb(150,163,204,163)));
 //            print(" Cellstart "+(CellStart+1)+" cellsize "+(cellgridheight)+"");
                 GridLayout.LayoutParams params= new GridLayout.LayoutParams(GridLayout.spec(CellStart+1,cellgridheight),GridLayout.spec(day,1));
                 params.width=Cell_Width-2;
@@ -381,7 +396,7 @@ public class TimeTable implements ViewTreeObserver.OnGlobalLayoutListener, TSLis
                 cellgridheight+=1;
             }
             TextView stiker=new TextView(context);
-            stiker.setBackground(getItemsBGWithoutBorder(getItemsRadius(CellStart+cellgridheight,day),Color.rgb(163,204,163)));
+            stiker.setBackground(getItemsBGWithoutBorder(getItemsRadius(CellStart+cellgridheight,day),Color.argb(150,163,204,163)));
 //            print(" Cellstart "+(CellStart+1)+" cellsize "+(cellgridheight)+"");
             GridLayout.LayoutParams params= new GridLayout.LayoutParams(GridLayout.spec(CellStart+1,cellgridheight),GridLayout.spec(day,1));
             params.width=Cell_Width-2;

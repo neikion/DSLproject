@@ -2,4 +2,5 @@
     <string name="app_name">DSL</string>
     <string name="ScheduleNotiChannelName">TSNC</string>
     <string name="ScheduleNotiChannelDescription">Time_Schedule_Notification_Channel</string>
+    <string name="TimeSchdule_Sticker_Overlap_Toast">겹치는 일정이 있습니다.</string>
 </resources>

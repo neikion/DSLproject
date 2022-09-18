@@ -12,6 +12,9 @@ import android.media.MediaPlayer;
 import android.os.Build;
 import android.os.Handler;
 import android.os.IBinder;
+import android.os.VibrationAttributes;
+import android.os.VibrationEffect;
+import android.os.Vibrator;
 import android.util.Log;
 
 import androidx.annotation.Nullable;
@@ -24,6 +27,9 @@ public class TimeScheduleAlarmService extends Service {
 
     MediaPlayer player;
     NotificationCompat.Builder noti;
+    Vibrator vibrator;
+    VibrationEffect vibrationEffect;
+    long[] vibratorPatten=new long[]{2000,2000,2000,2000};
     @Nullable
     @Override
     public IBinder onBind(Intent intent) {
@@ -36,6 +42,7 @@ public class TimeScheduleAlarmService extends Service {
         android.util.Log.i("DSL","onCreate");
         Createnoti();
         initPlayer();
+        initVibrator();
     }
     public void initPlayer(){
         player=MediaPlayer.create(this,R.raw.music);
@@ -48,6 +55,10 @@ public class TimeScheduleAlarmService extends Service {
         noti.setFullScreenIntent(ContentIntent(),true);
         noti.setCategory(NotificationCompat.CATEGORY_ALARM);
         noti.setContentIntent(ServiceDownIntent());
+    }
+    private void initVibrator(){
+        vibrator= (Vibrator) getSystemService(VIBRATOR_SERVICE);
+        vibrationEffect=VibrationEffect.createWaveform(vibratorPatten,0);
     }
     public PendingIntent ContentIntent(){
         Intent i=new Intent(this,MainActivity.class);
@@ -67,6 +78,11 @@ public class TimeScheduleAlarmService extends Service {
         if(intent.getExtras().getBoolean("AP")){
             startForeground(2,noti.build());
             player.start();
+//            VibrationAttributes.USAGE_CLASS_ALARM
+            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.R) {
+                VibrationAttributes a=new VibrationAttributes.Builder().setUsage(VibrationAttributes.USAGE_CLASS_ALARM).build();
+            }
+            vibrator.vibrate(vibrationEffect);
         }else{
             ServiceStop();
         }
@@ -85,6 +101,7 @@ public class TimeScheduleAlarmService extends Service {
             player.release();
             player=null;
         }
+        vibrator.cancel();
         super.onDestroy();
         Log.i("DSL","Service destroy");
     }
