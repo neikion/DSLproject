@@ -18,6 +18,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -37,7 +38,7 @@ public class TimeTable implements ViewTreeObserver.OnGlobalLayoutListener, TSLis
     final int DEFALUT_ROW=11;
     int colstart =0;
     Context context;
-    List<TextView> stikerlist = new LinkedList<>();
+    LinkedList<TextView> stikerlist = new LinkedList<>();
     private ArrayList<TSListAdaptor.AdaptorDataSet> initStickers;
     public final String[] dayarray=new String[]{"월요일","화요일","수요일","목요일","금요일","토요일","일요일"};
     private ArrayList<TSListAdaptor.AdaptorDataSet> LegacyStickers;
@@ -283,70 +284,26 @@ public class TimeTable implements ViewTreeObserver.OnGlobalLayoutListener, TSLis
 
 
         if(LegacyStickers!=null){
-            for(int i=1;i<LegacyStickers.size()-1;i++){
-                String strday=LegacyStickers.get(i).datas[0];
-                String strstart=LegacyStickers.get(i).datas[1];
-                String strend=LegacyStickers.get(i).datas[2];
-                String place=LegacyStickers.get(i).datas[3];
-                //day
-                day=Integer.parseInt(strday)+1;
-                //start time
-                start=Integer.parseInt(strstart);
-                //end time
-                end=Integer.parseInt(strend);
-
-                int cellbasic=(Cell_Height/((60/TIME_INTERVAL)-1));
-                int cell=end-start;
-//            print(" cell "+cell);
-                int cellminute=cell%100;
-                int cellhour=cell/100;
-//            print(" cellhour "+cellhour);
-                int Customcellsize=((cellbasic*((cellminute/TIME_INTERVAL)))+(cellhour*Cell_Height));
-                int cellgridheight=cellhour;
-                //시간 0부터 시작하여 1시간 오를때마다 1씩 증가
-                int CellStart=0;
-
-//            print("start : "+start+" end "+end+" fiststart : "+firststart+" lastend : "+lastend+" Cell start : "+(start-firststart)/100);
-                int needMinute=(lastend%100)-(firststart%100);
-//            print("needMinute "+needMinute);
-                int needcol=(lastend/100)-(firststart/100);
-                if(needMinute>0){
-                    needcol+=1;
-                }
-                int limit=needcol-(TableRowCount-1);
-//            print("limit:"+limit+" lastend "+lastend+" need col "+needcol);
-                if(limit>0){
-                    for(int i2=0;i2<limit;i2++){
-                        addRowBaseLayout();
-                    }
-                }
-                if(limit<0){
-                    for(int i2=limit;i2<0;i2++){
-                        removeRowBaseLayout();
-                    }
-                }
-
-                CellStart=(start-firststart)/100;
-
-                if(cellminute>0){
-                    cellgridheight+=1;
-                }
-                TextView stiker=new TextView(context);
-
-                stiker.setBackground(getItemsBGWithoutBorder(getItemsRadius(CellStart+cellgridheight,day),Color.argb(150,163,204,163)));
-//            print(" Cellstart "+(CellStart+1)+" cellsize "+(cellgridheight)+"");
-                GridLayout.LayoutParams params= new GridLayout.LayoutParams(GridLayout.spec(CellStart+1,cellgridheight),GridLayout.spec(day,1));
-                params.width=Cell_Width-2;
-                params.height=Customcellsize;
-                if(((start%100)/TIME_INTERVAL)!=0){
-                    params.setMargins(0,(cellbasic*(((start%100)/TIME_INTERVAL))),0,0);
-                }
-                stiker.setLayoutParams(params);
-                stiker.setText(place);
-                UITable.addView(stiker,UITable.getChildCount());
-                stikerlist.add(stiker);
-            }
+            addSticker(LegacyStickers,firststart,lastend);
         }
+
+        LinkedList<TextView> temp;
+        temp=addSticker(list,firststart,lastend);
+        for(int i=0;i<temp.size();i++){
+            stikerlist.add(temp.get(i));
+        }
+        UITimeUpdate(firststart/100);
+        BaseTableUpdate();
+/*        for(int i=0;i<UITable.getChildCount();i++){
+            ((TextView)UITable.getChildAt(i)).setBackgroundColor(Color.BLACK);
+        }*/
+    }
+    private LinkedList<TextView> addSticker(ArrayList<TSListAdaptor.AdaptorDataSet> list,int firststart, int lastend){
+        int day;
+        int start;
+        int end;
+        Calendar clacbonus=Calendar.getInstance();
+        LinkedList<TextView> stickers=new LinkedList<>();
         for(int i=1;i<list.size()-1;i++){
             String strday=list.get(i).datas[0];
             String strstart=list.get(i).datas[1];
@@ -358,26 +315,29 @@ public class TimeTable implements ViewTreeObserver.OnGlobalLayoutListener, TSLis
             start=Integer.parseInt(strstart);
             //end time
             end=Integer.parseInt(strend);
+            int starthour=start/100;
+            int startminute=start%100;
+            int endhour=end/100;
+            int endminute=end%100;
 
-            int cellbasic=(Cell_Height/((60/TIME_INTERVAL)-1));
-            int cell=end-start;
-//            print(" cell "+cell);
-            int cellminute=cell%100;
-            int cellhour=cell/100;
-//            print(" cellhour "+cellhour);
-            int Customcellsize=((cellbasic*((cellminute/TIME_INTERVAL)))+(cellhour*Cell_Height));
-            int cellgridheight=cellhour;
+            float cellbasic=((float)Cell_Height)/((60/TIME_INTERVAL));
+            clacbonus.set(Calendar.HOUR_OF_DAY,endhour);
+            clacbonus.set(Calendar.MINUTE,endminute);
+            clacbonus.add(Calendar.HOUR_OF_DAY,-starthour);
+            clacbonus.add(Calendar.MINUTE,-startminute);
+            int celltime=(clacbonus.get(Calendar.HOUR_OF_DAY)*100)+clacbonus.get(Calendar.MINUTE);
+            print(" cell "+celltime);
+            int cellminute=celltime%100;
+            int cellhour=celltime/100;
+//            print((cellbasic*(cellminute/TIME_INTERVAL))+" "+(cellhour*12*cellbasic));
+            float Customcellsize=((cellbasic*(cellminute/TIME_INTERVAL))+(cellhour*12*cellbasic));
+            int cellgridheight=getNeedCol(starthour,endhour,endminute);
             //시간 0부터 시작하여 1시간 오를때마다 1씩 증가
             int CellStart=0;
-
-//            print("start : "+start+" end "+end+" fiststart : "+firststart+" lastend : "+lastend+" Cell start : "+(start-firststart)/100);
-            int needMinute=(lastend%100)-(firststart%100);
-//            print("needMinute "+needMinute);
-            int needcol=(lastend/100)-(firststart/100);
-            if(needMinute>0){
-                needcol+=1;
-            }
+            int needcol=getNeedCol(firststart/100,lastend/100,lastend%100);
             int limit=needcol-(TableRowCount-1);
+//            print("start : "+start+" end "+end+" fiststart : "+firststart+" lastend : "+lastend+" Cell start : "+(start-firststart)/100+" Cell_Height "+Cell_Height);
+//            print("cellbasic "+cellbasic+" cellhour "+cellhour+" cellminute "+cellminute+" Customcellsize "+Customcellsize);
 //            print("limit:"+limit+" lastend "+lastend+" need col "+needcol);
             if(limit>0){
                 for(int i2=0;i2<limit;i2++){
@@ -389,30 +349,36 @@ public class TimeTable implements ViewTreeObserver.OnGlobalLayoutListener, TSLis
                     removeRowBaseLayout();
                 }
             }
-
             CellStart=(start-firststart)/100;
-
-            if(cellminute>0){
-                cellgridheight+=1;
-            }
+//            print("cellminute "+cellminute);
             TextView stiker=new TextView(context);
             stiker.setBackground(getItemsBGWithoutBorder(getItemsRadius(CellStart+cellgridheight,day),Color.argb(150,163,204,163)));
 //            print(" Cellstart "+(CellStart+1)+" cellsize "+(cellgridheight)+"");
             GridLayout.LayoutParams params= new GridLayout.LayoutParams(GridLayout.spec(CellStart+1,cellgridheight),GridLayout.spec(day,1));
-            params.width=Cell_Width-2;
-            params.height=Customcellsize;
-            if(((start%100)/TIME_INTERVAL)!=0){
-                params.setMargins(0,(cellbasic*(((start%100)/TIME_INTERVAL))),0,0);
+            params.width=Cell_Width;
+            params.height=(int)Customcellsize;
+//            print("margin "+(((start%100)/TIME_INTERVAL)*cellbasic));
+            if(startminute!=0){
+                params.setMargins(0,(int)((startminute/TIME_INTERVAL)*cellbasic),0,0);
             }
             stiker.setLayoutParams(params);
             stiker.setText(place);
             UITable.addView(stiker,UITable.getChildCount());
-            stikerlist.add(stiker);
-
-
+            stickers.add(stiker);
         }
-        UITimeUpdate(firststart/100);
-        BaseTableUpdate();
+
+        return stickers;
+    }
+    private int getNeedCol(int starthour,int endhour, int endminute){
+        int cellgridheight=endhour-starthour;
+        if(starthour!=endhour){
+            if((endminute)>0){
+                cellgridheight+=1;
+            }
+        }else{
+            cellgridheight+=1;
+        }
+        return cellgridheight;
     }
     private void UITimeUpdate(int starttime){
         for(int i2=TableColCount-1;i2<TableRowCount+TableColCount-2;i2++){
