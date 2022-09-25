@@ -48,15 +48,13 @@ public class ts_add extends AppCompatActivity implements View.OnClickListener {
             if(modifydatasetindex!=-1){
                 modifydataset=list.get(modifydatasetindex+1);
                 list.remove(modifydatasetindex+1);
-                table.setLegacyStickers(list);
                 ta.clearArrayData();
                 ta.setArrayData(0,list.get(0));
                 ta.setArrayData(1,modifydataset);
                 ta.setArrayData(2,list.get(list.size()-1));
-                table.setOnReadyStickers(ta.getArrayData());
+                table.setLegacyStickers(list,ta);
             }else{
-                table.setLegacyStickers(list);
-                table.setOnReadyStickers(new ArrayList<>());
+                table.setLegacyStickers(list,ta);
             }
         }
     }

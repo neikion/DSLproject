@@ -55,15 +55,15 @@ public class TimeTable implements ViewTreeObserver.OnGlobalLayoutListener, TSLis
         this.CellHeightWeight=CellHeightWeight;
         init(9);
     }
-    public void setLegacyStickers(ArrayList<TSListAdaptor.AdaptorDataSet> list){
-        LegacyStickers=list;
-    }
-    public void setOnReadyStickers(ArrayList<TSListAdaptor.AdaptorDataSet> list){
-        initStickers=list;
+    //미리 설정할 정보가 있을 시 설정할 정보랑 초기화할 정보 필요.
+    public void setLegacyStickers(ArrayList<TSListAdaptor.AdaptorDataSet> LegacyStickers,TSListAdaptor Adaptor){
+        this.LegacyStickers=LegacyStickers;
+        this.initStickers=Adaptor.getArrayData();
     }
     public ArrayList<TSListAdaptor.AdaptorDataSet> getLefacyStickers(){
         return LegacyStickers;
     }
+
     private void onReady(){
         if(LegacyStickers!=null){
             ChangeListener(initStickers);
@@ -281,29 +281,32 @@ public class TimeTable implements ViewTreeObserver.OnGlobalLayoutListener, TSLis
             }
             UITableReset();
         }
-
-
         if(LegacyStickers!=null){
             addSticker(LegacyStickers,firststart,lastend);
         }
-
-        LinkedList<TextView> temp;
-        temp=addSticker(list,firststart,lastend);
-        for(int i=0;i<temp.size();i++){
-            stikerlist.add(temp.get(i));
-        }
+        addSticker(list,firststart,lastend);
         UITimeUpdate(firststart/100);
         BaseTableUpdate();
 /*        for(int i=0;i<UITable.getChildCount();i++){
             ((TextView)UITable.getChildAt(i)).setBackgroundColor(Color.BLACK);
         }*/
     }
-    private LinkedList<TextView> addSticker(ArrayList<TSListAdaptor.AdaptorDataSet> list,int firststart, int lastend){
+    private void addSticker(ArrayList<TSListAdaptor.AdaptorDataSet> list,int firststart, int lastend){
         int day;
         int start;
         int end;
         Calendar clacbonus=Calendar.getInstance();
-        LinkedList<TextView> stickers=new LinkedList<>();
+        String subject = list.get(0).datas[0];
+        String professor=list.get(0).datas[1];
+        StringBuilder sb=new StringBuilder();
+        if(subject!=null){
+            sb.append(subject);
+            sb.append("\n");
+        }
+        if(professor!=null&&!professor.isEmpty()){
+            sb.append(professor);
+            sb.append("\n");
+        }
         for(int i=1;i<list.size()-1;i++){
             String strday=list.get(i).datas[0];
             String strstart=list.get(i).datas[1];
@@ -326,7 +329,7 @@ public class TimeTable implements ViewTreeObserver.OnGlobalLayoutListener, TSLis
             clacbonus.add(Calendar.HOUR_OF_DAY,-starthour);
             clacbonus.add(Calendar.MINUTE,-startminute);
             int celltime=(clacbonus.get(Calendar.HOUR_OF_DAY)*100)+clacbonus.get(Calendar.MINUTE);
-            print(" cell "+celltime);
+//            print(" cell "+celltime);
             int cellminute=celltime%100;
             int cellhour=celltime/100;
 //            print((cellbasic*(cellminute/TIME_INTERVAL))+" "+(cellhour*12*cellbasic));
@@ -362,12 +365,16 @@ public class TimeTable implements ViewTreeObserver.OnGlobalLayoutListener, TSLis
                 params.setMargins(0,(int)((startminute/TIME_INTERVAL)*cellbasic),0,0);
             }
             stiker.setLayoutParams(params);
-            stiker.setText(place);
+            if(place!=null){
+                sb.append(place);
+            }
+            stiker.setText(sb.toString());
+            if(place!=null){
+                sb.delete(sb.length()-place.length(),sb.length());
+            }
             UITable.addView(stiker,UITable.getChildCount());
-            stickers.add(stiker);
+            stikerlist.add(stiker);
         }
-
-        return stickers;
     }
     private int getNeedCol(int starthour,int endhour, int endminute){
         int cellgridheight=endhour-starthour;
@@ -498,6 +505,7 @@ public class TimeTable implements ViewTreeObserver.OnGlobalLayoutListener, TSLis
         for(int i = 0; i< stikerlist.size(); i++){
             UITable.removeView(stikerlist.get(i));
         }
+        stikerlist.clear();
     }
     private int getCell_Width(){
         Cell_Width=(TableWidth/TableColCount);

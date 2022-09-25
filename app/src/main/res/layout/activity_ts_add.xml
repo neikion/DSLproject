@@ -51,7 +51,7 @@
             android:id="@+id/ts_add_frame"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:padding="7.5dp"
+            android:layout_margin="7.5dp"
             >
             <LinearLayout
                 android:id="@+id/ts_add_base_table"
@@ -61,8 +61,6 @@
                 android:gravity="center"
                 android:layout_gravity="center"
                 >
-
-
             </LinearLayout>
             <LinearLayout
                 android:orientation="horizontal"

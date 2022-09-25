@@ -23,6 +23,7 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Parcelable;
 import android.os.SystemClock;
 import android.provider.MediaStore;
 import android.provider.Settings;
@@ -84,7 +85,11 @@ public class Schedule extends AppCompatActivity implements View.OnClickListener 
         findViewById(R.id.gomainactivity).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivity(new Intent(getApplicationContext(),MainActivity.class));
+//                startActivity(new Intent(getApplicationContext(),MainActivity.class));
+                AlarmCheck(3);
+                Calendar c=Calendar.getInstance();
+                c.setTimeInMillis(System.currentTimeMillis());
+                print(c.getTime());
             }
         });
     }
@@ -145,17 +150,24 @@ public class Schedule extends AppCompatActivity implements View.OnClickListener 
         //todo 알람 종류 선택가능하도록 하기
         //todo 알림 화면 만들기
         alarmmanager= (AlarmManager) getApplicationContext().getSystemService(Context.ALARM_SERVICE);
+
         Intent intent=new Intent(this,TimeScheduleAlarmReceiver.class);
         intent.putExtra("AP",true);
+//        intent.putExtra("Player", (Parcelable) MediaPlayer.create(this,R.raw.music));
         PendingIntent Alarmintent=PendingIntent.getBroadcast(this,1,intent,PendingIntent.FLAG_IMMUTABLE);
         Calendar c=Calendar.getInstance();
         c.setTimeInMillis(System.currentTimeMillis());
-        c.add(Calendar.SECOND,20);
+        c.add(Calendar.SECOND,15);
         alarmmanager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, c.getTimeInMillis(),Alarmintent);
+/*        AlarmManager.AlarmClockInfo info=new AlarmManager.AlarmClockInfo(c.getTimeInMillis(),FullScreenIntent());
+        alarmmanager.setAlarmClock(info,Alarmintent);
+        Calendar d=Calendar.getInstance();
+        d.setTimeInMillis(info.getTriggerTime());
+        print(d.getTime());*/
         Log.i("DSL","\n\n 현재시각 "+ new Date(System.currentTimeMillis())+"\n 알람 예약 시간 "+new Date(c.getTimeInMillis()));
 
 
-/*                //noti it is alarm test code it's right work
+                //noti it is alarm test code it's right work
                 new Handler().postDelayed(()->{
                     AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
                     Intent myIntent = new Intent(getApplicationContext(), TimeScheduleAlarmReceiver.class);
@@ -164,10 +176,36 @@ public class Schedule extends AppCompatActivity implements View.OnClickListener 
                             PendingIntent.FLAG_UPDATE_CURRENT|PendingIntent.FLAG_IMMUTABLE);
 
                     alarmManager.cancel(pendingIntent);
-                    print("dd");
-                },10000);*/
+                },10000);
     }
+    public void AlarmCheck(int requestCode){
+        alarmmanager= (AlarmManager) getApplicationContext().getSystemService(Context.ALARM_SERVICE);
+        Intent intent=new Intent(this,TimeScheduleAlarmReceiver.class);
+        intent.putExtra("AP",true);
+        PendingIntent Alarmintent=PendingIntent.getBroadcast(this,requestCode,intent,PendingIntent.FLAG_IMMUTABLE|PendingIntent.FLAG_NO_CREATE);
+        if(Alarmintent!=null){
+            print("이미 있음");
 
+        }else{
+            print("없음");
+        }
+    }
+    public void setAlarm(int day,int hour, int minute,int requestCode){
+        alarmmanager= (AlarmManager) getApplicationContext().getSystemService(Context.ALARM_SERVICE);
+        Intent intent=new Intent(this,TimeScheduleAlarmReceiver.class);
+        intent.putExtra("AP",true);
+        PendingIntent Alarmintent=PendingIntent.getBroadcast(this,requestCode,intent,PendingIntent.FLAG_IMMUTABLE);
+        Calendar c=Calendar.getInstance();
+        c.setTimeInMillis(System.currentTimeMillis());
+        //day == 0 is monday
+        c.set(Calendar.DAY_OF_WEEK,((day+1)%7)+1);
+        c.set(Calendar.HOUR_OF_DAY,hour);
+        c.set(Calendar.MINUTE,minute);
+        c.set(Calendar.SECOND,0);
+//        alarmmanager.setRepeating(AlarmManager.RTC_WAKEUP,c.getTimeInMillis(),1000*60*24*7,Alarmintent);
+        alarmmanager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, c.getTimeInMillis(),Alarmintent);
+        Log.i("DSL","\n\n 현재시각 "+ new Date(System.currentTimeMillis())+"\n 알람 예약 시간 "+new Date(c.getTimeInMillis()));
+    }
     private void setonclick(){
         for(int i=table.TableColCount+table.TableRowCount-2;i<table.UITable.getChildCount();i++){
             int setid = i-(table.TableColCount+table.TableRowCount-2);
@@ -217,7 +255,6 @@ public class Schedule extends AppCompatActivity implements View.OnClickListener 
                 table.ChangeListener(stickers);
                 setonclick();
                 //todo 넘어온 시간에 맞춰 알람 설정
-                //todo 설정값에 따라 수업, 교수, 장소 표기해주기
             }else if(result.getResultCode()==Activity.RESULT_CANCELED){
                 print("RESULT_CANCELED");
             }
