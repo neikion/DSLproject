@@ -1,11 +1,7 @@
 package com.example.dsl;
 
-import android.content.ContentValues;
 import android.content.Context;
-import android.content.Intent;
 import android.util.Log;
-
-import androidx.annotation.Nullable;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -20,11 +16,8 @@ import java.security.KeyStore;
 import java.security.cert.Certificate;
 import java.security.cert.CertificateFactory;
 import java.sql.SQLException;
-import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
 
@@ -67,7 +60,6 @@ public final class DSLManager{
         void Result(JSONArray Result);
     }
     private class ServerConnect implements AutoCloseable{
-        private boolean start=false;
         //debuging
         private final String targetIP;
         private final String BaseURL;
@@ -77,7 +69,6 @@ public final class DSLManager{
         public ServerConnect(String targetIP){
             this.targetIP=targetIP;
             BaseURL ="https://"+targetIP+"/DB.jsp";
-
         }
         private HttpsURLConnection RightConnect(){
             try{
@@ -91,7 +82,6 @@ public final class DSLManager{
         }
         //Only Debuging use
         private HttpsURLConnection DangerConnect(){
-            String s="";
             try {
                 CertificateFactory cf= CertificateFactory.getInstance("X.509");
                 InputStream cainput;
@@ -129,11 +119,12 @@ public final class DSLManager{
                     }
                 });
                 urlConnection.setSSLSocketFactory(context.getSocketFactory());
+                urlConnection.setConnectTimeout(5000);
+                urlConnection.setReadTimeout(5000);
                 return urlConnection;
             }catch (Exception e){
                 e.printStackTrace();
             }
-
             return null;
         }
         private String ConnectWork(HttpsURLConnection urlConnection, JSONObject parameter, String type){
@@ -181,8 +172,8 @@ public final class DSLManager{
 
         }
         private String StreamRead(InputStream in){
-            String s="";
-            int len = 0;
+            StringBuilder s= new StringBuilder();
+            int len;
             byte[] buffer=new byte[1024];
             while(true){
                 try{
@@ -194,9 +185,9 @@ public final class DSLManager{
                 if(len==-1){
                     break;
                 }
-                s+=new String(buffer);
+                s.append(new String(buffer));
             }
-            return s;
+            return s.toString();
         }
         //Only test. must delete
         private HttpsURLConnection Connect(){
@@ -216,52 +207,10 @@ public final class DSLManager{
             }
             throw new SQLException(responseString);
         }
-        public String Create(Context context, JSONObject json) throws ExecutionException, InterruptedException, JSONException, SQLException {
-            cont=context;
-            Callable<String> task=()->{
-                return ConnectWork(Connect(),json,"Create");
-            };
-            Future<String> result=exs.submit(task);
-
-            return getResult(result.get());
-        }
-
-        public JSONArray Read(Context con,JSONObject json) throws JSONException, SQLException, ExecutionException, InterruptedException {
-            cont=con;
-            Callable<String> task=()->{
-                return ConnectWork(Connect(),json,"Read");
-            };
-            Future<String> result=exs.submit(task);
-            JSONArray resultjson=new JSONArray(result.get());
-            if(resultjson.isNull(0)){
-                return resultjson;
-            }
-            if(resultjson.getJSONObject(0).has("result")){
-                throw new SQLException(resultjson.getJSONObject(0).getString("result"));
-            }
-            return resultjson;
-        }
-        public String Update(Context context, JSONObject json) throws ExecutionException, InterruptedException, JSONException, SQLException {
-            cont=context;
-            Callable<String> task=()->{
-                return ConnectWork(Connect(),json,"Update");
-
-            };
-            Future<String> result=exs.submit(task);
-            return getResult(result.get());
-        }
-        public String Delete(Context context, JSONObject json) throws ExecutionException, InterruptedException, JSONException, SQLException{
-            cont=context;
-            Callable<String> task=()->{
-                return ConnectWork(Connect(),json,"Delete");
-
-            };
-            Future<String> result=exs.submit(task);
-            return getResult(result.get());
-        }
-
         public void Create(Context context, JSONObject json,NetListener netListener){
-            cont=context;
+            if(cont==null){
+                cont=context.getApplicationContext();
+            }
             Runnable task=()->{
                 try {
                     JSONArray result=new JSONArray(ConnectWork(Connect(),json,"Create"));
@@ -272,8 +221,10 @@ public final class DSLManager{
             };
             exs.submit(task);
         }
-        public void Read(Context con, JSONObject json, NetListener netListener){
-            cont=con;
+        public void Read(Context context, JSONObject json, NetListener netListener){
+            if(cont==null){
+                cont=context.getApplicationContext();
+            }
             Runnable task = ()->{
                 JSONArray result;
                 try {
@@ -285,12 +236,13 @@ public final class DSLManager{
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
-
             };
             exs.submit(task);
         }
         public void Update(Context context, JSONObject json,NetListener netListener) {
-            cont=context;
+            if(cont==null){
+                cont=context.getApplicationContext();
+            }
             Runnable task=()->{
                 try {
                     JSONArray result=new JSONArray(ConnectWork(Connect(),json,"Update"));
@@ -302,7 +254,9 @@ public final class DSLManager{
             exs.submit(task);
         }
         public void Delete(Context context, JSONObject json,NetListener netListener) {
-            cont=context;
+            if(cont==null){
+                cont=context.getApplicationContext();
+            }
             Runnable task=()->{
                 try {
                     JSONArray result=new JSONArray(ConnectWork(Connect(),json,"Delete"));
@@ -314,7 +268,7 @@ public final class DSLManager{
             exs.submit(task);
         }
         @Override
-        public void close() throws Exception {
+        public void close() {
             exs.shutdown();
             cont=null;
             try {
@@ -333,90 +287,21 @@ public final class DSLManager{
             }
         }
     }
-    public class ServerReqeust{
-        private JSONObject json;
-        public ServerReqeust(String table){
-            json=new JSONObject();
-            try {
-                json.put("table",table);
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-        }
-        public ServerReqeust Column(String column){
-            try {
-                json.put("column",column);
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-            return this;
-        }
-        public ServerReqeust UpdateValue(String value){
-            try {
-                json.put("update_value",value);
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-            return this;
-        }
-        public ServerReqeust Insert(String[] values){
-            try {
-                json.put("insert_value",strary2str(values));
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-            return this;
-        }
-        private String strary2str(String[] str){
-            String result="";
-            for(int i=0;i<str.length-1;i++){
-                result+=str[i]+",";
-            }
-            result+=str[str.length-1];
-            return result;
-        }
-        public ServerReqeust Constraint(String constraint,String constraint_value){
-            try {
-                json.put("constraint",constraint);
-                json.put("constraint_value",constraint_value);
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-            return this;
-        }
-        public String Create(Context context) throws JSONException, ExecutionException, InterruptedException, SQLException {
-            return Server.Create(context,json);
-        }
-        public JSONArray Read(Context context) throws Exception {
-            return Server.Read(context,json);
-        }
-        public String Update(Context context) throws ExecutionException, InterruptedException, JSONException, SQLException {
-            return Server.Update(context,json);
-        }
-        public String Delete(Context context) throws ExecutionException, InterruptedException, JSONException, SQLException {
-            return Server.Delete(context,json);
-        }
-        public void Create(Context context,NetListener netListener){
-            Server.Create(context,json,netListener);
-        }
-        public void Read(Context context,NetListener netListener){
-            Server.Read(context,json,netListener);
-        }
-        public void Update(Context context,NetListener netListener){
-            Server.Update(context,json,netListener);
-        }
-        public void Delete(Context context,NetListener netListener){
-            Server.Delete(context,json,netListener);
-        }
+    public void Create(Context context,JSONObject json,NetListener netListener){
+        Server.Create(context,json,netListener);
     }
-    public ServerReqeust Reqeust(String table){
-        return new ServerReqeust(table);
+    public void Read(Context context,JSONObject json,NetListener netListener){
+        Server.Read(context,json,netListener);
+    }
+    public void Update(Context context,JSONObject json,NetListener netListener){
+        Server.Update(context,json,netListener);
+    }
+    public void Delete(Context context,JSONObject json,NetListener netListener){
+        Server.Delete(context,json,netListener);
     }
     public void Close() throws Exception {
         Server.close();
         Server=null;
     }
-
-
 
 }
