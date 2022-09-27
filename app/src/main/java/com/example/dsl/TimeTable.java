@@ -39,9 +39,9 @@ public class TimeTable implements ViewTreeObserver.OnGlobalLayoutListener, TSLis
     int colstart =0;
     Context context;
     LinkedList<TextView> stikerlist = new LinkedList<>();
-    private ArrayList<TSListAdaptor.AdaptorDataSet> initStickers;
+    private ArrayList<AdaptorDataSet> initStickers;
     public final String[] dayarray=new String[]{"월요일","화요일","수요일","목요일","금요일","토요일","일요일"};
-    private ArrayList<TSListAdaptor.AdaptorDataSet> LegacyStickers;
+    private ArrayList<AdaptorDataSet> LegacyStickers;
     public TimeTable(Context context,LinearLayout BaseTablePosition,LinearLayout UITablePosition){
         this.context=context;
         this.BaseTablePosition=BaseTablePosition;
@@ -56,11 +56,11 @@ public class TimeTable implements ViewTreeObserver.OnGlobalLayoutListener, TSLis
         init(9);
     }
     //미리 설정할 정보가 있을 시 설정할 정보랑 초기화할 정보 필요.
-    public void setLegacyStickers(ArrayList<TSListAdaptor.AdaptorDataSet> LegacyStickers,TSListAdaptor Adaptor){
+    public void setLegacyStickers(ArrayList<AdaptorDataSet> LegacyStickers,TSListAdaptor Adaptor){
         this.LegacyStickers=LegacyStickers;
         this.initStickers=Adaptor.getArrayData();
     }
-    public ArrayList<TSListAdaptor.AdaptorDataSet> getLefacyStickers(){
+    public ArrayList<AdaptorDataSet> getLefacyStickers(){
         return LegacyStickers;
     }
 
@@ -218,7 +218,7 @@ public class TimeTable implements ViewTreeObserver.OnGlobalLayoutListener, TSLis
         onReady();
     }
     @Override
-    public void ChangeListener(ArrayList<TSListAdaptor.AdaptorDataSet> list) {
+    public void ChangeListener(ArrayList<AdaptorDataSet> list) {
         //첫번째와 마지막은 시간과 관련 없음
         Clear();
         int lastrecodeday=-1;
@@ -229,46 +229,43 @@ public class TimeTable implements ViewTreeObserver.OnGlobalLayoutListener, TSLis
         int day=0;
         int start=0;
         int end=0;
+        //새로운 스티커 행열 계산
         for(int i=1;i<list.size()-1;i++){
-            String strday=list.get(i).datas[0];
-            String strstart=list.get(i).datas[1];
-            String strend=list.get(i).datas[2];
             //starttime
-            start=Integer.parseInt(strstart);
+            start=list.get(i).start;
             if(firststart>start){
                 firststart=start;
             }
             //end time
-            end=Integer.parseInt(strend);
+            end=list.get(i).end;
             if(lastend<end){
                 lastend=end;
             }
-            day=Integer.parseInt(strday)+1;
+            day=list.get(i).day+1;
             if(lastrecodeday<day){
                 lastrecodeday=day;
             }
         }
+        //기존 스티커 행열 계산
         if(LegacyStickers!=null){
             for(int i=1;i<LegacyStickers.size()-1;i++){
-                String strday=LegacyStickers.get(i).datas[0];
-                String strstart=LegacyStickers.get(i).datas[1];
-                String strend=LegacyStickers.get(i).datas[2];
                 //starttime
-                start=Integer.parseInt(strstart);
+                start=LegacyStickers.get(i).start;
                 if(firststart>start){
                     firststart=start;
                 }
                 //end time
-                end=Integer.parseInt(strend);
+                end=LegacyStickers.get(i).end;
                 if(lastend<end){
                     lastend=end;
                 }
-                day=Integer.parseInt(strday)+1;
+                day=LegacyStickers.get(i).day+1;
                 if(lastrecodeday<day){
                     lastrecodeday=day;
                 }
             }
         }
+        //최종 행열 처리
         if(lastrecodeday>5&&TableColCount-1<lastrecodeday){
             for(int i2=TableColCount-1;i2<lastrecodeday;i2++){
                 addColumnBaseLayout();
@@ -291,33 +288,33 @@ public class TimeTable implements ViewTreeObserver.OnGlobalLayoutListener, TSLis
             ((TextView)UITable.getChildAt(i)).setBackgroundColor(Color.BLACK);
         }*/
     }
-    private void addSticker(ArrayList<TSListAdaptor.AdaptorDataSet> list,int firststart, int lastend){
+    private void addSticker(ArrayList<AdaptorDataSet> list,int firststart, int lastend){
         int day;
         int start;
         int end;
         Calendar clacbonus=Calendar.getInstance();
-        String subject = list.get(0).datas[0];
-        String professor=list.get(0).datas[1];
         StringBuilder sb=new StringBuilder();
-        if(subject!=null){
-            sb.append(subject);
-            sb.append("\n");
-        }
-        if(professor!=null&&!professor.isEmpty()){
-            sb.append(professor);
-            sb.append("\n");
-        }
+        String subject;
+        String professor;
         for(int i=1;i<list.size()-1;i++){
-            String strday=list.get(i).datas[0];
-            String strstart=list.get(i).datas[1];
-            String strend=list.get(i).datas[2];
-            String place=list.get(i).datas[3];
+            subject = list.get(i).subject;
+            professor=list.get(i).professor;
+            if(subject!=null){
+                sb.append(subject);
+                sb.append("\n");
+            }
+            if(professor!=null&&!professor.isEmpty()){
+                sb.append(professor);
+                sb.append("\n");
+            }
+            String place=list.get(i).place;
             //day
-            day=Integer.parseInt(strday)+1;
+            day=list.get(i).day+1;
             //start time
-            start=Integer.parseInt(strstart);
+            start=list.get(i).start;
             //end time
-            end=Integer.parseInt(strend);
+            end=list.get(i).end;
+
             int starthour=start/100;
             int startminute=start%100;
             int endhour=end/100;
@@ -369,9 +366,7 @@ public class TimeTable implements ViewTreeObserver.OnGlobalLayoutListener, TSLis
                 sb.append(place);
             }
             stiker.setText(sb.toString());
-            if(place!=null){
-                sb.delete(sb.length()-place.length(),sb.length());
-            }
+            sb.setLength(0);
             UITable.addView(stiker,UITable.getChildCount());
             stikerlist.add(stiker);
         }

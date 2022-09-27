@@ -40,16 +40,15 @@ public class ts_add extends AppCompatActivity implements View.OnClickListener {
     }
     public void TempReciveIntent(){
         Intent receive=getIntent();
-        ArrayList<TSListAdaptor.AdaptorDataSet> list= (ArrayList<TSListAdaptor.AdaptorDataSet>) receive.getSerializableExtra("LegacySticker");
+        ArrayList<AdaptorDataSet> list= (ArrayList<AdaptorDataSet>) receive.getSerializableExtra("LegacySticker");
         int modifydatasetindex=receive.getIntExtra("addLegacySticker",-1);
-        TSListAdaptor.AdaptorDataSet modifydataset;
-
+        AdaptorDataSet modifydataset;
         if(list!=null){
             if(modifydatasetindex!=-1){
                 modifydataset=list.get(modifydatasetindex+1);
                 list.remove(modifydatasetindex+1);
                 ta.clearArrayData();
-                ta.setArrayData(0,list.get(0));
+                ta.setArrayData(0,modifydataset);
                 ta.setArrayData(1,modifydataset);
                 ta.setArrayData(2,list.get(list.size()-1));
                 table.setLegacyStickers(list,ta);
@@ -66,9 +65,9 @@ public class ts_add extends AppCompatActivity implements View.OnClickListener {
         rv.setAdapter(ta);
         rv.setHasFixedSize(true);
     }
-    private boolean check(){
-        ArrayList<TSListAdaptor.AdaptorDataSet> legacy=table.getLefacyStickers();
-        ArrayList<TSListAdaptor.AdaptorDataSet> modify=ta.getArrayData();
+    private boolean checkOverLapSchdule(){
+        ArrayList<AdaptorDataSet> legacy=table.getLefacyStickers();
+        ArrayList<AdaptorDataSet> modify=ta.getArrayData();
         int mday=0,lday=0;
         Calendar lsc=Calendar.getInstance();
         Calendar lec=Calendar.getInstance();
@@ -76,18 +75,18 @@ public class ts_add extends AppCompatActivity implements View.OnClickListener {
         Calendar mec=Calendar.getInstance();
 
         for(int i=1;i<modify.size()-1;i++){
-            mday=Integer.parseInt(modify.get(i).datas[0]);
-            msc.set(Calendar.HOUR_OF_DAY,Integer.parseInt(modify.get(i).datas[1])/100);
-            msc.set(Calendar.MINUTE,Integer.parseInt(modify.get(i).datas[1])%100);
-            mec.set(Calendar.HOUR_OF_DAY,Integer.parseInt(modify.get(i).datas[2])/100);
-            mec.set(Calendar.MINUTE,Integer.parseInt(modify.get(i).datas[2])%100);
+            mday=modify.get(i).day;
+            msc.set(Calendar.HOUR_OF_DAY,modify.get(i).start/100);
+            msc.set(Calendar.MINUTE,modify.get(i).start%100);
+            mec.set(Calendar.HOUR_OF_DAY,modify.get(i).end/100);
+            mec.set(Calendar.MINUTE,modify.get(i).end%100);
             if(legacy!=null&&legacy.size()>2){
                 for(int i2=1;i2<legacy.size()-1;i2++){
-                    lday=Integer.parseInt(legacy.get(i2).datas[0]);
-                    lsc.set(Calendar.HOUR_OF_DAY,Integer.parseInt(legacy.get(i2).datas[1])/100);
-                    lsc.set(Calendar.MINUTE,Integer.parseInt(legacy.get(i2).datas[1])%100);
-                    lec.set(Calendar.HOUR_OF_DAY,Integer.parseInt(legacy.get(i2).datas[2])/100);
-                    lec.set(Calendar.MINUTE,Integer.parseInt(legacy.get(i2).datas[2])%100);
+                    lday=legacy.get(i2).day;
+                    lsc.set(Calendar.HOUR_OF_DAY,legacy.get(i2).start/100);
+                    lsc.set(Calendar.MINUTE,legacy.get(i2).start%100);
+                    lec.set(Calendar.HOUR_OF_DAY,legacy.get(i2).end/100);
+                    lec.set(Calendar.MINUTE,legacy.get(i2).end%100);
                     if(mday!=lday){
                         continue;
                     }
@@ -100,17 +99,28 @@ public class ts_add extends AppCompatActivity implements View.OnClickListener {
                 continue;
             }
             for(int i4=i+1;i4<modify.size()-1;i4++){
-                lday=Integer.parseInt(modify.get(i4).datas[0]);
-                lsc.set(Calendar.HOUR_OF_DAY,Integer.parseInt(modify.get(i4).datas[1])/100);
-                lsc.set(Calendar.MINUTE,Integer.parseInt(modify.get(i4).datas[1])%100);
-                lec.set(Calendar.HOUR_OF_DAY,Integer.parseInt(modify.get(i4).datas[2])/100);
-                lec.set(Calendar.MINUTE,Integer.parseInt(modify.get(i4).datas[2])%100);
+                lday=modify.get(i4).day;
+                lsc.set(Calendar.HOUR_OF_DAY,modify.get(i4).start/100);
+                lsc.set(Calendar.MINUTE,modify.get(i4).start%100);
+                lec.set(Calendar.HOUR_OF_DAY,modify.get(i4).end/100);
+                lec.set(Calendar.MINUTE,modify.get(i4).end%100);
                 if(mday!=lday){
                     continue;
                 }
                 if(calendercheck(msc,mec,lsc,lec)){
                     return true;
                 }
+            }
+        }
+        return false;
+    }
+    private boolean checkTitle(){
+        ArrayList<AdaptorDataSet> modify=ta.getArrayData();
+        for(int i=1;i<modify.size()-1;i++){
+            AdaptorDataSet checktarget=modify.get(i);
+            print(checktarget.subject+"");
+            if(checktarget.subject==null||checktarget.subject.isEmpty()){
+                return true;
             }
         }
         return false;
@@ -137,34 +147,40 @@ public class ts_add extends AppCompatActivity implements View.OnClickListener {
                 finish();
                 break;
             case R.id.add_accept:
-                if(!check()){
-                    Intent Result=new Intent();
-                    if(ta.getArrayData().size()>2){
-                        if(table.getLefacyStickers()!=null){
-                            ArrayList<TSListAdaptor.AdaptorDataSet> all=ta.getArrayData();
-                            for(int i=1;i<table.getLefacyStickers().size()-1;i++){
-                                all.add(all.size()-2,table.getLefacyStickers().get(i));
-                            }
-                            Result.putExtra("Result_Value",all);
-                        }else{
-                            Result.putExtra("Result_Value",ta.getArrayData());
-                        }
-                        setResult(Activity.RESULT_OK,Result);
-                    }else{
-                        if(table.getLefacyStickers()!=null){
-                            Result.putExtra("Result_Value",table.getLefacyStickers());
-                            setResult(Activity.RESULT_OK,Result);
-                        }else{
-                            setResult(Activity.RESULT_CANCELED);
-                        }
-                    }
-                    finish();
-                }else{
+                if(checkOverLapSchdule()) {
                     Snackbar s= Snackbar.make(BaseTablePosition,R.string.TimeSchdule_Sticker_Overlap_Toast,Snackbar.LENGTH_SHORT);
                     s.getView().setTranslationY(-DSLUtil.DPtoPX(10,this));
                     s.show();
+                    return;
                 }
-                break;
+                Intent Result=new Intent();
+                if(ta.getArrayData().size()>2){
+                    if(checkTitle()){
+                        Snackbar s= Snackbar.make(BaseTablePosition,R.string.TimeSchdule_Sticker_Empty_Title,Snackbar.LENGTH_SHORT);
+                        s.getView().setTranslationY(-DSLUtil.DPtoPX(10,this));
+                        s.show();
+                        return;
+                    }
+                    if(table.getLefacyStickers()!=null){
+                        ArrayList<AdaptorDataSet> all=ta.getArrayData();
+                        for(int i=1;i<table.getLefacyStickers().size()-1;i++){
+                            all.add(all.size()-2,table.getLefacyStickers().get(i));
+                        }
+                        Result.putExtra("Result_Value",all);
+                    }else{
+                        Result.putExtra("Result_Value",ta.getArrayData());
+                    }
+                    setResult(Activity.RESULT_OK,Result);
+                }
+                else{
+                    if(table.getLefacyStickers()!=null){
+                        Result.putExtra("Result_Value",table.getLefacyStickers());
+                        setResult(Activity.RESULT_OK,Result);
+                    }else{
+                        setResult(Activity.RESULT_CANCELED);
+                    }
+                }
+                finish();
         }
     }
 }

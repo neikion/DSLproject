@@ -3,4 +3,5 @@
     <string name="ScheduleNotiChannelName">TSNC</string>
     <string name="ScheduleNotiChannelDescription">Time_Schedule_Notification_Channel</string>
     <string name="TimeSchdule_Sticker_Overlap_Toast">겹치는 일정이 있습니다.</string>
+    <string name="TimeSchdule_Sticker_Empty_Title">제목을 입력해주세요.</string>
 </resources>

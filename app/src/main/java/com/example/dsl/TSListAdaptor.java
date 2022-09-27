@@ -61,8 +61,8 @@ public class TSListAdaptor extends RecyclerView.Adapter<TSListAdaptor.TSListView
                     startc.set(Calendar.HOUR_OF_DAY,hourOfDay);
                     startc.set(Calendar.MINUTE,minute);
                     int intend;
-                    if(datalist.get(getAdapterPosition()).datas[2]!=null){
-                        intend=Integer.parseInt(datalist.get(getAdapterPosition()).datas[2]);
+                    if(datalist.get(getAdapterPosition()).end!=-1){
+                        intend=datalist.get(getAdapterPosition()).end;
                     }else{
                         intend=initendvalue*100;
                     }
@@ -77,12 +77,12 @@ public class TSListAdaptor extends RecyclerView.Adapter<TSListAdaptor.TSListView
                             endc.add(Calendar.HOUR_OF_DAY,1);
                         }
                         endpicker.updateTime(endc.get(Calendar.HOUR_OF_DAY),endc.get(Calendar.MINUTE));
-                        datalist.get(getAdapterPosition()).datas[2]=String.format(Locale.getDefault(),"%02d%02d",endc.get(Calendar.HOUR_OF_DAY),endc.get(Calendar.MINUTE));
+                        datalist.get(getAdapterPosition()).end=(endc.get(Calendar.HOUR_OF_DAY)*100)+endc.get(Calendar.MINUTE);
                         end.setText(String.format(Locale.getDefault(),"%02d:%02d",endc.get(Calendar.HOUR_OF_DAY),endc.get(Calendar.MINUTE)));
                     }
                     start.setText(String.format(Locale.getDefault(),"%02d:%02d",hourOfDay,minute));
                     startpicker.updateTime(hourOfDay,minute);
-                    datalist.get(getAdapterPosition()).datas[1]=String.format(Locale.getDefault(),"%02d%02d",hourOfDay,minute);
+                    datalist.get(getAdapterPosition()).start= (hourOfDay*100)+minute;
                     listener.ChangeListener(datalist);
                 }
             },initstartvalue,0);
@@ -97,8 +97,8 @@ public class TSListAdaptor extends RecyclerView.Adapter<TSListAdaptor.TSListView
                     endc.set(Calendar.HOUR_OF_DAY,hourOfDay);
                     endc.set(Calendar.MINUTE,minute);
                     int intstart;
-                    if(datalist.get(getAdapterPosition()).datas[1]!=null){
-                        intstart=Integer.parseInt(datalist.get(getAdapterPosition()).datas[1]);
+                    if(datalist.get(getAdapterPosition()).start!=-1){
+                        intstart=datalist.get(getAdapterPosition()).start;
                     }else{
                         intstart=initstartvalue*100;
                     }
@@ -116,11 +116,11 @@ public class TSListAdaptor extends RecyclerView.Adapter<TSListAdaptor.TSListView
 
                         startpicker.updateTime(startc.get(Calendar.HOUR_OF_DAY),startc.get(Calendar.MINUTE));
                         start.setText(String.format(Locale.getDefault(),"%02d:%02d",startc.get(Calendar.HOUR_OF_DAY),startc.get(Calendar.MINUTE)));
-                        datalist.get(getAdapterPosition()).datas[1]=String.format(Locale.getDefault(),"%02d%02d",startc.get(Calendar.HOUR_OF_DAY),startc.get(Calendar.MINUTE));
+                        datalist.get(getAdapterPosition()).start=(startc.get(Calendar.HOUR_OF_DAY)*100)+startc.get(Calendar.MINUTE);
                     }
                     end.setText(String.format(Locale.getDefault(),"%02d:%02d",hourOfDay,minute));
                     endpicker.updateTime(endc.get(Calendar.HOUR_OF_DAY),endc.get(Calendar.MINUTE));
-                    datalist.get(getAdapterPosition()).datas[2]=String.format(Locale.getDefault(),"%02d%02d",hourOfDay,minute);
+                    datalist.get(getAdapterPosition()).end=(hourOfDay*100)+minute;
                     listener.ChangeListener(datalist);
                 }
             }, initendvalue, 0);
@@ -144,15 +144,25 @@ public class TSListAdaptor extends RecyclerView.Adapter<TSListAdaptor.TSListView
             }
         }
         private void initMiddleItem(int position){
-            datalist.get(position).datas[0]=String.valueOf(initdayvalue);
-            datalist.get(position).datas[1]=String.format(Locale.getDefault(),"%02d00",initstartvalue);
-            datalist.get(position).datas[2]=String.format(Locale.getDefault(),"%02d00",initendvalue);
+
+            DSLUtil.print(datalist.get(position)+"");
+            if(datalist.get(0)!=null){
+                if(datalist.get(0).subject!=null){
+                    datalist.get(position).subject=datalist.get(0).subject;
+                }
+                if(datalist.get(0).professor!=null){
+                    datalist.get(position).professor=datalist.get(0).professor;
+                }
+            }
+            datalist.get(position).day=initdayvalue;
+            datalist.get(position).start=initstartvalue*100;
+            datalist.get(position).end=initendvalue*100;
         }
         public void createDayPickerDialog(Context context){
             daypicker=new AlertDialog.Builder(context);
             daypicker.setItems(dayarray, (dialog, which) -> {
                 today.setText(dayarray[which]);
-                datalist.get(getAdapterPosition()).datas[0]=Integer.toString(which);
+                datalist.get(getAdapterPosition()).day=which;
                 listener.ChangeListener(datalist);
             });
         }
@@ -165,10 +175,10 @@ public class TSListAdaptor extends RecyclerView.Adapter<TSListAdaptor.TSListView
         void enableWatcher() {
             int id = view.getId();
             if (id == R.id.ts_list_first_item_layout) {
-                sub.setText(datalist.get(0).datas[0]);
+                sub.setText(datalist.get(0).subject);
                 sub.addTextChangedListener(this);
 
-                pro.setText(datalist.get(0).datas[1]);
+                pro.setText(datalist.get(0).professor);
                 pro.addTextChangedListener(this);
             } else if (id == R.id.ts_list_item_layout) {
                 today.setText(getmiddleValue(getAdapterPosition(),0));
@@ -183,7 +193,7 @@ public class TSListAdaptor extends RecyclerView.Adapter<TSListAdaptor.TSListView
                 end.setOnClickListener(this);
 
 
-                place.setText(datalist.get(getAdapterPosition()).datas[3]);
+                place.setText(datalist.get(getAdapterPosition()).place);
                 place.addTextChangedListener(this);
 
                 soundSwitch.setChecked(datalist.get(getAdapterPosition()).soundSwitch);
@@ -198,21 +208,29 @@ public class TSListAdaptor extends RecyclerView.Adapter<TSListAdaptor.TSListView
             }
         }
         private String getmiddleValue(int layoutpos,int datapos){
-            if(datalist.get(layoutpos).datas[datapos]==null) {
-                switch (datapos) {
-                    case 0:
+            switch (datapos) {
+                case 0:
+                    if(datalist.get(layoutpos).day==-1){
                         return dayarray[initdayvalue];
-                    case 1:
+                    }else{
+                        return dayarray[datalist.get(layoutpos).day];
+                    }
+                case 1:
+                    if(datalist.get(layoutpos).start==-1){
                         return String.format(Locale.getDefault(),"%02d:00",initstartvalue);
-                    case 2:
+                    }else{
+                        int reuslt = datalist.get(layoutpos).start;
+                        return String.format(Locale.getDefault(),"%02d:%02d",reuslt/100,reuslt%100);
+                    }
+                case 2:
+                    if(datalist.get(layoutpos).end==-1){
                         return String.format(Locale.getDefault(),"%02d:00",initendvalue);
-                }
+                    }else{
+                        int reuslt = datalist.get(layoutpos).end;
+                        return String.format(Locale.getDefault(),"%02d:%02d",reuslt/100,reuslt%100);
+                    }
             }
-            if(datapos==0){
-                return dayarray[Integer.parseInt(datalist.get(layoutpos).datas[datapos])];
-            }
-            String reuslt = datalist.get(layoutpos).datas[datapos];
-            return reuslt.substring(0,2)+":"+reuslt.substring(2);
+            return null;
         }
         void disableWatcher() {
             int id = view.getId();
@@ -269,13 +287,15 @@ public class TSListAdaptor extends RecyclerView.Adapter<TSListAdaptor.TSListView
         public void afterTextChanged(Editable s) {
             if(view.getId()==R.id.ts_list_first_item_layout){
                 if (s.hashCode()==sub.getText().hashCode()) {
-                    datalist.get(getAdapterPosition()).datas[0] = s.toString();
+//                    datalist.get(0).subject=s.toString();
+                    setListSubject(s.toString());
                 }else{
-                    datalist.get(getAdapterPosition()).datas[1] = s.toString();
+//                    datalist.get(0).professor=s.toString();
+                    setListProfessor(s.toString());
                 }
             }
             else{
-                datalist.get(getAdapterPosition()).datas[3] = s.toString();
+                datalist.get(getAdapterPosition()).place = s.toString();
             }
             listener.ChangeListener(datalist);
         }
@@ -295,18 +315,6 @@ public class TSListAdaptor extends RecyclerView.Adapter<TSListAdaptor.TSListView
     }
 
 
-    //todo static class에서 일반 class로 바꿔주기
-    public static class AdaptorDataSet implements Serializable {
-        public String[] datas;
-        //first 0 subject 1 professor
-        //middle 0 day 1 start 2 end 3 place 4 sound 5 vibe
-        //last
-        public AdaptorDataSet(){
-            datas =new String[4];
-        }
-        public boolean soundSwitch=false;
-        public boolean vibrateSwitch=false;
-    }
 
 
     private ArrayList<AdaptorDataSet> datalist;
@@ -360,6 +368,17 @@ public class TSListAdaptor extends RecyclerView.Adapter<TSListAdaptor.TSListView
         else{
             //처음
             return 1;
+        }
+    }
+
+    private void setListSubject(String subject){
+        for(int i=0;i<datalist.size()-1;i++){
+            datalist.get(i).subject=subject;
+        }
+    }
+    private void setListProfessor(String professor){
+        for(int i=0;i<datalist.size()-1;i++){
+            datalist.get(i).professor=professor;
         }
     }
 

@@ -16,6 +16,7 @@ import java.security.KeyStore;
 import java.security.cert.Certificate;
 import java.security.cert.CertificateFactory;
 import java.sql.SQLException;
+import java.util.Iterator;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadFactory;
@@ -62,13 +63,12 @@ public final class DSLManager{
     private class ServerConnect implements AutoCloseable{
         //debuging
         private final String targetIP;
-        private final String BaseURL;
+        private String BaseURL;
         private Context cont;
 
 
         public ServerConnect(String targetIP){
             this.targetIP=targetIP;
-            BaseURL ="https://"+targetIP+"/DB.jsp";
         }
         private HttpsURLConnection RightConnect(){
             try{
@@ -127,9 +127,9 @@ public final class DSLManager{
             }
             return null;
         }
-        private String ConnectWork(HttpsURLConnection urlConnection, JSONObject parameter, String type){
+        private String ConnectWork(HttpsURLConnection urlConnection, JSONObject parameter){
             if(parameter!=null){
-                RequestSend(urlConnection,parameter, type);
+                RequestSend(urlConnection,parameter);
             }
             String Result="";
 
@@ -150,26 +150,38 @@ public final class DSLManager{
             }
             return Result;
         }
-        private void RequestSend(HttpsURLConnection con,JSONObject parameter,String type){
+        private String setParameter(JSONObject parameter) throws JSONException {
             StringBuffer sb=new StringBuffer();
-            sb.append("input_json");
-            sb.append("=");
-            sb.append(parameter.toString());
+            Iterator iterator= parameter.keys();
+            String id;
+            while(iterator.hasNext()){
+                id=iterator.next().toString();
+                sb.append(id);
+                sb.append("=");
+                sb.append(parameter.getString(id));
+                sb.append("&");
+            }
+            sb.deleteCharAt(sb.length()-1);
+            return sb.toString();
+        }
+        private void RequestSend(HttpsURLConnection con,JSONObject parameter){
             try{
                 con.setDoInput(true);
                 con.setDoOutput(true);
                 con.setRequestMethod("POST");
                 con.setRequestProperty("Accept","Application/json");
-                con.setRequestProperty("type",type);
+
+                //noti my code for test
+                con.setRequestProperty("type","Read");
+
                 OutputStream out=new BufferedOutputStream(con.getOutputStream());
-                String param=sb.toString();
+                String param=setParameter(parameter);
                 out.write(param.getBytes(StandardCharsets.UTF_8));
                 out.close();
 
             }catch (Exception e){
                 e.printStackTrace();
             }
-
         }
         private String StreamRead(InputStream in){
             StringBuilder s= new StringBuilder();
@@ -200,67 +212,16 @@ public final class DSLManager{
             }
             throw new SQLException(responseString);
         }
-        private JSONArray getResult(JSONArray result) throws SQLException, JSONException {
-            String responseString = result.getJSONObject(0).getString("result");
-            if(responseString.equals("200")){
-                return result;
-            }
-            throw new SQLException(responseString);
-        }
-        public void Create(Context context, JSONObject json,NetListener netListener){
+        public void sendRequest(Context context, JSONObject json,String API_URL, NetListener netListener){
             if(cont==null){
                 cont=context.getApplicationContext();
             }
-            Runnable task=()->{
-                try {
-                    JSONArray result=new JSONArray(ConnectWork(Connect(),json,"Create"));
-                    netListener.Result(getResult(result));
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            };
-            exs.submit(task);
-        }
-        public void Read(Context context, JSONObject json, NetListener netListener){
-            if(cont==null){
-                cont=context.getApplicationContext();
-            }
+            BaseURL ="https://"+targetIP+API_URL;
             Runnable task = ()->{
                 JSONArray result;
                 try {
-                    result=new JSONArray(ConnectWork(Connect(),json,"Read"));
-                    if(result.getJSONObject(0).has("result")){
-                        throw new SQLException(result.getJSONObject(0).getString("result"));
-                    }
+                    result=new JSONArray(ConnectWork(Connect(),json));
                     netListener.Result(result);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            };
-            exs.submit(task);
-        }
-        public void Update(Context context, JSONObject json,NetListener netListener) {
-            if(cont==null){
-                cont=context.getApplicationContext();
-            }
-            Runnable task=()->{
-                try {
-                    JSONArray result=new JSONArray(ConnectWork(Connect(),json,"Update"));
-                    netListener.Result(getResult(result));
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            };
-            exs.submit(task);
-        }
-        public void Delete(Context context, JSONObject json,NetListener netListener) {
-            if(cont==null){
-                cont=context.getApplicationContext();
-            }
-            Runnable task=()->{
-                try {
-                    JSONArray result=new JSONArray(ConnectWork(Connect(),json,"Delete"));
-                    netListener.Result(getResult(result));
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -272,32 +233,19 @@ public final class DSLManager{
             exs.shutdown();
             cont=null;
             try {
-                // Wait a while for existing tasks to terminate
                 if (!exs.awaitTermination(60, TimeUnit.SECONDS)) {
-                    exs.shutdownNow(); // Cancel currently executing tasks
-                    // Wait a while for tasks to respond to being cancelled
+                    exs.shutdownNow();
                     if (!exs.awaitTermination(60, TimeUnit.SECONDS))
                         System.err.println("Pool did not terminate");
                 }
             } catch (InterruptedException ie) {
-                // (Re-)Cancel if current thread also interrupted
                 exs.shutdownNow();
-                // Preserve interrupt status
                 Thread.currentThread().interrupt();
             }
         }
     }
-    public void Create(Context context,JSONObject json,NetListener netListener){
-        Server.Create(context,json,netListener);
-    }
-    public void Read(Context context,JSONObject json,NetListener netListener){
-        Server.Read(context,json,netListener);
-    }
-    public void Update(Context context,JSONObject json,NetListener netListener){
-        Server.Update(context,json,netListener);
-    }
-    public void Delete(Context context,JSONObject json,NetListener netListener){
-        Server.Delete(context,json,netListener);
+    public void sendRequest(Context context, JSONObject json,String API_URL, NetListener netListener){
+        Server.sendRequest(context,json,API_URL,netListener);
     }
     public void Close() throws Exception {
         Server.close();

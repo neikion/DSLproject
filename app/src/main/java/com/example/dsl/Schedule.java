@@ -4,39 +4,16 @@ import static com.example.dsl.DSLUtil.print;
 
 import android.app.Activity;
 import android.app.AlarmManager;
-import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
-import android.app.Service;
-import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.content.res.Resources;
-import android.graphics.Color;
-import android.graphics.Point;
-import android.graphics.drawable.GradientDrawable;
-import android.graphics.drawable.InsetDrawable;
-import android.media.AudioManager;
-import android.media.MediaPlayer;
-import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
-import android.os.Parcelable;
-import android.os.SystemClock;
-import android.provider.MediaStore;
-import android.provider.Settings;
-import android.util.DisplayMetrics;
 import android.util.Log;
-import android.util.TypedValue;
-import android.view.Display;
 import android.view.View;
-import android.view.ViewGroup;
-import android.view.ViewTreeObserver;
-import android.view.WindowManager;
-import android.widget.FrameLayout;
-import android.widget.GridLayout;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -44,13 +21,12 @@ import androidx.activity.result.ActivityResult;
 import androidx.activity.result.ActivityResultCallback;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
-import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.NotificationCompat;
-import androidx.core.app.NotificationManagerCompat;
 
-import java.io.IOException;
-import java.net.URI;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -67,7 +43,9 @@ public class Schedule extends AppCompatActivity implements View.OnClickListener 
     private AlarmManager alarmmanager;
     private List<PendingIntent> alarmList=new LinkedList<>();
     TimeTable table;
-    ArrayList<TSListAdaptor.AdaptorDataSet> stickers;
+    ArrayList<AdaptorDataSet> stickers;
+    DSLManager manager;
+    AlarmScheduler alarmSchedulernew = new AlarmScheduler(7);;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -80,20 +58,45 @@ public class Schedule extends AppCompatActivity implements View.OnClickListener 
         UITablePosition=findViewById(R.id.UITablePosition);
         findViewById(R.id.AddAlarm).setOnClickListener(this);
         findViewById(R.id.movemenu).setOnClickListener(this);
-        //todo 데이터베이스에서 값 받아오기
+        findViewById(R.id.testactivity).setOnClickListener(this);
         table=new TimeTable(this,BaseTablePosition,UITablePosition,9);
-        findViewById(R.id.gomainactivity).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-//                startActivity(new Intent(getApplicationContext(),MainActivity.class));
-                AlarmCheck(3);
-                Calendar c=Calendar.getInstance();
-                c.setTimeInMillis(System.currentTimeMillis());
-                print(c.getTime());
-            }
-        });
+        /*//noti 정상 작동하나 트래픽을 위해 테스트에서는 비활성화
+        connect();*/
     }
+    public void connect(){
+        manager=DSLManager.getInstance();
+        try {
+            manager.sendRequest(this,DSLUtil.getTimeTable(),"/DB.jsp",(Result) -> {
+                try{
+                    ArrayList<AdaptorDataSet> datalist=new ArrayList<>();
+                    AdaptorDataSet dataSet;
+                    for(int i=0;i<Result.length();i++){
+                        JSONObject temp=Result.getJSONObject(i);
+                        dataSet=new AdaptorDataSet();
+                        dataSet.subject=temp.getString("subject");
+                        dataSet.professor=temp.getString("professor");
+                        dataSet.place=temp.getString("room");
+                        dataSet.day=Integer.parseInt(temp.getString("day"));
+                        dataSet.start=Integer.parseInt(temp.getString("start_time"));
+                        dataSet.end=Integer.parseInt(temp.getString("end_time"));
+                        dataSet.setAlarmGroup(Integer.parseInt(temp.getString("alarm")));
+                        datalist.add(dataSet);
+                    }
+                    datalist.add(0,new AdaptorDataSet());
+                    datalist.add(new AdaptorDataSet());
+                    runOnUiThread(()->{
+                        setTableChange(datalist);
+                    });
 
+                }catch (Exception e){
+                    e.printStackTrace();
+                }
+
+            });
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+    }
     public void initNoti(){
 
         CreatenotiChannel();
@@ -206,7 +209,7 @@ public class Schedule extends AppCompatActivity implements View.OnClickListener 
         alarmmanager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, c.getTimeInMillis(),Alarmintent);
         Log.i("DSL","\n\n 현재시각 "+ new Date(System.currentTimeMillis())+"\n 알람 예약 시간 "+new Date(c.getTimeInMillis()));
     }
-    private void setonclick(){
+    private void setStickerOnClick(){
         for(int i=table.TableColCount+table.TableRowCount-2;i<table.UITable.getChildCount();i++){
             int setid = i-(table.TableColCount+table.TableRowCount-2);
             ((TextView)table.UITable.getChildAt(i)).setOnClickListener(new View.OnClickListener() {
@@ -214,7 +217,6 @@ public class Schedule extends AppCompatActivity implements View.OnClickListener 
                 public void onClick(View view) {
                     Intent go=new Intent(getApplicationContext(),ts_add.class);
                     if(stickers!=null){
-//                        TSListAdaptor.AdaptorDataSet set =stickers.get(setid);
                         go.putExtra("LegacySticker",stickers);
                         go.putExtra("addLegacySticker",setid);
                     }
@@ -227,19 +229,18 @@ public class Schedule extends AppCompatActivity implements View.OnClickListener 
 
     @Override
     public void onClick(View v) {
-        switch (v.getId()){
-            case R.id.AddAlarm:
-                Intent i=new Intent(this,ts_add.class);
-                if(stickers!=null){
-                    i.putExtra("LegacySticker",stickers);
-                }
-                ActivityLuncher.launch(i);
-                break;
-            case R.id.movemenu:
-                initalarm();
-
-
-                break;
+        int id = v.getId();
+        if (id == R.id.AddAlarm) {
+            Intent i = new Intent(this, ts_add.class);
+            if (stickers != null) {
+                i.putExtra("LegacySticker", stickers);
+            }
+            ActivityLuncher.launch(i);
+        } else if (id == R.id.movemenu) {
+            initalarm();
+        } else if (id == R.id.testactivity) {
+//            startActivity(new Intent(getApplicationContext(),MainActivity.class));
+            connect();
         }
     }
 
@@ -251,13 +252,17 @@ public class Schedule extends AppCompatActivity implements View.OnClickListener 
             if(result.getResultCode()== Activity.RESULT_OK){
 //                print("RESULT_OK");
                 Intent ReIntent=result.getData();
-                stickers = (ArrayList<TSListAdaptor.AdaptorDataSet>)ReIntent.getSerializableExtra("Result_Value");
-                table.ChangeListener(stickers);
-                setonclick();
+                setTableChange((ArrayList<AdaptorDataSet>)ReIntent.getSerializableExtra("Result_Value"));
                 //todo 넘어온 시간에 맞춰 알람 설정
             }else if(result.getResultCode()==Activity.RESULT_CANCELED){
                 print("RESULT_CANCELED");
             }
         }
     });
+
+    private void setTableChange(ArrayList<AdaptorDataSet> list){
+        stickers=list;
+        table.ChangeListener(stickers);
+        setStickerOnClick();
+    }
 }
