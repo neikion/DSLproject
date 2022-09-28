@@ -9,6 +9,7 @@ import android.util.DisplayMetrics;
 import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.widget.GridLayout;
 import android.widget.LinearLayout;
@@ -110,6 +111,7 @@ public class TimeTable implements ViewTreeObserver.OnGlobalLayoutListener, TSLis
                 params.setGravity(Gravity.CENTER);
                 if(rowc==0 && colc>0){
                     v.setText(dayarray[colc-1]);
+                    //textview parms gravity not working
                     v.setGravity(Gravity.CENTER);
                     UITable.addView(v,params);
                 }else if(rowc>0&&colc==0){
@@ -117,9 +119,7 @@ public class TimeTable implements ViewTreeObserver.OnGlobalLayoutListener, TSLis
                     if(time==0){
                         time=12;
                     }
-
                     v.setText(Integer.toString(time));
-
                     v.setGravity(Gravity.TOP|Gravity.RIGHT);
                     v.setPadding(0,(int)DPtoPX(5),(int)DPtoPX(5),0);
                     UITable.addView(v,params);
@@ -129,12 +129,18 @@ public class TimeTable implements ViewTreeObserver.OnGlobalLayoutListener, TSLis
     }
     private void initBaseLayout(GridLayout grid){
         View v;
+        GridLayout.Spec row,col;
         //cell setting init
         for(int rowc=0;rowc<TableRowCount;rowc++){
             for(int colc=0;colc<TableColCount;colc++){
                 v=new View(context);
                 v.setBackground(getItemsBGWithBorder(getItemsRadius(rowc,colc)));
-                additems(v, grid, rowc, colc);
+                row=GridLayout.spec(rowc,1);
+                col=GridLayout.spec(colc,1);
+                GridLayout.LayoutParams gridChildparams=new GridLayout.LayoutParams(row,col);
+                gridChildparams.width=Cell_Width;
+                gridChildparams.height=Cell_Height;
+                grid.addView(v,gridChildparams);
             }
         }
     }
@@ -143,15 +149,6 @@ public class TimeTable implements ViewTreeObserver.OnGlobalLayoutListener, TSLis
         gridChildparams.width=Cell_Width;
         gridChildparams.height=Cell_Height;
         return gridChildparams;
-    }
-    private void additems(View Items, GridLayout grid, int rowcount, int colcount){
-        GridLayout.Spec row,col;
-        row=GridLayout.spec(rowcount,1);
-        col=GridLayout.spec(colcount,1);
-        GridLayout.LayoutParams gridChildparams=new GridLayout.LayoutParams(row,col);
-        gridChildparams.width=Cell_Width;
-        gridChildparams.height=Cell_Height;
-        grid.addView(Items,gridChildparams);
     }
     private float[] getItemsRadius(int rowcount,int colcount){
         float[] radi=new float[8];
@@ -354,7 +351,7 @@ public class TimeTable implements ViewTreeObserver.OnGlobalLayoutListener, TSLis
             TextView stiker=new TextView(context);
             stiker.setBackground(getItemsBGWithoutBorder(getItemsRadius(CellStart+cellgridheight,day),Color.argb(150,163,204,163)));
 //            print(" Cellstart "+(CellStart+1)+" cellsize "+(cellgridheight)+"");
-            GridLayout.LayoutParams params= new GridLayout.LayoutParams(GridLayout.spec(CellStart+1,cellgridheight),GridLayout.spec(day,1));
+            GridLayout.LayoutParams params= new GridLayout.LayoutParams(GridLayout.spec(CellStart+1,cellgridheight,GridLayout.CENTER),GridLayout.spec(day,1,GridLayout.CENTER));
             params.width=Cell_Width;
             params.height=(int)Customcellsize;
 //            print("margin "+(((start%100)/TIME_INTERVAL)*cellbasic));
@@ -441,13 +438,13 @@ public class TimeTable implements ViewTreeObserver.OnGlobalLayoutListener, TSLis
             BaseTable.addView(e,(TableColCount*(i+1))-1,getItemLayoutParams(i,TableColCount-1));
 //            print((TableColCount*(i+1))-1+"");
         }
-
         //UITABLE에 textview 새로 만들시 column추가
         TextView tv=new TextView(context);
         tv.setText(dayarray[TableColCount-2]);
 //        print(TableColCount);
         GridLayout.LayoutParams params=getItemLayoutParams(0,TableColCount-1);
         params.setGravity(Gravity.CENTER);
+        params.setMargins(0,0,0,0);
         tv.setGravity(Gravity.CENTER);
         tv.setWidth(Cell_Width);
         UITable.addView(tv,TableColCount-2,params);
@@ -471,7 +468,8 @@ public class TimeTable implements ViewTreeObserver.OnGlobalLayoutListener, TSLis
                 }else{
                     ((GradientDrawable)v.getBackground()).setCornerRadii(getItemsRadius(1,1));
                 }
-            }else{
+            }
+            else{
                 if(i==0){
                     v.setBackground(getItemsBGWithBorder(getItemsRadius(0,0)));
                 }else if(i==TableColCount-1){
@@ -506,4 +504,5 @@ public class TimeTable implements ViewTreeObserver.OnGlobalLayoutListener, TSLis
         Cell_Width=(TableWidth/TableColCount);
         return Cell_Width;
     }
+
 }

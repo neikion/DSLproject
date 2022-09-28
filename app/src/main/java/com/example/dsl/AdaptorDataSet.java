@@ -6,9 +6,9 @@ public class AdaptorDataSet implements Serializable {
     //first 0 subject 1 professor
     //middle 0 day 1 start 2 end 3 place 4 sound 5 vibe
     //last
-    public String subject;
-    public String professor;
-    public String place;
+    public String subject="";
+    public String professor="";
+    public String place="";
     public int day=-1;
     public int start=-1;
     public int end=-1;
@@ -21,10 +21,26 @@ public class AdaptorDataSet implements Serializable {
         }else if(id==1){
             soundSwitch=false;
             vibrateSwitch=true;
+        }else if(id==2){
+            soundSwitch=true;
+            vibrateSwitch=false;
         }else{
             soundSwitch=true;
             vibrateSwitch=true;
         }
+    }
+    public int getAlarmGroup(){
+        int result=0;
+        if(vibrateSwitch){
+            result++;
+        }
+        if(soundSwitch){
+            result=2;
+            if(vibrateSwitch){
+                result++;
+            }
+        }
+        return result;
     }
 
     @Override

@@ -144,8 +144,6 @@ public class TSListAdaptor extends RecyclerView.Adapter<TSListAdaptor.TSListView
             }
         }
         private void initMiddleItem(int position){
-
-            DSLUtil.print(datalist.get(position)+"");
             if(datalist.get(0)!=null){
                 if(datalist.get(0).subject!=null){
                     datalist.get(position).subject=datalist.get(0).subject;

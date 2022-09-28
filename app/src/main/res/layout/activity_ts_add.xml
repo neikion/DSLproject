@@ -6,7 +6,6 @@
     android:layout_height="match_parent"
     tools:context=".ts_add"
     android:orientation="vertical"
-
     >
     <RelativeLayout
         android:layout_width="match_parent"
@@ -46,12 +45,13 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_weight="3"
+        android:layout_gravity="center"
         android:fillViewport="true">
         <FrameLayout
             android:id="@+id/ts_add_frame"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_margin="7.5dp"
+            android:padding="7dp"
             >
             <LinearLayout
                 android:id="@+id/ts_add_base_table"
@@ -63,6 +63,7 @@
                 >
             </LinearLayout>
             <LinearLayout
+                android:baselineAligned="false"
                 android:orientation="horizontal"
                 android:id="@+id/ts_add_ui_table"
                 android:gravity="center"

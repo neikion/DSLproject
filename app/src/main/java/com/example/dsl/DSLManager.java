@@ -172,7 +172,7 @@ public final class DSLManager{
                 con.setRequestProperty("Accept","Application/json");
 
                 //noti my code for test
-                con.setRequestProperty("type","Read");
+                con.setRequestProperty("type",parameter.getJSONObject("input_json").getString("type"));
 
                 OutputStream out=new BufferedOutputStream(con.getOutputStream());
                 String param=setParameter(parameter);
@@ -221,7 +221,9 @@ public final class DSLManager{
                 JSONArray result;
                 try {
                     result=new JSONArray(ConnectWork(Connect(),json));
-                    netListener.Result(result);
+                    if(netListener!=null){
+                        netListener.Result(result);
+                    }
                 } catch (Exception e) {
                     e.printStackTrace();
                 }

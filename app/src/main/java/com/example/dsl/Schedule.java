@@ -45,7 +45,9 @@ public class Schedule extends AppCompatActivity implements View.OnClickListener 
     TimeTable table;
     ArrayList<AdaptorDataSet> stickers;
     DSLManager manager;
-    AlarmScheduler alarmSchedulernew = new AlarmScheduler(7);;
+    AlarmScheduler alarmSchedulernew = new AlarmScheduler(7);
+    //noti test
+    final int UserId=9999;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -58,16 +60,26 @@ public class Schedule extends AppCompatActivity implements View.OnClickListener 
         UITablePosition=findViewById(R.id.UITablePosition);
         findViewById(R.id.AddAlarm).setOnClickListener(this);
         findViewById(R.id.movemenu).setOnClickListener(this);
-        findViewById(R.id.testactivity).setOnClickListener(this);
+        findViewById(R.id.gettest).setOnClickListener(this);
+        findViewById(R.id.sendtest).setOnClickListener(this);
         table=new TimeTable(this,BaseTablePosition,UITablePosition,9);
         /*//noti 정상 작동하나 트래픽을 위해 테스트에서는 비활성화
         connect();*/
     }
-    public void connect(){
+    private void getServerData(){
         manager=DSLManager.getInstance();
         try {
-            manager.sendRequest(this,DSLUtil.getTimeTable(),"/DB.jsp",(Result) -> {
+            JSONObject json=new JSONObject();
+            json.put("table","time_schedule");
+            json.put("column","*");
+            json.put("constraint","user_code");
+            json.put("constraint_value",String.valueOf(UserId));
+            json.put("type","Read");
+            manager.sendRequest(this,DSLUtil.getTimeTableObject(json),"/DB.jsp",(Result) -> {
                 try{
+                    if(Result.isNull(0)){
+                        return;
+                    }
                     ArrayList<AdaptorDataSet> datalist=new ArrayList<>();
                     AdaptorDataSet dataSet;
                     for(int i=0;i<Result.length();i++){
@@ -87,13 +99,42 @@ public class Schedule extends AppCompatActivity implements View.OnClickListener 
                     runOnUiThread(()->{
                         setTableChange(datalist);
                     });
-
                 }catch (Exception e){
                     e.printStackTrace();
                 }
-
             });
         } catch (JSONException e) {
+            e.printStackTrace();
+        }
+    }
+    private void setServerData(){
+        manager=DSLManager.getInstance();
+        if(stickers!=null&&stickers.size()<3){
+            return;
+        }
+        try{
+            JSONObject json=new JSONObject();
+            json.put("table","time_schedule");
+            json.put("constraint","user_code");
+            json.put("constraint_value",String.valueOf(UserId));
+            json.put("type","Delete");
+            StringBuilder sb=new StringBuilder();
+            AdaptorDataSet dataSet;
+            manager.sendRequest(this,DSLUtil.getTimeTableObject(json),"/DB.jsp",null);
+            for(int i=1;i<stickers.size()-1;i++){
+                dataSet=stickers.get(i);
+                json=new JSONObject();
+                json.put("table","time_schedule");
+                sb.append(i).append(',').append(UserId).append(',').append('"').append(dataSet.subject).append('"').append(',').append('"').append(dataSet.professor)
+                        .append('"').append(',').append(dataSet.day).append(',').append(dataSet.start).append(',').append(dataSet.end).append(',').append('"')
+                        .append(dataSet.place).append('"').append(',').append(dataSet.getAlarmGroup());
+                json.put("insert_value",sb.toString());
+                json.put("type","Create");
+                print(sb.toString());
+                manager.sendRequest(this,DSLUtil.getTimeTableObject(json),"/DB.jsp",null);
+                sb.setLength(0);
+            }
+        }catch (Exception e){
             e.printStackTrace();
         }
     }
@@ -238,9 +279,11 @@ public class Schedule extends AppCompatActivity implements View.OnClickListener 
             ActivityLuncher.launch(i);
         } else if (id == R.id.movemenu) {
             initalarm();
-        } else if (id == R.id.testactivity) {
+        } else if (id == R.id.gettest) {
 //            startActivity(new Intent(getApplicationContext(),MainActivity.class));
-            connect();
+            getServerData();
+        }else if(id==R.id.sendtest){
+            setServerData();
         }
     }
 

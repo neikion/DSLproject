@@ -10,6 +10,8 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.LinearLayout;
 
 import com.google.android.material.snackbar.Snackbar;
@@ -118,7 +120,6 @@ public class ts_add extends AppCompatActivity implements View.OnClickListener {
         ArrayList<AdaptorDataSet> modify=ta.getArrayData();
         for(int i=1;i<modify.size()-1;i++){
             AdaptorDataSet checktarget=modify.get(i);
-            print(checktarget.subject+"");
             if(checktarget.subject==null||checktarget.subject.isEmpty()){
                 return true;
             }

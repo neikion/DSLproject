@@ -74,8 +74,13 @@
         android:layout_height="match_parent"
         android:layout_weight="3">
         <Button
-            android:text="test"
-            android:id="@+id/testactivity"
+            android:text="gettest"
+            android:id="@+id/gettest"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+        <Button
+            android:text="sendtest"
+            android:id="@+id/sendtest"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"/>
     </LinearLayout>
