@@ -21,7 +21,8 @@
 
         <receiver android:name=".TimeScheduleAlarmReceiver"></receiver>
 
-        <service android:name=".TimeScheduleAlarmService" />
+        <service android:name=".TimeScheduleAlarmService"
+            android:foregroundServiceType="mediaPlayback"/>
 
         <activity
             android:name=".Schedule"
@@ -33,7 +34,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".MainActivity"
+            android:name=".AlarmActivity"
             android:exported="false"></activity>
     </application>
 

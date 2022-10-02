@@ -49,6 +49,13 @@ public final class DSLManager{
             }
         });
         Server=new ServerConnect("13.124.33.18");
+        try{
+            Runtime.getRuntime().addShutdownHook(new Thread(()-> Close()));
+        }catch (Exception e){
+            Close();
+            e.printStackTrace();
+        }
+
     }
     private ExecutorService exs;
     private ServerConnect Server;
@@ -249,9 +256,10 @@ public final class DSLManager{
     public void sendRequest(Context context, JSONObject json,String API_URL, NetListener netListener){
         Server.sendRequest(context,json,API_URL,netListener);
     }
-    public void Close() throws Exception {
+    public void Close() {
         Server.close();
         Server=null;
+
     }
 
 }

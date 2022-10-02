@@ -45,7 +45,7 @@ public class Schedule extends AppCompatActivity implements View.OnClickListener 
     TimeTable table;
     ArrayList<AdaptorDataSet> stickers;
     DSLManager manager;
-    AlarmScheduler alarmSchedulernew = new AlarmScheduler(7);
+    AlarmScheduler alarmScheduler = new AlarmScheduler(7);
     //noti test
     final int UserId=9999;
     @Override
@@ -63,6 +63,7 @@ public class Schedule extends AppCompatActivity implements View.OnClickListener 
         findViewById(R.id.gettest).setOnClickListener(this);
         findViewById(R.id.sendtest).setOnClickListener(this);
         table=new TimeTable(this,BaseTablePosition,UITablePosition,9);
+        alarmmanager= (AlarmManager) getApplicationContext().getSystemService(Context.ALARM_SERVICE);
         /*//noti 정상 작동하나 트래픽을 위해 테스트에서는 비활성화
         connect();*/
     }
@@ -172,7 +173,7 @@ public class Schedule extends AppCompatActivity implements View.OnClickListener 
         }
     }
     public PendingIntent FullScreenIntent(){
-        Intent intent=new Intent(this,MainActivity.class);
+        Intent intent=new Intent(this, AlarmActivity.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK|Intent.FLAG_ACTIVITY_CLEAR_TASK);
         PendingIntent pending=PendingIntent.getActivity(this,0,intent,PendingIntent.FLAG_IMMUTABLE);
         return pending;
@@ -191,64 +192,39 @@ public class Schedule extends AppCompatActivity implements View.OnClickListener 
 
     /*알람*/
     public void initalarm(){
-        //todo 알람 종류 선택가능하도록 하기
         //todo 알림 화면 만들기
         alarmmanager= (AlarmManager) getApplicationContext().getSystemService(Context.ALARM_SERVICE);
-
-        Intent intent=new Intent(this,TimeScheduleAlarmReceiver.class);
-        intent.putExtra("AP",true);
-//        intent.putExtra("Player", (Parcelable) MediaPlayer.create(this,R.raw.music));
-        PendingIntent Alarmintent=PendingIntent.getBroadcast(this,1,intent,PendingIntent.FLAG_IMMUTABLE);
-        Calendar c=Calendar.getInstance();
-        c.setTimeInMillis(System.currentTimeMillis());
-        c.add(Calendar.SECOND,15);
-        alarmmanager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, c.getTimeInMillis(),Alarmintent);
-/*        AlarmManager.AlarmClockInfo info=new AlarmManager.AlarmClockInfo(c.getTimeInMillis(),FullScreenIntent());
-        alarmmanager.setAlarmClock(info,Alarmintent);
-        Calendar d=Calendar.getInstance();
-        d.setTimeInMillis(info.getTriggerTime());
-        print(d.getTime());*/
-        Log.i("DSL","\n\n 현재시각 "+ new Date(System.currentTimeMillis())+"\n 알람 예약 시간 "+new Date(c.getTimeInMillis()));
-
-
-                //noti it is alarm test code it's right work
-                new Handler().postDelayed(()->{
-                    AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
-                    Intent myIntent = new Intent(getApplicationContext(), TimeScheduleAlarmReceiver.class);
-                    PendingIntent pendingIntent = PendingIntent.getBroadcast(
-                            getApplicationContext(), 1, myIntent,
-                            PendingIntent.FLAG_UPDATE_CURRENT|PendingIntent.FLAG_IMMUTABLE);
-
-                    alarmManager.cancel(pendingIntent);
-                },10000);
+        AdaptorDataSet a=new AdaptorDataSet();
+        a.start=1822;
+        a.professor="pp";
+        a.end=a.start+100;
+        a.subject="d";
+        a.place="p";
+        a.day=6;
+        a.soundSwitch=true;
+        a.vibrateSwitch=true;
+        setAlarm(a);
     }
-    public void AlarmCheck(int requestCode){
-        alarmmanager= (AlarmManager) getApplicationContext().getSystemService(Context.ALARM_SERVICE);
-        Intent intent=new Intent(this,TimeScheduleAlarmReceiver.class);
-        intent.putExtra("AP",true);
-        PendingIntent Alarmintent=PendingIntent.getBroadcast(this,requestCode,intent,PendingIntent.FLAG_IMMUTABLE|PendingIntent.FLAG_NO_CREATE);
-        if(Alarmintent!=null){
-            print("이미 있음");
-
-        }else{
-            print("없음");
-        }
-    }
-    public void setAlarm(int day,int hour, int minute,int requestCode){
-        alarmmanager= (AlarmManager) getApplicationContext().getSystemService(Context.ALARM_SERVICE);
-        Intent intent=new Intent(this,TimeScheduleAlarmReceiver.class);
-        intent.putExtra("AP",true);
-        PendingIntent Alarmintent=PendingIntent.getBroadcast(this,requestCode,intent,PendingIntent.FLAG_IMMUTABLE);
-        Calendar c=Calendar.getInstance();
-        c.setTimeInMillis(System.currentTimeMillis());
+    public void setAlarm(AdaptorDataSet dataset){
+        alarmScheduler.add(dataset.day,dataset.start);
+        Intent sendintent=new Intent(this,TimeScheduleAlarmReceiver.class);
+        sendintent.putExtra("AP",true);
+        sendintent.putExtra("AlarmGroup",dataset.getAlarmGroup());
+        sendintent.putExtra("Request_Code",alarmScheduler.get(dataset.day).get(dataset.start).request_code);
+        Calendar calendar=Calendar.getInstance();
+        calendar.setTimeInMillis(System.currentTimeMillis());
         //day == 0 is monday
-        c.set(Calendar.DAY_OF_WEEK,((day+1)%7)+1);
-        c.set(Calendar.HOUR_OF_DAY,hour);
-        c.set(Calendar.MINUTE,minute);
-        c.set(Calendar.SECOND,0);
-//        alarmmanager.setRepeating(AlarmManager.RTC_WAKEUP,c.getTimeInMillis(),1000*60*24*7,Alarmintent);
-        alarmmanager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, c.getTimeInMillis(),Alarmintent);
-        Log.i("DSL","\n\n 현재시각 "+ new Date(System.currentTimeMillis())+"\n 알람 예약 시간 "+new Date(c.getTimeInMillis()));
+        calendar.set(Calendar.DAY_OF_WEEK,((dataset.day+1)%7)+1);
+        calendar.set(Calendar.HOUR_OF_DAY,dataset.start/100);
+        calendar.set(Calendar.MINUTE,dataset.start%100);
+        calendar.set(Calendar.SECOND,0);
+        sendintent.putExtra("DAY_OF_WEEK",calendar.get(Calendar.DAY_OF_WEEK));
+        sendintent.putExtra("HOUR_OF_DAY",calendar.get(Calendar.HOUR_OF_DAY));
+        sendintent.putExtra("MINUTE",calendar.get(Calendar.MINUTE));
+        PendingIntent Alarmintent=PendingIntent.getBroadcast(this,alarmScheduler.get(dataset.day).get(dataset.start).request_code,sendintent,PendingIntent.FLAG_IMMUTABLE);
+//        alarmmanager.setRepeating(AlarmManager.RTC_WAKEUP,calendar.getTimeInMillis(),7*24*60*60*1000,Alarmintent);
+        alarmmanager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(),Alarmintent);
+        Log.i("DSL","\n\n 현재시각 "+ new Date(System.currentTimeMillis())+"\n 알람 예약 시간 "+new Date(calendar.getTimeInMillis()));
     }
     private void setStickerOnClick(){
         for(int i=table.TableColCount+table.TableRowCount-2;i<table.UITable.getChildCount();i++){
@@ -280,8 +256,8 @@ public class Schedule extends AppCompatActivity implements View.OnClickListener 
         } else if (id == R.id.movemenu) {
             initalarm();
         } else if (id == R.id.gettest) {
-//            startActivity(new Intent(getApplicationContext(),MainActivity.class));
-            getServerData();
+            //getServerData();
+            startActivity(new Intent(this,AlarmActivity.class));
         }else if(id==R.id.sendtest){
             setServerData();
         }
@@ -296,7 +272,6 @@ public class Schedule extends AppCompatActivity implements View.OnClickListener 
 //                print("RESULT_OK");
                 Intent ReIntent=result.getData();
                 setTableChange((ArrayList<AdaptorDataSet>)ReIntent.getSerializableExtra("Result_Value"));
-                //todo 넘어온 시간에 맞춰 알람 설정
             }else if(result.getResultCode()==Activity.RESULT_CANCELED){
                 print("RESULT_CANCELED");
             }
@@ -307,5 +282,38 @@ public class Schedule extends AppCompatActivity implements View.OnClickListener 
         stickers=list;
         table.ChangeListener(stickers);
         setStickerOnClick();
+        clearAlarm();
+        if(list.size()>2){
+            for(int i=1;i<list.size()-1;i++){
+                setAlarm(list.get(i));
+            }
+        }
+
+    }
+    public void clearAlarm(){
+        Intent sendintent=new Intent(this,TimeScheduleAlarmReceiver.class);
+        PendingIntent Alarmintent;
+        for(int i=0;i<alarmScheduler.size();i++){
+            AlarmScheduler.AlarmArray alarmArrays= alarmScheduler.get(i);
+            for(int foo=0;foo<alarmArrays.size();foo++){
+                AlarmScheduler.Alarmdata alarmdata=alarmArrays.getIndex(foo);
+                if(alarmdata==null){
+                    print("alarm data null");
+                    continue;
+                }
+                Alarmintent=PendingIntent.getBroadcast(this,alarmdata.request_code,sendintent,PendingIntent.FLAG_IMMUTABLE);
+                if(Alarmintent==null){
+                    print("alarmintentnull");
+                    continue;
+                }
+                alarmmanager.cancel(Alarmintent);
+                print("alarmcancle"+alarmdata.toString());
+            }
+            alarmArrays.clear();
+        }
+    }
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
     }
 }
