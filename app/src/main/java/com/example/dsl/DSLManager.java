@@ -129,8 +129,6 @@ public final class DSLManager{
                     }
                 });
                 urlConnection.setSSLSocketFactory(context.getSocketFactory());
-                urlConnection.setConnectTimeout(5000);
-                urlConnection.setReadTimeout(5000);
                 return urlConnection;
             }catch (Exception e){
                 e.printStackTrace();
@@ -138,6 +136,8 @@ public final class DSLManager{
             return null;
         }
         private String ConnectWork(HttpsURLConnection urlConnection, JSONObject parameter){
+            urlConnection.setConnectTimeout(5000);
+            urlConnection.setReadTimeout(5000);
             if(parameter!=null){
                 RequestSend(urlConnection,parameter);
             }

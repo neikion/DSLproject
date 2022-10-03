@@ -33,16 +33,51 @@
 
         <activity
             android:name=".Schedule"
+            android:exported="false">
+
+        </activity>
+        <activity
+            android:name=".AlarmActivity"
+            android:exported="false"/>
+        <!--notice-->
+        <activity
+            android:name=".LoginActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
         <activity
-            android:name=".AlarmActivity"
-            android:exported="false"></activity>
+            android:name=".LoginAddActivity"
+            android:exported="false"/>
+        <activity
+            android:name=".SubjectRemoveActivity"
+            android:exported="false" />
+        <activity
+            android:name=".SubjectAddActivity"
+            android:exported="false" />
+        <activity
+            android:name=".SoftwareMajorSubjectActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ContentWriteActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ContentViewActivity"
+            android:exported="false" />
+        <activity
+            android:name=".DataManagementActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ConfMenuActivity"
+            android:exported="false" />
+        <activity
+            android:name=".MenuActivity"
+            android:exported="false" />
+        <activity
+            android:name=".MainActivity"
+            android:exported="false" />
     </application>
 
 </manifest>

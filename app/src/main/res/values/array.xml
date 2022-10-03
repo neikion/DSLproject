@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="array_category">
+        <item>전체보기</item>
+        <item>JSP</item>
+        <item>C#</item>
+        <item>딥러닝 프로그래밍</item>
+    </string-array>
+    <string-array name="array_search">
+        <item>제목</item>
+        <item>본문</item>
+    </string-array>
+</resources>
