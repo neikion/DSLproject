@@ -1,7 +1,14 @@
 package com.example.dsl;
 
+import android.content.ContentValues;
 import android.content.Context;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteOpenHelper;
+import android.provider.BaseColumns;
 import android.util.Log;
+
+import androidx.annotation.Nullable;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -49,6 +56,7 @@ public final class DSLManager{
             }
         });
         Server=new ServerConnect("13.124.33.18");
+//        localDB=new LocalDataBase();
         try{
             Runtime.getRuntime().addShutdownHook(new Thread(()-> Close()));
         }catch (Exception e){
@@ -59,11 +67,6 @@ public final class DSLManager{
     }
     private ExecutorService exs;
     private ServerConnect Server;
-    enum DBIDS{
-        TimeSchedule,
-        Noti,
-        SchoolSchedule
-    }
     public interface NetListener {
         void Result(JSONArray Result);
     }
@@ -256,8 +259,76 @@ public final class DSLManager{
     public void sendRequest(Context context, JSONObject json,String API_URL, NetListener netListener){
         Server.sendRequest(context,json,API_URL,netListener);
     }
+    public LocalDataBase localDB;
+    private class LocalDataBase{
+        private DBopen DBopener;
+        private SQLiteDatabase DB;
+        public void CreateDataBase(Context context){
+            DBopener=new DBopen(context);
+        }
+        public long Insert(String table_name,ContentValues cv){
+            DB=DBopener.getWritableDatabase();
+            long result=DB.insert(table_name,null,cv);
+            DB.close();
+            return result;
+        }
+        public Cursor Read(String table_name,String[] target,String[] selection,String[] selectionArgs){
+            DB=DBopener.getReadableDatabase();
+            StringBuilder sb=new StringBuilder();
+            for(int i=0;i<selection.length;i++){
+                sb.append(selection[i]);
+                sb.append("=?");
+                if(i<selection.length-1){
+                    sb.append(" and ");
+                }
+            }
+            Cursor result=DB.query(table_name,target,sb.toString(),selectionArgs,null,null,null);
+            DB.close();
+            return result;
+        }
+        public void close(){
+            DBopener.close();
+        }
+        public class DBEntry implements BaseColumns {
+            private DBEntry(){ }
+            public static final String TABLE = "time_schedule";
+            public static final String ID = "id";
+            public static final String USER_CODE = "user_code";
+            public static final String SUBJECT = "subject";
+            public static final String PROFESSOR = "professor";
+            public static final String DAY = "day";
+            public static final String START_TIME = "start_time";
+            public static final String END_TIME = "end_time";
+            public static final String ROOM = "room";
+            public static final String ALARM = "alarm";
+        }
+        private class DBopen extends SQLiteOpenHelper{
+            public static final int DATABASE_VERSION = 1;
+            private  final static String DATABASE_NAME ="test.db";
+            public DBopen(@Nullable Context context) {
+                super(context, DATABASE_NAME, null, DATABASE_VERSION);
+            }
+
+            @Override
+            public void onCreate(SQLiteDatabase db) {
+                StringBuilder sb=new StringBuilder();
+                sb.append("create table ").append(DBEntry.TABLE).append(" (").append(DBEntry.ID).append(" INTEGER PRIMARY KEY AUTOINCREMENT,").append(DBEntry.USER_CODE).append(" INTEGER,")
+                        .append(DBEntry.SUBJECT).append(" varchar(20), ").append(DBEntry.PROFESSOR).append(" varchar(20),").append(DBEntry.DAY).append(" integer,")
+                        .append(DBEntry.START_TIME).append(" integer, ").append(DBEntry.END_TIME).append(" integer,").append(DBEntry.ROOM).append(" varchar(20),")
+                        .append(DBEntry.ALARM).append(" integer);");
+                db.execSQL(sb.toString());
+            }
+
+            @Override
+            public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
+                db.execSQL("drop table if exists "+DBEntry.TABLE);
+                onCreate(db);
+            }
+        }
+    }
     public void Close() {
         Server.close();
+        localDB.close();
         Server=null;
 
     }

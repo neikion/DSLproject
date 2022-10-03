@@ -7,6 +7,7 @@
     <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
     <uses-permission android:name="android.permission.VIBRATE"/>
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
 
     <application
         android:allowBackup="true"
@@ -19,7 +20,13 @@
             android:name=".ts_add"
             android:exported="false" />
 
-        <receiver android:name=".TimeScheduleAlarmReceiver"></receiver>
+        <receiver android:name=".TimeScheduleAlarmReceiver"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED"/>
+                <category android:name="android.intent.category.DEFAULT"/>
+            </intent-filter>
+        </receiver>
 
         <service android:name=".TimeScheduleAlarmService"
             android:foregroundServiceType="mediaPlayback"/>
