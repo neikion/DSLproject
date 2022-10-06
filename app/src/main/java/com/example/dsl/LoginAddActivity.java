@@ -67,7 +67,7 @@ public class LoginAddActivity extends AppCompatActivity {
                     jsonObject.put("NickName", editNickName.getText().toString());
                 } catch (JSONException e) {
                 }
-                DSLManager.getInstance().sendRequest(getApplicationContext(), jsonObject, "/Notice/User/Insert", new DSLManager.NetListener() {
+                DSLManager.getInstance().sendRequest(getApplicationContext(), jsonObject, "/User/Insert", new DSLManager.NetListener() {
                     @Override
                     public void Result(JSONArray Result) {
                         runOnUiThread(()->{

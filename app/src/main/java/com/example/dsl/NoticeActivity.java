@@ -3,7 +3,6 @@ package com.example.dsl;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.AdapterView;
@@ -20,7 +19,7 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 
-public class MainActivity extends AppCompatActivity {
+public class NoticeActivity extends AppCompatActivity {
 
     ImageButton btnMenu;
     Spinner spinSubject;
@@ -48,7 +47,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.activity_notice);
 /*
         if(savedInstanceState != null)
         {
@@ -103,7 +102,7 @@ public class MainActivity extends AppCompatActivity {
             jsonObject.put("ID", -1);
         } catch (JSONException e) {
         }
-        DSLManager.getInstance().sendRequest(getApplicationContext(), jsonObject, "/Notice/Subject/Search", new DSLManager.NetListener() {
+        DSLManager.getInstance().sendRequest(getApplicationContext(), jsonObject, "/Subject/Search", new DSLManager.NetListener() {
             @Override
             public void Result(JSONArray Result) {
                 runOnUiThread(()->{
@@ -179,7 +178,7 @@ public class MainActivity extends AppCompatActivity {
             jsonObject2.put("Content", SearchContent);
         } catch (JSONException e) {
         }
-        DSLManager.getInstance().sendRequest(getApplicationContext(), jsonObject2, "/Notice/Notice/Search", new DSLManager.NetListener() {
+        DSLManager.getInstance().sendRequest(getApplicationContext(), jsonObject2, "/Notice/Search", new DSLManager.NetListener() {
             @Override
             public void Result(JSONArray Result) {
                 runOnUiThread(()->{
@@ -206,7 +205,7 @@ public class MainActivity extends AppCompatActivity {
                 NoticeItem item = noticeItems.get(position);
                 SearchID = item.ID;
                 Intent intent = new Intent(getApplicationContext(), ContentViewActivity.class);
-                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                //intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                 intent.putExtra("ID", SearchID);
                 intent.putExtra("SubjectID", SearchSubjectID);
                 startActivity(intent);
@@ -239,7 +238,7 @@ public class MainActivity extends AppCompatActivity {
                     jsonObject3.put("Content", SearchContent);
                 } catch (JSONException e) {
                 }
-                DSLManager.getInstance().sendRequest(getApplicationContext(), jsonObject3, "/Notice/Notice/Search", new DSLManager.NetListener() {
+                DSLManager.getInstance().sendRequest(getApplicationContext(), jsonObject3, "/Notice/Search", new DSLManager.NetListener() {
                     @Override
                     public void Result(JSONArray Result) {
                         runOnUiThread(()->{

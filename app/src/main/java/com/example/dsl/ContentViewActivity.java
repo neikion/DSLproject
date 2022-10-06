@@ -3,7 +3,6 @@ package com.example.dsl;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ImageButton;
@@ -41,9 +40,7 @@ public class ContentViewActivity extends AppCompatActivity {
         imageButton1.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v){
-                Intent intent = new Intent(getApplicationContext(), MainActivity.class);
-                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK|Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                startActivity(intent);
+                finish();
             }
         });
 
@@ -56,7 +53,7 @@ public class ContentViewActivity extends AppCompatActivity {
             jsonObject.put("Content", "");
         } catch (JSONException e) {
         }
-        DSLManager.getInstance().sendRequest(getApplicationContext(), jsonObject, "/Notice/Notice/Search", new DSLManager.NetListener() {
+        DSLManager.getInstance().sendRequest(getApplicationContext(), jsonObject, "/Notice/Search", new DSLManager.NetListener() {
             @Override
             public void Result(JSONArray Result) {
                 runOnUiThread(()->{

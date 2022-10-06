@@ -76,7 +76,7 @@
             android:name=".MenuActivity"
             android:exported="false" />
         <activity
-            android:name=".MainActivity"
+            android:name=".NoticeActivity"
             android:exported="false" />
     </application>
 

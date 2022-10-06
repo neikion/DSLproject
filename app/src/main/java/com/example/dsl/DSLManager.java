@@ -181,11 +181,22 @@ public final class DSLManager{
                 con.setRequestMethod("POST");
                 con.setRequestProperty("Accept","Application/json");
 
+                String param="";
                 //noti my code for test
-                con.setRequestProperty("type",parameter.getJSONObject("input_json").getString("type"));
-
+                if(parameter.has("input_json")){
+                    con.setRequestProperty("type",parameter.getJSONObject("input_json").getString("type"));
+                    param=setParameter(parameter);
+                }else{
+                    //noti test
+                    param=parameter.toString();
+                }
                 OutputStream out=new BufferedOutputStream(con.getOutputStream());
-                String param=setParameter(parameter);
+
+
+
+
+                //noti for test
+                //String param=setParameter(parameter);
                 out.write(param.getBytes(StandardCharsets.UTF_8));
                 out.close();
 

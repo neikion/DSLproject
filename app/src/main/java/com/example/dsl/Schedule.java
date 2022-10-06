@@ -64,8 +64,8 @@ public class Schedule extends AppCompatActivity implements View.OnClickListener 
         findViewById(R.id.sendtest).setOnClickListener(this);
         table=new TimeTable(this,BaseTablePosition,UITablePosition,9);
         alarmmanager= (AlarmManager) getApplicationContext().getSystemService(Context.ALARM_SERVICE);
-        /*//noti 정상 작동하나 트래픽을 위해 테스트에서는 비활성화
-        connect();*/
+        //noti 정상 작동하나 테스트에서는 비활성화
+        getServerData();
     }
     private void getServerData(){
         manager=DSLManager.getInstance();
@@ -78,7 +78,7 @@ public class Schedule extends AppCompatActivity implements View.OnClickListener 
             json.put("type","Read");
             manager.sendRequest(this,DSLUtil.getTimeTableObject(json),"/DB.jsp",(Result) -> {
                 try{
-                    if(Result.isNull(0)){
+                    if(Result==null){
                         return;
                     }
                     ArrayList<AdaptorDataSet> datalist=new ArrayList<>();
@@ -192,7 +192,6 @@ public class Schedule extends AppCompatActivity implements View.OnClickListener 
 
     /*알람*/
     public void initalarm(){
-        //todo 알림 화면 만들기
         alarmmanager= (AlarmManager) getApplicationContext().getSystemService(Context.ALARM_SERVICE);
         AdaptorDataSet a=new AdaptorDataSet();
         a.start=1822;
@@ -256,8 +255,8 @@ public class Schedule extends AppCompatActivity implements View.OnClickListener 
         } else if (id == R.id.movemenu) {
             initalarm();
         } else if (id == R.id.gettest) {
-            //getServerData();
-            startActivity(new Intent(this,AlarmActivity.class));
+            getServerData();
+//            startActivity(new Intent(this,AlarmActivity.class));
         }else if(id==R.id.sendtest){
             setServerData();
         }
@@ -288,6 +287,7 @@ public class Schedule extends AppCompatActivity implements View.OnClickListener 
                 setAlarm(list.get(i));
             }
         }
+//        setServerData();
 
     }
     public void clearAlarm(){
