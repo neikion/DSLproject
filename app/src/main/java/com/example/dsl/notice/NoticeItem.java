@@ -1,4 +1,4 @@
-package com.example.dsl;
+package com.example.dsl.notice;
 
 public class NoticeItem {
     public int ID;

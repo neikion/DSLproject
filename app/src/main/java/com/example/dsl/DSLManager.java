@@ -226,13 +226,6 @@ public final class DSLManager{
         private HttpsURLConnection Connect(){
             return DangerConnect();
         }
-        private String getResult(String result) throws JSONException, SQLException {
-            String responseString = new JSONArray(result).getJSONObject(0).getString("result");
-            if(responseString.equals("200")){
-                return "Success";
-            }
-            throw new SQLException(responseString);
-        }
         public void sendRequest(Context context, JSONObject json,String API_URL, NetListener netListener){
             if(cont==null){
                 cont=context.getApplicationContext();

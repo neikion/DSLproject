@@ -1,4 +1,4 @@
-package com.example.dsl;
+package com.example.dsl.schedule;
 import android.graphics.drawable.Drawable;
 public class ts_list_item {
     public String Today;

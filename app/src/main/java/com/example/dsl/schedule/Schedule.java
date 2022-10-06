@@ -1,4 +1,4 @@
-package com.example.dsl;
+package com.example.dsl.schedule;
 
 import static com.example.dsl.DSLUtil.print;
 
@@ -23,6 +23,11 @@ import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.NotificationCompat;
+
+import com.example.dsl.DSLManager;
+import com.example.dsl.DSLUtil;
+import com.example.dsl.R;
+import com.example.dsl.notice.AdaptorDataSet;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -76,7 +81,7 @@ public class Schedule extends AppCompatActivity implements View.OnClickListener 
             json.put("constraint","user_code");
             json.put("constraint_value",String.valueOf(UserId));
             json.put("type","Read");
-            manager.sendRequest(this,DSLUtil.getTimeTableObject(json),"/DB.jsp",(Result) -> {
+            manager.sendRequest(this, DSLUtil.getTimeTableObject(json),"/DB.jsp",(Result) -> {
                 try{
                     if(Result==null){
                         return;
@@ -206,7 +211,7 @@ public class Schedule extends AppCompatActivity implements View.OnClickListener 
     }
     public void setAlarm(AdaptorDataSet dataset){
         alarmScheduler.add(dataset.day,dataset.start);
-        Intent sendintent=new Intent(this,TimeScheduleAlarmReceiver.class);
+        Intent sendintent=new Intent(this, TimeScheduleAlarmReceiver.class);
         sendintent.putExtra("AP",true);
         sendintent.putExtra("AlarmGroup",dataset.getAlarmGroup());
         sendintent.putExtra("Request_Code",alarmScheduler.get(dataset.day).get(dataset.start).request_code);
@@ -231,7 +236,7 @@ public class Schedule extends AppCompatActivity implements View.OnClickListener 
             ((TextView)table.UITable.getChildAt(i)).setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    Intent go=new Intent(getApplicationContext(),ts_add.class);
+                    Intent go=new Intent(getApplicationContext(), ts_add.class);
                     if(stickers!=null){
                         go.putExtra("LegacySticker",stickers);
                         go.putExtra("addLegacySticker",setid);

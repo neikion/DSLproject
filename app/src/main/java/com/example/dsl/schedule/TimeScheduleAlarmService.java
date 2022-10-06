@@ -1,4 +1,4 @@
-package com.example.dsl;
+package com.example.dsl.schedule;
 
 import static com.example.dsl.DSLUtil.print;
 
@@ -18,6 +18,9 @@ import android.util.Log;
 
 import androidx.annotation.Nullable;
 import androidx.core.app.NotificationCompat;
+
+import com.example.dsl.DSLUtil;
+import com.example.dsl.R;
 
 import java.util.Calendar;
 import java.util.Date;
@@ -42,7 +45,7 @@ public class TimeScheduleAlarmService extends Service {
         initVibrator();
     }
     public void initPlayer(){
-        player=MediaPlayer.create(this,R.raw.music);
+        player=MediaPlayer.create(this, R.raw.music);
         //todo audio foucus와 audio manager를 통해 볼륨 조절
         //noti 현재 볼륨은 사용자가 설정한 볼륨을 기반으로 재생됨
         player.setVolume(1,1);

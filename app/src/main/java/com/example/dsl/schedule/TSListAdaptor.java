@@ -1,4 +1,4 @@
-package com.example.dsl;
+package com.example.dsl.schedule;
 
 import android.app.TimePickerDialog;
 import android.content.Context;
@@ -18,7 +18,10 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.recyclerview.widget.RecyclerView;
 
-import java.io.Serializable;
+import com.example.dsl.R;
+import com.example.dsl.notice.AdaptorDataSet;
+import com.example.dsl.notice.CustomTimePickerDialog;
+
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Locale;

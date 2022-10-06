@@ -1,16 +1,16 @@
-package com.example.dsl;
+package com.example.dsl.notice;
 
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
-import android.widget.TextView;
 
+import com.example.dsl.DSLManager;
+import com.example.dsl.R;
 import com.google.android.material.textfield.TextInputEditText;
 
 import org.json.JSONArray;

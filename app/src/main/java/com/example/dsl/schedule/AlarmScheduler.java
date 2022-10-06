@@ -1,4 +1,4 @@
-package com.example.dsl;
+package com.example.dsl.schedule;
 
 import java.util.ArrayList;
 

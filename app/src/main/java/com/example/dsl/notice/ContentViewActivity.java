@@ -1,4 +1,4 @@
-package com.example.dsl;
+package com.example.dsl.notice;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -7,6 +7,9 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.TextView;
+
+import com.example.dsl.DSLManager;
+import com.example.dsl.R;
 
 import org.json.JSONArray;
 import org.json.JSONException;

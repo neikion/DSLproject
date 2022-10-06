@@ -1,4 +1,4 @@
-package com.example.dsl;
+package com.example.dsl.schedule;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -9,6 +9,8 @@ import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.TextView;
+
+import com.example.dsl.R;
 
 import java.util.Locale;
 

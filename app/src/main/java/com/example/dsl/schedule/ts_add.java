@@ -1,4 +1,4 @@
-package com.example.dsl;
+package com.example.dsl.schedule;
 
 import static com.example.dsl.DSLUtil.print;
 
@@ -10,10 +10,11 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
-import android.view.Window;
-import android.view.WindowManager;
 import android.widget.LinearLayout;
 
+import com.example.dsl.DSLUtil;
+import com.example.dsl.R;
+import com.example.dsl.notice.AdaptorDataSet;
 import com.google.android.material.snackbar.Snackbar;
 
 import java.util.ArrayList;

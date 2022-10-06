@@ -1,6 +1,9 @@
-package com.example.dsl;
+package com.example.dsl.notice;
 
 import androidx.appcompat.app.AppCompatActivity;
+
+import com.example.dsl.DSLManager;
+import com.example.dsl.R;
 import com.google.android.material.textfield.TextInputEditText;
 
 import android.app.AlertDialog;

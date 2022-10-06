@@ -17,10 +17,10 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.DSL">
         <activity
-            android:name=".ts_add"
+            android:name=".schedule.ts_add"
             android:exported="false" />
 
-        <receiver android:name=".TimeScheduleAlarmReceiver"
+        <receiver android:name=".schedule.TimeScheduleAlarmReceiver"
             android:exported="false">
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED"/>
@@ -28,55 +28,67 @@
             </intent-filter>
         </receiver>
 
-        <service android:name=".TimeScheduleAlarmService"
+        <service android:name=".schedule.TimeScheduleAlarmService"
             android:foregroundServiceType="mediaPlayback"/>
 
         <activity
-            android:name=".Schedule"
+            android:name=".schedule.Schedule"
             android:exported="false">
 
         </activity>
         <activity
-            android:name=".AlarmActivity"
+            android:name=".schedule.AlarmActivity"
             android:exported="false"/>
         <!--notice-->
         <activity
-            android:name=".LoginActivity"
+            android:name=".notice.LoginActivity"
             android:exported="true">
+
+        </activity>
+        <activity
+            android:name=".notice.LoginAddActivity"
+            android:exported="false"/>
+        <activity
+            android:name=".notice.SubjectRemoveActivity"
+            android:exported="false" />
+        <activity
+            android:name=".notice.SubjectAddActivity"
+            android:exported="false" />
+        <activity
+            android:name=".notice.SoftwareMajorSubjectActivity"
+            android:exported="false" />
+        <activity
+            android:name=".notice.ContentWriteActivity"
+            android:exported="false" />
+        <activity
+            android:name=".notice.ContentViewActivity"
+            android:exported="false" />
+        <activity
+            android:name=".notice.DataManagementActivity"
+            android:exported="false" />
+        <activity
+            android:name=".notice.ConfMenuActivity"
+            android:exported="false" />
+        <activity
+            android:name=".notice.MenuActivity"
+            android:exported="false" />
+        <activity
+            android:name=".notice.NoticeActivity"
+            android:exported="false" />
+        <!--calender-->
+        <activity
+            android:name=".calender.CalenderActivity"
+            android:exported="true" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
         <activity
-            android:name=".LoginAddActivity"
-            android:exported="false"/>
-        <activity
-            android:name=".SubjectRemoveActivity"
+            android:name=".calender.schedule_content_viewer"
             android:exported="false" />
         <activity
-            android:name=".SubjectAddActivity"
-            android:exported="false" />
-        <activity
-            android:name=".SoftwareMajorSubjectActivity"
-            android:exported="false" />
-        <activity
-            android:name=".ContentWriteActivity"
-            android:exported="false" />
-        <activity
-            android:name=".ContentViewActivity"
-            android:exported="false" />
-        <activity
-            android:name=".DataManagementActivity"
-            android:exported="false" />
-        <activity
-            android:name=".ConfMenuActivity"
-            android:exported="false" />
-        <activity
-            android:name=".MenuActivity"
-            android:exported="false" />
-        <activity
-            android:name=".NoticeActivity"
+            android:name=".calender.schedule_input"
             android:exported="false" />
     </application>
 

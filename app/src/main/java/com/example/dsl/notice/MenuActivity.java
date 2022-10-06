@@ -1,4 +1,4 @@
-package com.example.dsl;
+package com.example.dsl.notice;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -8,6 +8,9 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.TextView;
+
+import com.example.dsl.R;
+import com.example.dsl.schedule.Schedule;
 
 public class MenuActivity extends AppCompatActivity {
 
@@ -56,7 +59,7 @@ public class MenuActivity extends AppCompatActivity {
         btnSchedule.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent i=new Intent(getApplicationContext(),Schedule.class);
+                Intent i=new Intent(getApplicationContext(), Schedule.class);
                 i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK|Intent.FLAG_ACTIVITY_CLEAR_TASK);
                 startActivity(i);
             }

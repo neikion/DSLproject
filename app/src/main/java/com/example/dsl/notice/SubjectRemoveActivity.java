@@ -1,21 +1,18 @@
-package com.example.dsl;
+package com.example.dsl.notice;
 
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.ImageButton;
 import android.widget.ListView;
-import android.widget.TextView;
-import android.widget.Toast;
 
+import com.example.dsl.DSLManager;
+import com.example.dsl.R;
 import com.google.android.material.textfield.TextInputEditText;
 
 import org.json.JSONArray;
@@ -23,7 +20,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
-import java.util.List;
 
 public class SubjectRemoveActivity extends AppCompatActivity {
 

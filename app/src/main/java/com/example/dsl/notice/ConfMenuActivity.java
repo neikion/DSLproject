@@ -1,4 +1,4 @@
-package com.example.dsl;
+package com.example.dsl.notice;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -7,40 +7,38 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
-import android.widget.TextView;
 
-public class DataManagementActivity extends AppCompatActivity {
+import com.example.dsl.R;
+
+public class ConfMenuActivity extends AppCompatActivity {
 
     ImageButton imageButton1;
-    TextView textView1;
-    Button button1;
+    Button btnData;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_data_management);
+        setContentView(R.layout.activity_conf_menu);
 
         imageButton1 = (ImageButton) findViewById(R.id.btnPrevious);
-        textView1 = (TextView) findViewById(R.id.textView1);
-        button1 = (Button) findViewById(R.id.btnRegist);
+        btnData = (Button) findViewById(R.id.btnData);
 
         imageButton1.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v){
-                Intent intent = new Intent(getApplicationContext(), ConfMenuActivity.class);
+                Intent intent = new Intent(getApplicationContext(), MenuActivity.class);
                 intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK|Intent.FLAG_ACTIVITY_CLEAR_TASK);
                 startActivity(intent);
             }
         });
 
-        button1.setOnClickListener(new View.OnClickListener(){
+        btnData.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v){
-                Intent intent = new Intent(getApplicationContext(), SoftwareMajorSubjectActivity.class);
+                Intent intent = new Intent(getApplicationContext(), DataManagementActivity.class);
                 intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK|Intent.FLAG_ACTIVITY_CLEAR_TASK);
                 startActivity(intent);
             }
         });
-
     }
 }
