@@ -18,6 +18,7 @@ import java.io.BufferedOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URL;
+import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.security.KeyStore;
 import java.security.cert.Certificate;
@@ -180,26 +181,15 @@ public final class DSLManager{
                 con.setDoOutput(true);
                 con.setRequestMethod("POST");
                 con.setRequestProperty("Accept","Application/json");
-
+//                나중에 설정하면 좋을 듯
+//                con.setRequestProperty("Content-Type", "Application/json");
                 String param="";
-                //noti my code for test
-                if(parameter.has("input_json")){
-                    con.setRequestProperty("type",parameter.getJSONObject("input_json").getString("type"));
-                    param=setParameter(parameter);
-                }else{
-                    //noti test
-                    param=parameter.toString();
-                }
                 OutputStream out=new BufferedOutputStream(con.getOutputStream());
-
-
-
-
-                //noti for test
-                //String param=setParameter(parameter);
+                param=setParameter(parameter);
+                DSLUtil.print("파라미터 : "+param);
+                //noti main
                 out.write(param.getBytes(StandardCharsets.UTF_8));
                 out.close();
-
             }catch (Exception e){
                 e.printStackTrace();
             }
@@ -231,18 +221,82 @@ public final class DSLManager{
                 cont=context.getApplicationContext();
             }
             BaseURL ="https://"+targetIP+API_URL;
+            DSLUtil.print("target : "+BaseURL);
             Runnable task = ()->{
                 JSONArray result;
                 try {
-                    result=new JSONArray(ConnectWork(Connect(),json));
-                    if(netListener!=null){
+                    String resultstr=ConnectWork(Connect(),json);
+                    if(resultstr!=null&&!resultstr.isEmpty()){
+                        result=new JSONArray(resultstr);
+                        if(netListener==null){
+                            return;
+                        }
                         netListener.Result(result);
+                    }else{
+                        if(netListener==null){
+                            return;
+                        }
+                        netListener.Result(null);
+                        return;
                     }
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
             };
             exs.submit(task);
+        }
+        public void sendRequestforWeather(Context context,String API_URL, NetListener netListener){
+            if(cont==null){
+                cont=context.getApplicationContext();
+            }
+            BaseURL =API_URL;
+            DSLUtil.print("target : "+BaseURL);
+            Runnable task = ()->{
+                JSONArray result;
+                try {
+                    String resultstr=ConnectWorkforWeather(RightConnect());
+                    if(resultstr!=null&&!resultstr.isEmpty()){
+                        JSONObject temp=new JSONObject(resultstr);
+                        result=new JSONArray();
+                        result.put(temp);
+                        if(netListener==null){
+                            return;
+                        }
+                        netListener.Result(result);
+                    }else{
+                        if(netListener==null){
+                            return;
+                        }
+                        netListener.Result(null);
+                        return;
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            };
+            exs.submit(task);
+        }
+        private String ConnectWorkforWeather(HttpsURLConnection urlConnection){
+            urlConnection.setConnectTimeout(5000);
+            urlConnection.setReadTimeout(5000);
+            String Result="";
+            try{
+                urlConnection.setRequestMethod("GET");
+                urlConnection.setRequestProperty("Accept","Application/json");
+                if(urlConnection.getResponseCode()==200){
+                    InputStream in=urlConnection.getInputStream();
+                    Result=StreamRead(in);
+
+                    in.close();
+                }else{
+                    Log.i("DSL",urlConnection.getResponseMessage());
+                }
+            }catch (Exception e){
+                e.printStackTrace();
+            }finally {
+                urlConnection.disconnect();
+            }
+            return Result;
         }
         @Override
         public void close() {
@@ -262,6 +316,9 @@ public final class DSLManager{
     }
     public void sendRequest(Context context, JSONObject json,String API_URL, NetListener netListener){
         Server.sendRequest(context,json,API_URL,netListener);
+    }
+    public void sendRequestforWeather(Context context,String API_URL, NetListener netListener){
+        Server.sendRequestforWeather(context,API_URL,netListener);
     }
     public LocalDataBase localDB;
     private class LocalDataBase{

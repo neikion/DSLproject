@@ -23,6 +23,7 @@ public class Calender implements Serializable {
     }
 
     public Calender(int userCode, int scheduleYear, int scheduleMonth, int scheduleDay, String title, String scheduleContent, int scheduleID) {
+        this.title=title;
         this.userCode = userCode;
         this.scheduleYear = scheduleYear;
         this.scheduleMonth = scheduleMonth;

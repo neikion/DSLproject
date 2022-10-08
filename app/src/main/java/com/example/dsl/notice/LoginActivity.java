@@ -11,6 +11,7 @@ import android.widget.Button;
 import android.widget.EditText;
 
 import com.example.dsl.DSLManager;
+import com.example.dsl.DSLUtil;
 import com.example.dsl.R;
 
 import org.json.JSONArray;
@@ -39,6 +40,11 @@ public class LoginActivity extends AppCompatActivity {
         alertDialog = new AlertDialog.Builder(this);
         alertDialog.setTitle("알림");
         alertDialog.setMessage("로그인에 실패하였습니다.");
+        //noti test
+        editId.setText("test");
+        //noti test
+        editPassword.setText("1234");
+
         alertDialog.setPositiveButton("확인", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
@@ -50,13 +56,14 @@ public class LoginActivity extends AppCompatActivity {
             public void onClick(View v) {
                 JSONObject jsonObject = new JSONObject();
                 try {
-                    jsonObject.put("Id", editId.getText().toString());
+                    jsonObject.put("userCode", editId.getText().toString());
                     jsonObject.put("Password", editPassword.getText().toString());
                 } catch (JSONException e) {
                 }
-                DSLManager.getInstance().sendRequest(getApplicationContext(), jsonObject, "/User/Search", new DSLManager.NetListener() {
+                DSLManager.getInstance().sendRequest(getApplicationContext(), jsonObject, "/Notice/Select", new DSLManager.NetListener() {
                     @Override
                     public void Result(JSONArray Result) {
+                        DSLUtil.print(Result.toString()+"");
                         runOnUiThread(()->{
                             try {
                                 JSONObject jsonObject = Result.getJSONObject(0);

@@ -27,8 +27,11 @@ import androidx.core.app.NotificationCompat;
 import com.example.dsl.DSLManager;
 import com.example.dsl.DSLUtil;
 import com.example.dsl.R;
+import com.example.dsl.calender.User;
 import com.example.dsl.notice.AdaptorDataSet;
+import com.example.dsl.notice.MenuActivity;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -57,6 +60,9 @@ public class Schedule extends AppCompatActivity implements View.OnClickListener 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_schedule);
+
+        manager=DSLManager.getInstance();
+        findViewById(R.id.movemenu).setOnClickListener(this);
         init();
         initNoti();
     }
@@ -76,12 +82,8 @@ public class Schedule extends AppCompatActivity implements View.OnClickListener 
         manager=DSLManager.getInstance();
         try {
             JSONObject json=new JSONObject();
-            json.put("table","time_schedule");
-            json.put("column","*");
-            json.put("constraint","user_code");
-            json.put("constraint_value",String.valueOf(UserId));
-            json.put("type","Read");
-            manager.sendRequest(this, DSLUtil.getTimeTableObject(json),"/DB.jsp",(Result) -> {
+            json.put("userCode",UserId);
+            manager.sendRequest(this, json,"/timeschedule/search",(Result) -> {
                 try{
                     if(Result==null){
                         return;
@@ -95,8 +97,8 @@ public class Schedule extends AppCompatActivity implements View.OnClickListener 
                         dataSet.professor=temp.getString("professor");
                         dataSet.place=temp.getString("room");
                         dataSet.day=Integer.parseInt(temp.getString("day"));
-                        dataSet.start=Integer.parseInt(temp.getString("start_time"));
-                        dataSet.end=Integer.parseInt(temp.getString("end_time"));
+                        dataSet.start=Integer.parseInt(temp.getString("startTime"));
+                        dataSet.end=Integer.parseInt(temp.getString("endTime"));
                         dataSet.setAlarmGroup(Integer.parseInt(temp.getString("alarm")));
                         datalist.add(dataSet);
                     }
@@ -120,26 +122,37 @@ public class Schedule extends AppCompatActivity implements View.OnClickListener 
         }
         try{
             JSONObject json=new JSONObject();
-            json.put("table","time_schedule");
-            json.put("constraint","user_code");
-            json.put("constraint_value",String.valueOf(UserId));
-            json.put("type","Delete");
-            StringBuilder sb=new StringBuilder();
-            AdaptorDataSet dataSet;
-            manager.sendRequest(this,DSLUtil.getTimeTableObject(json),"/DB.jsp",null);
-            for(int i=1;i<stickers.size()-1;i++){
-                dataSet=stickers.get(i);
-                json=new JSONObject();
-                json.put("table","time_schedule");
-                sb.append(i).append(',').append(UserId).append(',').append('"').append(dataSet.subject).append('"').append(',').append('"').append(dataSet.professor)
-                        .append('"').append(',').append(dataSet.day).append(',').append(dataSet.start).append(',').append(dataSet.end).append(',').append('"')
-                        .append(dataSet.place).append('"').append(',').append(dataSet.getAlarmGroup());
-                json.put("insert_value",sb.toString());
-                json.put("type","Create");
-                print(sb.toString());
-                manager.sendRequest(this,DSLUtil.getTimeTableObject(json),"/DB.jsp",null);
-                sb.setLength(0);
-            }
+            json.put("userCode",UserId);
+            manager.sendRequest(this, json, "/timeschedule/delete", new DSLManager.NetListener() {
+                @Override
+                public void Result(JSONArray Result) {
+                    DSLUtil.print("Ddd1");
+                    AdaptorDataSet dataSet;
+                    for(int i=1;i<stickers.size()-1;i++){
+                        dataSet=stickers.get(i);
+                        JSONObject json=new JSONObject();
+                        try {
+                            json.put("userCode",UserId);
+                            json.put("subject",dataSet.subject);
+                            json.put("professor",dataSet.professor);
+                            json.put("day",dataSet.day);
+                            json.put("startTime",dataSet.start);
+                            json.put("endTime",dataSet.end);
+                            json.put("room",dataSet.place);
+                            json.put("alarm",dataSet.getAlarmGroup());
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                        manager.sendRequest(getApplicationContext(), json, "/timeschedule/insert", new DSLManager.NetListener() {
+                            @Override
+                            public void Result(JSONArray Result) {
+                                DSLUtil.print("Ddd2");
+                            }
+                        });
+                    }
+                }
+            });
+
         }catch (Exception e){
             e.printStackTrace();
         }
@@ -258,7 +271,7 @@ public class Schedule extends AppCompatActivity implements View.OnClickListener 
             }
             ActivityLuncher.launch(i);
         } else if (id == R.id.movemenu) {
-            initalarm();
+            startActivity(new Intent(this, MenuActivity.class));
         } else if (id == R.id.gettest) {
             getServerData();
 //            startActivity(new Intent(this,AlarmActivity.class));

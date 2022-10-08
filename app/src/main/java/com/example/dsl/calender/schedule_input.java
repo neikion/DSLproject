@@ -10,6 +10,8 @@ import android.widget.Button;
 import android.widget.CalendarView;
 import android.widget.EditText;
 import android.widget.Toast;
+
+import com.example.dsl.DSLUtil;
 import com.example.dsl.R;
 import com.example.dsl.calender.Calender.*;
 import com.example.dsl.DSLManager;
@@ -49,11 +51,13 @@ public class schedule_input extends AppCompatActivity {
             public void onClick(View view) {
                 title = editTitle.getText().toString();
                 content = editContent.getText().toString();
-                Calender cal = new Calender(user.getUserCode(),year,month,day,title,content);
+                Calender cal = null;
                 if (intentCalender == null) {//insert
+                    cal = new Calender(User.getUserInstance().getUserCode(),year,month,day,title,content,0);
                     sendServer("insert",cal);
                 }
                 else{//update
+                    cal = new Calender(user.getUserCode(),year,month,day,title,content,intentCalender.getScheduleID());
                     sendServer("update",cal);
                 }
                 finish();
@@ -61,20 +65,21 @@ public class schedule_input extends AppCompatActivity {
         });
     }
 
+
     private void sendServer(String option,Calender cal) {
         try {
             DSLManager manager=DSLManager.getInstance();
             JSONObject data=new JSONObject();
-            data.put("userID",user.getUserCode());
+            data.put("scheduleID",cal.getScheduleID());
+            data.put("userCode",9999);
             data.put("scheduleYear", cal.getScheduleYear());
             data.put("scheduleMonth", cal.getScheduleMonth());
             data.put("scheduleDay", cal.getScheduleDay());
             data.put("title", cal.getTitle());
-            data.put("content", cal.getScheduleContent());
+            data.put("scheduleContent", cal.getScheduleContent());
             manager.sendRequest(getApplicationContext(), data,"/calender/" + option, new DSLManager.NetListener() {
                 @Override
                 public void Result(JSONArray Result) {
-
                 }
             });
         } catch (Exception e) {

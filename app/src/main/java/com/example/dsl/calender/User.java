@@ -1,8 +1,8 @@
 package com.example.dsl.calender;
 //미완성 유저 객체
 public class User {
-    private int userCode;
-    private String userName;
+    private int userCode=9999;
+    private String userName="dd";
 
     private User() {
 

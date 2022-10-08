@@ -33,7 +33,7 @@
 
         <activity
             android:name=".schedule.Schedule"
-            android:exported="false">
+            android:exported="true">
 
         </activity>
         <activity
@@ -43,7 +43,10 @@
         <activity
             android:name=".notice.LoginActivity"
             android:exported="true">
-
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
         </activity>
         <activity
             android:name=".notice.LoginAddActivity"
@@ -79,10 +82,7 @@
         <activity
             android:name=".calender.CalenderActivity"
             android:exported="true" >
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
+
         </activity>
         <activity
             android:name=".calender.schedule_content_viewer"
@@ -90,6 +90,10 @@
         <activity
             android:name=".calender.schedule_input"
             android:exported="false" />
+        <!--weather-->
+        <activity android:name=".weather.WeatherActivity"
+            android:exported="true">
+        </activity>
     </application>
 
 </manifest>

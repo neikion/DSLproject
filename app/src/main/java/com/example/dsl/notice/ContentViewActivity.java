@@ -56,7 +56,7 @@ public class ContentViewActivity extends AppCompatActivity {
             jsonObject.put("Content", "");
         } catch (JSONException e) {
         }
-        DSLManager.getInstance().sendRequest(getApplicationContext(), jsonObject, "/Notice/Search", new DSLManager.NetListener() {
+        DSLManager.getInstance().sendRequest(getApplicationContext(), jsonObject, "/Notice/User/Search", new DSLManager.NetListener() {
             @Override
             public void Result(JSONArray Result) {
                 runOnUiThread(()->{

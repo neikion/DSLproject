@@ -16,11 +16,13 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.dsl.DSLUtil;
 import com.example.dsl.calender.Calender.*;
 import com.example.dsl.DSLManager;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.example.dsl.R;
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
@@ -44,8 +46,9 @@ public class CalenderActivity extends AppCompatActivity {//롱클릭으로 수�
             public void onSelectedDayChange(@NonNull CalendarView calendarView, int year, int month, int day) {//날짜 변화 리스너 이 기능의 모든것
                 //칼랜더리스트의 요소를 순회하여 날짜가 일치할경우 textView 를 만들어서 보여줄 예정
                 for (int i = 0; i < calenderList.size(); i++) {
+                    DSLUtil.print(year+" "+month+" "+day);
                     if(calenderList.get(i).getScheduleYear() == year &&
-                            calenderList.get(i).getScheduleMonth() == month &&
+                            calenderList.get(i).getScheduleMonth() == month+1 &&
                             calenderList.get(i).getScheduleDay() == day){
                         //여기는 리스트에서 현재 선택된 날짜와 동일한 녀석만 넘어올수 있음
                         Calender cal = calenderList.get(i);
@@ -153,15 +156,16 @@ public class CalenderActivity extends AppCompatActivity {//롱클릭으로 수�
         try {
             DSLManager manager=DSLManager.getInstance();
             JSONObject data=new JSONObject();
-            data.put("user_code",userID);
+            data.put("userCode",9999);
             manager.sendRequest(getApplicationContext(), data,"/calender/select", new DSLManager.NetListener() {
                 @Override
-                public void Result(JSONArray result) {
+                public void Result(JSONArray Result) {
+                    DSLUtil.print(Result.toString()+"");
                     try{
-                        for (int i = 0; i < result.length(); i++) {
-                            JSONObject json = result.getJSONObject(i);
-                            String j = json.toString();
-                            Calender cal = objectMapper.readValue(j, Calender.class);
+                        for (int i = 0; i < Result.length(); i++) {
+                            JSONObject jj = Result.getJSONObject(i);
+                            Calender cal = new Calender(jj.getInt("userCode"),jj.getInt("scheduleYear"),jj.getInt("scheduleMonth"),jj.getInt("scheduleDay"),jj.getString("title"),jj.getString("scheduleContent"),jj.getInt("scheduleID"));
+                            DSLUtil.print(cal.toString());
                             list.add(cal);
                         }
                     }catch (Exception e){

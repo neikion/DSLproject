@@ -19,9 +19,4 @@ public class DSLUtil {
         DisplayMetrics metrics = context.getResources().getDisplayMetrics();
         return TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dipValue, metrics);
     }
-    public static JSONObject getTimeTableObject(JSONObject json) throws JSONException {
-        JSONObject wrap=new JSONObject();
-        wrap.put("input_json",json);
-        return wrap;
-    }
 }
