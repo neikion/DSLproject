@@ -19,6 +19,7 @@ import android.widget.Toast;
 import com.example.dsl.DSLUtil;
 import com.example.dsl.calender.Calender.*;
 import com.example.dsl.DSLManager;
+import com.example.dsl.notice.MenuActivity;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.example.dsl.R;
 import org.json.JSONArray;
@@ -124,6 +125,12 @@ public class CalenderActivity extends AppCompatActivity {//롱클릭으로 수�
         setContentView(R.layout.activity_calender);
         calView = (CalendarView) findViewById(R.id.calender_view);
         textViews = (LinearLayout) findViewById(R.id.textViewLayout);
+        findViewById(R.id.calender_menu).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                DSLManager.gomenu(getApplicationContext());
+            }
+        });
      //end main method
     }
 

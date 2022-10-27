@@ -3,8 +3,15 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
     tools:context=".calender.CalenderActivity">
+    <ImageButton
+        android:id="@+id/calender_menu"
+        android:layout_width="53dp"
+        android:layout_height="56dp"
+        android:layout_gravity="left"
+        app:srcCompat="@android:drawable/ic_dialog_dialer" />
     <CalendarView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -27,11 +34,4 @@
             >
         </LinearLayout>
     </ScrollView>
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_weight="1.7"
-        android:text="NAV_AREA"
-        android:gravity="center"
-        />
 </LinearLayout>

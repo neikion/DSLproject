@@ -45,8 +45,6 @@ public class Schedule extends AppCompatActivity implements View.OnClickListener 
 
     LinearLayout BaseTablePosition;
     LinearLayout UITablePosition;
-    int BaseTableID;
-    NotificationCompat.Builder noti;
     NotificationManager notimanager;
     private AlarmManager alarmmanager;
     private List<PendingIntent> alarmList=new LinkedList<>();
@@ -71,8 +69,6 @@ public class Schedule extends AppCompatActivity implements View.OnClickListener 
         UITablePosition=findViewById(R.id.UITablePosition);
         findViewById(R.id.AddAlarm).setOnClickListener(this);
         findViewById(R.id.movemenu).setOnClickListener(this);
-        findViewById(R.id.gettest).setOnClickListener(this);
-        findViewById(R.id.sendtest).setOnClickListener(this);
         table=new TimeTable(this,BaseTablePosition,UITablePosition,9);
         alarmmanager= (AlarmManager) getApplicationContext().getSystemService(Context.ALARM_SERVICE);
         //noti 정상 작동하나 테스트에서는 비활성화
@@ -85,9 +81,11 @@ public class Schedule extends AppCompatActivity implements View.OnClickListener 
             json.put("userCode",UserId);
             manager.sendRequest(this, json,"/timeschedule/search",(Result) -> {
                 try{
+                    DSLUtil.print(Result.toString());
                     if(Result==null){
                         return;
                     }
+
                     ArrayList<AdaptorDataSet> datalist=new ArrayList<>();
                     AdaptorDataSet dataSet;
                     for(int i=0;i<Result.length();i++){
@@ -117,39 +115,32 @@ public class Schedule extends AppCompatActivity implements View.OnClickListener 
     }
     private void setServerData(){
         manager=DSLManager.getInstance();
-        if(stickers!=null&&stickers.size()<3){
-            return;
-        }
+        JSONObject json=new JSONObject();
         try{
-            JSONObject json=new JSONObject();
+            if(stickers!=null&&stickers.size()<3){
+                json.put("userCode",UserId);
+                manager.sendRequest(this, json, "/timeschedule/delete",null);
+                return;
+            }
             json.put("userCode",UserId);
-            manager.sendRequest(this, json, "/timeschedule/delete", new DSLManager.NetListener() {
-                @Override
-                public void Result(JSONArray Result) {
-                    DSLUtil.print("Ddd1");
-                    AdaptorDataSet dataSet;
-                    for(int i=1;i<stickers.size()-1;i++){
-                        dataSet=stickers.get(i);
-                        JSONObject json=new JSONObject();
-                        try {
-                            json.put("userCode",UserId);
-                            json.put("subject",dataSet.subject);
-                            json.put("professor",dataSet.professor);
-                            json.put("day",dataSet.day);
-                            json.put("startTime",dataSet.start);
-                            json.put("endTime",dataSet.end);
-                            json.put("room",dataSet.place);
-                            json.put("alarm",dataSet.getAlarmGroup());
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
-                        manager.sendRequest(getApplicationContext(), json, "/timeschedule/insert", new DSLManager.NetListener() {
-                            @Override
-                            public void Result(JSONArray Result) {
-                                DSLUtil.print("Ddd2");
-                            }
-                        });
+            manager.sendRequest(this, json, "/timeschedule/delete", Result -> {
+                AdaptorDataSet dataSet;
+                for(int i=1;i<stickers.size()-1;i++){
+                    dataSet=stickers.get(i);
+                    JSONObject json1 =new JSONObject();
+                    try {
+                        json1.put("userCode",UserId);
+                        json1.put("subject",dataSet.subject);
+                        json1.put("professor",dataSet.professor);
+                        json1.put("day",dataSet.day);
+                        json1.put("startTime",dataSet.start);
+                        json1.put("endTime",dataSet.end);
+                        json1.put("room",dataSet.place);
+                        json1.put("alarm",dataSet.getAlarmGroup());
+                    } catch (JSONException e) {
+                        e.printStackTrace();
                     }
+                    manager.sendRequest(getApplicationContext(), json1, "/timeschedule/insert", null);
                 }
             });
 
@@ -158,19 +149,7 @@ public class Schedule extends AppCompatActivity implements View.OnClickListener 
         }
     }
     public void initNoti(){
-
         CreatenotiChannel();
-    }
-    /*알림*/
-    public void Createnoti(){
-
-        noti=new NotificationCompat.Builder(this,"TSNC");
-        noti.setContentTitle("TSNC Title");
-        noti.setContentText("TSNC Context");
-        noti.setSmallIcon(R.drawable.ic_launcher_foreground);
-        noti.setStyle(new NotificationCompat.BigTextStyle().bigText("TSNC Style Text"));
-        noti.setFullScreenIntent(FullScreenIntent(),true);
-        noti.setAutoCancel(true);
     }
     private void CreatenotiChannel(){
         if(Build.VERSION.SDK_INT>=Build.VERSION_CODES.O){
@@ -190,38 +169,6 @@ public class Schedule extends AppCompatActivity implements View.OnClickListener 
 
         }
     }
-    public PendingIntent FullScreenIntent(){
-        Intent intent=new Intent(this, AlarmActivity.class);
-        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK|Intent.FLAG_ACTIVITY_CLEAR_TASK);
-        PendingIntent pending=PendingIntent.getActivity(this,0,intent,PendingIntent.FLAG_IMMUTABLE);
-        return pending;
-    }
-    public void ShowNoti(){
-        notimanager.notify(1,noti.build());
-        try {
-            Handler h=new Handler();
-            h.postDelayed(()->{
-                notimanager.cancel(1);
-            },5000);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-    /*알람*/
-    public void initalarm(){
-        alarmmanager= (AlarmManager) getApplicationContext().getSystemService(Context.ALARM_SERVICE);
-        AdaptorDataSet a=new AdaptorDataSet();
-        a.start=1822;
-        a.professor="pp";
-        a.end=a.start+100;
-        a.subject="d";
-        a.place="p";
-        a.day=6;
-        a.soundSwitch=true;
-        a.vibrateSwitch=true;
-        setAlarm(a);
-    }
     public void setAlarm(AdaptorDataSet dataset){
         alarmScheduler.add(dataset.day,dataset.start);
         Intent sendintent=new Intent(this, TimeScheduleAlarmReceiver.class);
@@ -235,12 +182,20 @@ public class Schedule extends AppCompatActivity implements View.OnClickListener 
         calendar.set(Calendar.HOUR_OF_DAY,dataset.start/100);
         calendar.set(Calendar.MINUTE,dataset.start%100);
         calendar.set(Calendar.SECOND,0);
+
+        Calendar calendar2=Calendar.getInstance();
+        calendar2.setTimeInMillis(System.currentTimeMillis());
+        if(calendar.compareTo(calendar2)<0){
+            calendar.add(Calendar.DAY_OF_WEEK_IN_MONTH,1);
+        }
         sendintent.putExtra("DAY_OF_WEEK",calendar.get(Calendar.DAY_OF_WEEK));
         sendintent.putExtra("HOUR_OF_DAY",calendar.get(Calendar.HOUR_OF_DAY));
         sendintent.putExtra("MINUTE",calendar.get(Calendar.MINUTE));
+
         PendingIntent Alarmintent=PendingIntent.getBroadcast(this,alarmScheduler.get(dataset.day).get(dataset.start).request_code,sendintent,PendingIntent.FLAG_IMMUTABLE);
 //        alarmmanager.setRepeating(AlarmManager.RTC_WAKEUP,calendar.getTimeInMillis(),7*24*60*60*1000,Alarmintent);
         alarmmanager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(),Alarmintent);
+
         Log.i("DSL","\n\n 현재시각 "+ new Date(System.currentTimeMillis())+"\n 알람 예약 시간 "+new Date(calendar.getTimeInMillis()));
     }
     private void setStickerOnClick(){
@@ -271,12 +226,7 @@ public class Schedule extends AppCompatActivity implements View.OnClickListener 
             }
             ActivityLuncher.launch(i);
         } else if (id == R.id.movemenu) {
-            startActivity(new Intent(this, MenuActivity.class));
-        } else if (id == R.id.gettest) {
-            getServerData();
-//            startActivity(new Intent(this,AlarmActivity.class));
-        }else if(id==R.id.sendtest){
-            setServerData();
+            DSLManager.gomenu(getApplicationContext());
         }
     }
 
@@ -284,9 +234,7 @@ public class Schedule extends AppCompatActivity implements View.OnClickListener 
     ActivityResultLauncher<Intent> ActivityLuncher=registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), new ActivityResultCallback<ActivityResult>() {
         @Override
         public void onActivityResult(ActivityResult result) {
-//            print("onActivityResult");
             if(result.getResultCode()== Activity.RESULT_OK){
-//                print("RESULT_OK");
                 Intent ReIntent=result.getData();
                 setTableChange((ArrayList<AdaptorDataSet>)ReIntent.getSerializableExtra("Result_Value"));
             }else if(result.getResultCode()==Activity.RESULT_CANCELED){
@@ -305,7 +253,8 @@ public class Schedule extends AppCompatActivity implements View.OnClickListener 
                 setAlarm(list.get(i));
             }
         }
-//        setServerData();
+        print(stickers.size()+"");
+        setServerData();
 
     }
     public void clearAlarm(){
@@ -325,7 +274,7 @@ public class Schedule extends AppCompatActivity implements View.OnClickListener 
                     continue;
                 }
                 alarmmanager.cancel(Alarmintent);
-                print("alarmcancle"+alarmdata.toString());
+                print("alarmcancle"+alarmdata);
             }
             alarmArrays.clear();
         }

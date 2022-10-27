@@ -89,9 +89,7 @@ public class NoticeActivity extends AppCompatActivity {
         btnMenu.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(getApplicationContext(), MenuActivity.class);
-                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                startActivity(intent);
+                DSLManager.gomenu(getApplicationContext());
             }
         });
 

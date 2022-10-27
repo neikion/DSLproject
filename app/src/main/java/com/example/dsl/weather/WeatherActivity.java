@@ -50,9 +50,7 @@ public class WeatherActivity extends AppCompatActivity {
         findViewById(R.id.weather_menu).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent i=new Intent(getApplicationContext(), MenuActivity.class);
-                i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                startActivity(i);
+                DSLManager.gomenu(getApplicationContext());
             }
         });
         button.setOnClickListener(new View.OnClickListener() {

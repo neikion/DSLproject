@@ -2,6 +2,7 @@ package com.example.dsl;
 
 import android.content.ContentValues;
 import android.content.Context;
+import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
@@ -9,6 +10,8 @@ import android.provider.BaseColumns;
 import android.util.Log;
 
 import androidx.annotation.Nullable;
+
+import com.example.dsl.notice.MenuActivity;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -318,6 +321,11 @@ public final class DSLManager{
     }
     public void sendRequestforWeather(Context context,String API_URL, NetListener netListener){
         Server.sendRequestforWeather(context,API_URL,netListener);
+    }
+    public static void gomenu(Context context){
+        Intent i=new Intent(context, MenuActivity.class);
+        i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        context.startActivity(i);
     }
     public LocalDataBase localDB;
     private class LocalDataBase{

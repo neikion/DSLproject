@@ -12,7 +12,7 @@ public class AlarmScheduler {
         }
     }
     public void add(int day, int start_time){
-        schedule.get(day).add((day*10000)+start_time,start_time);
+        schedule.get(day).add(((day*10000)+start_time),start_time);
     }
     public AlarmArray get(int day){
         return schedule.get(day);

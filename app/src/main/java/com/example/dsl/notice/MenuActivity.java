@@ -14,73 +14,43 @@ import com.example.dsl.calender.CalenderActivity;
 import com.example.dsl.schedule.Schedule;
 import com.example.dsl.weather.WeatherActivity;
 
-public class MenuActivity extends AppCompatActivity {
-
-    TextView txtMenuGroup1;
-    Button btnSchedule;
-    ImageButton btnPrevious;
-    ImageButton btnConfig;
-    Button btnLocation;
-    TextView txtMenuGroup2;
-    Button btnCalendar;
-    Button btnWeather;
-    Button btnTraffic;
+public class MenuActivity extends AppCompatActivity implements View.OnClickListener{
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_menu);
+        findViewById(R.id.txtMenuGroup1).setOnClickListener(this);
+        findViewById(R.id.btnSchedule).setOnClickListener(this);
+        findViewById(R.id.btnPrevious).setOnClickListener(this);
+        findViewById(R.id.btnConfig).setOnClickListener(this);
+        findViewById(R.id.btnLocation).setOnClickListener(this);
+        findViewById(R.id.txtMenuGroup2).setOnClickListener(this);
+        findViewById(R.id.btnCalendar).setOnClickListener(this);
+        findViewById(R.id.btnWeather).setOnClickListener(this);
+        findViewById(R.id.notice).setOnClickListener(this);
+    }
 
-        txtMenuGroup1 = (TextView) findViewById(R.id.txtMenuGroup1);
-        btnSchedule = (Button) findViewById(R.id.btnSchedule);
-        btnPrevious = (ImageButton) findViewById(R.id.btnPrevious);
-        btnConfig = (ImageButton) findViewById(R.id.btnConfig);
-        btnLocation = (Button) findViewById(R.id.btnLocation);
-        txtMenuGroup2 = (TextView) findViewById(R.id.txtMenuGroup2);
-        btnCalendar = (Button) findViewById(R.id.btnCalendar);
-        btnWeather = (Button) findViewById(R.id.btnWeather);
-        btnTraffic = (Button) findViewById(R.id.btnTraffic);
-
-        btnPrevious.setOnClickListener(new View.OnClickListener(){
-            @Override
-            public void onClick(View v){
-                Intent intent = new Intent(getApplicationContext(), NoticeActivity.class);
-                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK|Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                startActivity(intent);
-            }
-        });
-
-        btnConfig.setOnClickListener(new View.OnClickListener(){
-            @Override
-            public void onClick(View v){
-                Intent intent = new Intent(getApplicationContext(), ConfMenuActivity.class);
-                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK|Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                startActivity(intent);
-            }
-        });
-        btnSchedule.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent i=new Intent(getApplicationContext(), Schedule.class);
-                i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK|Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                startActivity(i);
-            }
-        });
-        btnWeather.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent i=new Intent(getApplicationContext(), WeatherActivity.class);
-                i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK|Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                startActivity(i);
-            }
-        });
-        btnCalendar.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent i=new Intent(getApplicationContext(), CalenderActivity.class);
-                i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK|Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                startActivity(i);
-            }
-        });
+    @Override
+    public void onClick(View v) {
+        int id=v.getId();
+        Intent i;
+        if(id==R.id.notice){
+            i=new Intent(getApplicationContext(), NoticeActivity.class);
+        }else if(id==R.id.btnSchedule){
+            i=new Intent(getApplicationContext(), Schedule.class);
+        }else if(id==R.id.btnCalendar){
+            i=new Intent(getApplicationContext(), CalenderActivity.class);
+        }else if(id==R.id.btnWeather){
+            i=new Intent(getApplicationContext(), WeatherActivity.class);
+        }else if(id==R.id.btnConfig){
+            i = new Intent(getApplicationContext(), ConfMenuActivity.class);
+        }
+        else{
+            finish();
+            return;
+        }
+        i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK|Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        startActivity(i);
     }
 }
