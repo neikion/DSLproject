@@ -3,6 +3,7 @@ package com.example.dsl.notice;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.dsl.DSLManager;
+import com.example.dsl.DSLUtil;
 import com.example.dsl.R;
 import com.google.android.material.textfield.TextInputEditText;
 
@@ -69,10 +70,10 @@ public class ContentWriteActivity extends AppCompatActivity {
 
         JSONObject jsonObject = new JSONObject();
         try {
-            jsonObject.put("ID", -1);
+            jsonObject.put("Id", -1);
         } catch (JSONException e) {
         }
-        DSLManager.getInstance().sendRequest(getApplicationContext(), jsonObject,"/Notice/Subject/Search", new DSLManager.NetListener() {
+        DSLManager.getInstance().sendRequest(getApplicationContext(), jsonObject,"/Subject/Search", new DSLManager.NetListener() {
             @Override
             public void Result(JSONArray Result) {
                 runOnUiThread(()->{
@@ -119,12 +120,12 @@ public class ContentWriteActivity extends AppCompatActivity {
             public void onClick(View v) {
                 JSONObject jsonObject = new JSONObject();
                 try {
-                    jsonObject.put("SubjectID", AddSubjectID);
+                    jsonObject.put("SubjectId", AddSubjectID);
                     jsonObject.put("Name", editName.getText().toString());
                     jsonObject.put("Content", editContent.getText().toString());
                 } catch (JSONException e) {
                 }
-                DSLManager.getInstance().sendRequest(getApplicationContext(), jsonObject, "/Notice/Notice/Insert", new DSLManager.NetListener() {
+                DSLManager.getInstance().sendRequest(getApplicationContext(), jsonObject, "/Notice/Insert", new DSLManager.NetListener() {
                     @Override
                     public void Result(JSONArray Result) {
                         runOnUiThread(()->{

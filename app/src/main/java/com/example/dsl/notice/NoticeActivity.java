@@ -14,6 +14,7 @@ import android.widget.ListView;
 import android.widget.Spinner;
 
 import com.example.dsl.DSLManager;
+import com.example.dsl.DSLUtil;
 import com.example.dsl.R;
 
 import org.json.JSONArray;
@@ -102,7 +103,7 @@ public class NoticeActivity extends AppCompatActivity {
         // 과목 읽어오기 Task 실행
         JSONObject jsonObject = new JSONObject();
         try {
-            jsonObject.put("ID", -1);
+            jsonObject.put("Id", -1);
         } catch (JSONException e) {
         }
         DSLManager.getInstance().sendRequest(getApplicationContext(), jsonObject, "/Subject/Search", new DSLManager.NetListener() {
@@ -117,7 +118,6 @@ public class NoticeActivity extends AppCompatActivity {
                             JSONObject jsonObject = Result.getJSONObject(i);
                             int ID = jsonObject.getInt("ID");
                             String Name = jsonObject.getString("Name");
-                            //System.out.format("%d : %s\n", ID, Name);
                             item = new NoticeItem(ID, Name);
                             subjectAdapter.add(item);
                         }
@@ -125,9 +125,38 @@ public class NoticeActivity extends AppCompatActivity {
                         e.printStackTrace();
                     }
                 });
+                //noti 서버에서 비동기 처리가 안되어서 강제 동기 처리
+                JSONObject jsonObject2 = new JSONObject();
+                try {
+                    jsonObject2.put("Id", SearchID);
+                    jsonObject2.put("SubjectId", SearchSubjectID);
+                    jsonObject2.put("Name", SearchName);
+                    jsonObject2.put("Content", SearchContent);
+                } catch (JSONException e) {
+                }
+                DSLManager.getInstance().sendRequest(getApplicationContext(), jsonObject2, "/Notice/Search", new DSLManager.NetListener() {
+                    @Override
+                    public void Result(JSONArray Result) {
+                        runOnUiThread(()->{
+                            noticeAdapter.clear();
+                            try {
+                                for (int i = 0; i < Result.length(); i++) {
+                                    JSONObject jsonObject = Result.getJSONObject(i);
+                                    int ID = jsonObject.getInt("ID");
+                                    String Name = jsonObject.getString("Name");
+                                    //System.out.format("%d : %s\n", ID, Name);
+                                    NoticeItem item = new NoticeItem(ID, Name);
+                                    noticeAdapter.add(item);
+                                }
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
+                        });
+                    }
+                });
+
             }
         });
-
         spinSubject.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
@@ -172,11 +201,11 @@ public class NoticeActivity extends AppCompatActivity {
             SearchName = "";
             SearchContent = "";
         }
-
-        JSONObject jsonObject2 = new JSONObject();
+        //noti 서버에서 비동기로 보낼 시 처리가 안되서 비활성화
+/*        JSONObject jsonObject2 = new JSONObject();
         try {
-            jsonObject2.put("ID", SearchID);
-            jsonObject2.put("SubjectID", SearchSubjectID);
+            jsonObject2.put("Id", SearchID);
+            jsonObject2.put("SubjectId", SearchSubjectID);
             jsonObject2.put("Name", SearchName);
             jsonObject2.put("Content", SearchContent);
         } catch (JSONException e) {
@@ -191,7 +220,6 @@ public class NoticeActivity extends AppCompatActivity {
                             JSONObject jsonObject = Result.getJSONObject(i);
                             int ID = jsonObject.getInt("ID");
                             String Name = jsonObject.getString("Name");
-                            //System.out.format("%d : %s\n", ID, Name);
                             NoticeItem item = new NoticeItem(ID, Name);
                             noticeAdapter.add(item);
                         }
@@ -200,15 +228,13 @@ public class NoticeActivity extends AppCompatActivity {
                     }
                 });
             }
-        });
-
+        });*/
         listNotice.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 NoticeItem item = noticeItems.get(position);
                 SearchID = item.ID;
                 Intent intent = new Intent(getApplicationContext(), ContentViewActivity.class);
-                //intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                 intent.putExtra("ID", SearchID);
                 intent.putExtra("SubjectID", SearchSubjectID);
                 startActivity(intent);
@@ -232,11 +258,10 @@ public class NoticeActivity extends AppCompatActivity {
                     SearchName = "";
                     SearchContent = "";
                 }
-
                 JSONObject jsonObject3 = new JSONObject();
                 try {
-                    jsonObject3.put("ID", SearchID);
-                    jsonObject3.put("SubjectID", SearchSubjectID);
+                    jsonObject3.put("Id", SearchID);
+                    jsonObject3.put("SubjectId", SearchSubjectID);
                     jsonObject3.put("Name", SearchName);
                     jsonObject3.put("Content", SearchContent);
                 } catch (JSONException e) {

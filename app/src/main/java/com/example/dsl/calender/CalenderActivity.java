@@ -46,7 +46,6 @@ public class CalenderActivity extends AppCompatActivity {//롱클릭으로 수�
             public void onSelectedDayChange(@NonNull CalendarView calendarView, int year, int month, int day) {//날짜 변화 리스너 이 기능의 모든것
                 //칼랜더리스트의 요소를 순회하여 날짜가 일치할경우 textView 를 만들어서 보여줄 예정
                 for (int i = 0; i < calenderList.size(); i++) {
-                    DSLUtil.print(year+" "+month+" "+day);
                     if(calenderList.get(i).getScheduleYear() == year &&
                             calenderList.get(i).getScheduleMonth() == month+1 &&
                             calenderList.get(i).getScheduleDay() == day){
@@ -160,12 +159,10 @@ public class CalenderActivity extends AppCompatActivity {//롱클릭으로 수�
             manager.sendRequest(getApplicationContext(), data,"/calender/select", new DSLManager.NetListener() {
                 @Override
                 public void Result(JSONArray Result) {
-                    DSLUtil.print(Result.toString()+"");
                     try{
                         for (int i = 0; i < Result.length(); i++) {
                             JSONObject jj = Result.getJSONObject(i);
                             Calender cal = new Calender(jj.getInt("userCode"),jj.getInt("scheduleYear"),jj.getInt("scheduleMonth"),jj.getInt("scheduleDay"),jj.getString("title"),jj.getString("scheduleContent"),jj.getInt("scheduleID"));
-                            DSLUtil.print(cal.toString());
                             list.add(cal);
                         }
                     }catch (Exception e){

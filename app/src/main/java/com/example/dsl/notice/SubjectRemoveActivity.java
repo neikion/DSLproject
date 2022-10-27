@@ -65,10 +65,10 @@ public class SubjectRemoveActivity extends AppCompatActivity {
             public void onClick(View v){
                 JSONObject jsonObject = new JSONObject();
                 try {
-                    jsonObject.put("ID", DelSubjectID);
+                    jsonObject.put("Id", DelSubjectID);
                 } catch (JSONException e) {
                 }
-                DSLManager.getInstance().sendRequest(getApplicationContext(), jsonObject, "/Notice/Subject/Delete", new DSLManager.NetListener() {
+                DSLManager.getInstance().sendRequest(getApplicationContext(), jsonObject, "/Subject/Delete", new DSLManager.NetListener() {
                     @Override
                     public void Result(JSONArray Result) {
                         runOnUiThread(()->{
@@ -104,10 +104,10 @@ public class SubjectRemoveActivity extends AppCompatActivity {
         // 과목 읽어오기 Task 실행
         JSONObject jsonObject = new JSONObject();
         try {
-            jsonObject.put("ID", -1);
+            jsonObject.put("Id", -1);
         } catch (JSONException e) {
         }
-        DSLManager.getInstance().sendRequest(getApplicationContext(), jsonObject, "/Notice/Subject/Search", new DSLManager.NetListener() {
+        DSLManager.getInstance().sendRequest(getApplicationContext(), jsonObject, "/Subject/Search", new DSLManager.NetListener() {
             @Override
             public void Result(JSONArray Result) {
                 runOnUiThread(()->{

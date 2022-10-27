@@ -3,6 +3,7 @@ package com.example.dsl.weather;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.annotation.SuppressLint;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ImageButton;
@@ -10,6 +11,8 @@ import android.widget.TextView;
 import com.example.dsl.DSLManager;
 import com.example.dsl.DSLUtil;
 import com.example.dsl.R;
+import com.example.dsl.notice.MenuActivity;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -44,6 +47,14 @@ public class WeatherActivity extends AppCompatActivity {
         mainView = findViewById(R.id.mainView);
         mainView2 = findViewById(R.id.mainView2);
         ImageButton button = findViewById(R.id.imageButton);
+        findViewById(R.id.weather_menu).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent i=new Intent(getApplicationContext(), MenuActivity.class);
+                i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                startActivity(i);
+            }
+        });
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

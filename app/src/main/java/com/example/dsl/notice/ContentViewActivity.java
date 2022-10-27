@@ -50,13 +50,13 @@ public class ContentViewActivity extends AppCompatActivity {
         // 과목 읽어오기 Task 실행
         JSONObject jsonObject = new JSONObject();
         try {
-            jsonObject.put("ID", SearchID);
-            jsonObject.put("SubjectID", SearchSubjectID);
+            jsonObject.put("Id", SearchID);
+            jsonObject.put("SubjectId", SearchSubjectID);
             jsonObject.put("Name", "");
             jsonObject.put("Content", "");
         } catch (JSONException e) {
         }
-        DSLManager.getInstance().sendRequest(getApplicationContext(), jsonObject, "/Notice/User/Search", new DSLManager.NetListener() {
+        DSLManager.getInstance().sendRequest(getApplicationContext(), jsonObject, "/Notice/Search", new DSLManager.NetListener() {
             @Override
             public void Result(JSONArray Result) {
                 runOnUiThread(()->{

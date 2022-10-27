@@ -55,7 +55,7 @@ public class SubjectAddActivity extends AppCompatActivity {
                     jsonObject.put("Name", txtName.getText().toString());
                 } catch (JSONException e) {
                 }
-                DSLManager.getInstance().sendRequest(getApplicationContext(), jsonObject, "/Notice/Subject/Insert", new DSLManager.NetListener() {
+                DSLManager.getInstance().sendRequest(getApplicationContext(), jsonObject, "/Subject/Insert", new DSLManager.NetListener() {
                     @Override
                     public void Result(JSONArray Result) {
                         runOnUiThread(()->{

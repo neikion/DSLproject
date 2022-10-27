@@ -56,14 +56,13 @@ public class LoginActivity extends AppCompatActivity {
             public void onClick(View v) {
                 JSONObject jsonObject = new JSONObject();
                 try {
-                    jsonObject.put("userCode", editId.getText().toString());
+                    jsonObject.put("Id", editId.getText().toString());
                     jsonObject.put("Password", editPassword.getText().toString());
                 } catch (JSONException e) {
                 }
-                DSLManager.getInstance().sendRequest(getApplicationContext(), jsonObject, "/Notice/Select", new DSLManager.NetListener() {
+                DSLManager.getInstance().sendRequest(getApplicationContext(), jsonObject, "/User/Search", new DSLManager.NetListener() {
                     @Override
                     public void Result(JSONArray Result) {
-                        DSLUtil.print(Result.toString()+"");
                         runOnUiThread(()->{
                             try {
                                 JSONObject jsonObject = Result.getJSONObject(0);

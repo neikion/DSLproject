@@ -250,7 +250,6 @@ public final class DSLManager{
                 cont=context.getApplicationContext();
             }
             BaseURL =API_URL;
-            DSLUtil.print("target : "+BaseURL);
             Runnable task = ()->{
                 JSONArray result;
                 try {
