@@ -13,6 +13,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.CalendarView;
 import android.widget.LinearLayout;
+import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -34,10 +35,9 @@ public class CalenderActivity extends AppCompatActivity {//롱클릭으로 수�
     List<Calender> calenderList;
     LinearLayout textViews;
     CalendarView calView;
-    User user = User.getUserInstance();
-    int userID = user.getUserCode();//통합환경에서는 유저의 상태를 가지고 있는 무언가가 있기를
-
-
+    ScrollView scrollView;
+    List<TextView> textLists = new ArrayList<>();
+    int textViewLength = 0;
     @Override
     protected void onStart() {//화면이 실행 될때마다 보여지는 녀석 서버로 조회기능 -> 리스트 업데이트 -> 업데이트된 리스트 기반으로 일정 재구축 -> 택스트뷰에 리스너 생성
         super.onStart();
@@ -45,6 +45,9 @@ public class CalenderActivity extends AppCompatActivity {//롱클릭으로 수�
         calView.setOnDateChangeListener(new CalendarView.OnDateChangeListener() {
             @Override
             public void onSelectedDayChange(@NonNull CalendarView calendarView, int year, int month, int day) {//날짜 변화 리스너 이 기능의 모든것
+                textLists.forEach(textView -> textViews.removeView(textView));//
+                textLists = new ArrayList<>();
+                textViewLength = 0;
                 //칼랜더리스트의 요소를 순회하여 날짜가 일치할경우 textView 를 만들어서 보여줄 예정
                 for (int i = 0; i < calenderList.size(); i++) {
                     if(calenderList.get(i).getScheduleYear() == year &&
@@ -52,9 +55,8 @@ public class CalenderActivity extends AppCompatActivity {//롱클릭으로 수�
                             calenderList.get(i).getScheduleDay() == day){
                         //여기는 리스트에서 현재 선택된 날짜와 동일한 녀석만 넘어올수 있음
                         Calender cal = calenderList.get(i);
-                        TextView textView = createTextView(cal.getTitle());
-
-                        textView.setOnClickListener(new View.OnClickListener() {//숏클릭 리스너 터치시 상세 페이지로 넘어간다 돌아오면 다시 onStart가 실행되어 재구축 예정 성능 ? 망 : 망
+                        textLists.add(createTextView(cal.getTitle()));
+                        textLists.get(textViewLength).setOnClickListener(new View.OnClickListener() {//숏클릭 리스너 터치시 상세 페이지로 넘어간다 돌아오면 다시 onStart가 실행되어 재구축 예정 성능 ? 망 : 망
                             @Override
                             public void onClick(View view) {
                                 Intent intent = new Intent(CalenderActivity.this, schedule_content_viewer.class);
@@ -62,7 +64,7 @@ public class CalenderActivity extends AppCompatActivity {//롱클릭으로 수�
                                 startActivity(intent);//액티비티 실행 이 인텐트는 일정 상세 페이지로 넘어간다 이파트는 대화상자로 변경의 가능성이 있음
                             }
                         });
-                        textView.setOnLongClickListener(new View.OnLongClickListener() {//롱클릭 리스너 수정과 삭제가 가능하게 만든다 다만 여기서는 수행하지 않고 던질 예정
+                        textLists.get(textViewLength).setOnLongClickListener(new View.OnLongClickListener() {//롱클릭 리스너 수정과 삭제가 가능하게 만든다 다만 여기서는 수행하지 않고 던질 예정
                             @Override
                             public boolean onLongClick(View view) {
                                 String str;
@@ -110,7 +112,7 @@ public class CalenderActivity extends AppCompatActivity {//롱클릭으로 수�
                                 return false;
                             }
                         });
-                        textViews.addView(textView);
+                        textViews.addView(textLists.get(textViewLength++));
                         //end if
                     }
                     //end for loop
@@ -123,15 +125,16 @@ public class CalenderActivity extends AppCompatActivity {//롱클릭으로 수�
     protected void onCreate(Bundle savedInstanceState) {//최초 동작 메서드 안씀
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_calender);
+        scrollView = findViewById(R.id.scrollView);
+        textViews = findViewById(R.id.textViewLayout);
         calView = (CalendarView) findViewById(R.id.calender_view);
-        textViews = (LinearLayout) findViewById(R.id.textViewLayout);
         findViewById(R.id.calender_menu).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 DSLManager.gomenu(getApplicationContext());
             }
         });
-     //end main method
+        //end main method
     }
 
     @Override

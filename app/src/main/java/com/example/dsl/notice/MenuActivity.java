@@ -10,6 +10,7 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 
 import com.example.dsl.R;
+import com.example.dsl.bus.BusActivity;
 import com.example.dsl.calender.CalenderActivity;
 import com.example.dsl.schedule.Schedule;
 import com.example.dsl.weather.WeatherActivity;
@@ -24,7 +25,7 @@ public class MenuActivity extends AppCompatActivity implements View.OnClickListe
         findViewById(R.id.btnSchedule).setOnClickListener(this);
         findViewById(R.id.btnPrevious).setOnClickListener(this);
         findViewById(R.id.btnConfig).setOnClickListener(this);
-        findViewById(R.id.btnLocation).setOnClickListener(this);
+        findViewById(R.id.btnbus).setOnClickListener(this);
         findViewById(R.id.txtMenuGroup2).setOnClickListener(this);
         findViewById(R.id.btnCalendar).setOnClickListener(this);
         findViewById(R.id.btnWeather).setOnClickListener(this);
@@ -45,6 +46,8 @@ public class MenuActivity extends AppCompatActivity implements View.OnClickListe
             i=new Intent(getApplicationContext(), WeatherActivity.class);
         }else if(id==R.id.btnConfig){
             i = new Intent(getApplicationContext(), ConfMenuActivity.class);
+        }else if(id==R.id.btnbus){
+            i = new Intent(getApplicationContext(), BusActivity.class);
         }
         else{
             finish();

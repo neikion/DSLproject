@@ -25,7 +25,6 @@ public class schedule_input extends AppCompatActivity {
     int year,month,day;
     String title;
     String content;
-    User user;
 
 
     @Override
@@ -38,7 +37,6 @@ public class schedule_input extends AppCompatActivity {
         editContent = (EditText) findViewById(R.id.content_input);
         submitButton = (Button) findViewById(R.id.submit);
         calenderView = (CalendarView) findViewById(R.id.date_picker);
-        System.out.println("주입");
         calenderView.setOnDateChangeListener(new CalendarView.OnDateChangeListener() {
             @Override
             public void onSelectedDayChange(@NonNull CalendarView calendarView, int methodYear, int methodMonth, int methodDay) {
@@ -53,11 +51,11 @@ public class schedule_input extends AppCompatActivity {
                 content = editContent.getText().toString();
                 Calender cal = null;
                 if (intentCalender == null) {//insert
-                    cal = new Calender(User.getUserInstance().getUserCode(),year,month,day,title,content,0);
+                    cal = new Calender(DSLManager.getInstance().getUserCode(), year,month,day,title,content,0);
                     sendServer("insert",cal);
                 }
                 else{//update
-                    cal = new Calender(user.getUserCode(),year,month,day,title,content,intentCalender.getScheduleID());
+                    cal = new Calender(DSLManager.getInstance().getUserCode(), year,month,day,title,content,intentCalender.getScheduleID());
                     sendServer("update",cal);
                 }
                 finish();

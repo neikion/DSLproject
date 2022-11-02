@@ -6,8 +6,8 @@
     <uses-permission android:name="android.permission.USE_FULL_SCREEN_INTENT" />
     <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
-    <uses-permission android:name="android.permission.VIBRATE"/>
-    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
+    <uses-permission android:name="android.permission.VIBRATE" />
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
 
     <application
         android:allowBackup="true"
@@ -16,41 +16,44 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.DSL">
+
         <activity
             android:name=".schedule.ts_add"
             android:exported="false" />
 
-        <receiver android:name=".schedule.TimeScheduleAlarmReceiver"
+        <receiver
+            android:name=".schedule.TimeScheduleAlarmReceiver"
             android:exported="false">
             <intent-filter>
-                <action android:name="android.intent.action.BOOT_COMPLETED"/>
-                <category android:name="android.intent.category.DEFAULT"/>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+
+                <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </receiver>
 
-        <service android:name=".schedule.TimeScheduleAlarmService"
-            android:foregroundServiceType="mediaPlayback"/>
+        <service
+            android:name=".schedule.TimeScheduleAlarmService"
+            android:foregroundServiceType="mediaPlayback" />
 
         <activity
             android:name=".schedule.Schedule"
-            android:exported="true">
-
-        </activity>
+            android:exported="false"></activity>
         <activity
             android:name=".schedule.AlarmActivity"
-            android:exported="false"/>
-        <!--notice-->
+            android:exported="false" />
+        <!-- notice -->
         <activity
             android:name=".notice.LoginActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
         <activity
             android:name=".notice.LoginAddActivity"
-            android:exported="false"/>
+            android:exported="false" />
         <activity
             android:name=".notice.SubjectRemoveActivity"
             android:exported="false" />
@@ -77,12 +80,11 @@
             android:exported="false" />
         <activity
             android:name=".notice.NoticeActivity"
-            android:exported="false" >
-        </activity>
-        <!--calender-->
+            android:exported="false"></activity>
+        <!-- calender -->
         <activity
             android:name=".calender.CalenderActivity"
-            android:exported="true" >
+            android:exported="true">
 
         </activity>
         <activity
@@ -91,9 +93,15 @@
         <activity
             android:name=".calender.schedule_input"
             android:exported="false" />
-        <!--weather-->
-        <activity android:name=".weather.WeatherActivity"
-            android:exported="true">
+        <!-- weather -->
+        <activity
+            android:name=".weather.WeatherActivity"
+            android:exported="false"></activity>
+        <!--bus-->
+        <activity
+            android:name=".bus.BusActivity"
+            android:exported="false">
+
         </activity>
     </application>
 

@@ -17,7 +17,6 @@ import org.json.JSONObject;
 public class schedule_content_viewer extends AppCompatActivity {//일저의 상세를 보여주는 페이지 사실 필요했을까 의문이 남는다ㅏ아아아아아아아ㅏ아아아아아아아
     Button update,delete;
     TextView title,content;
-    User user = User.getUserInstance();//싱글턴이네 왜그랬을까
 
 
     @Override

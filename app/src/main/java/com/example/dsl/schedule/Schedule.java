@@ -27,11 +27,7 @@ import androidx.core.app.NotificationCompat;
 import com.example.dsl.DSLManager;
 import com.example.dsl.DSLUtil;
 import com.example.dsl.R;
-import com.example.dsl.calender.User;
 import com.example.dsl.notice.AdaptorDataSet;
-import com.example.dsl.notice.MenuActivity;
-
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -47,13 +43,10 @@ public class Schedule extends AppCompatActivity implements View.OnClickListener 
     LinearLayout UITablePosition;
     NotificationManager notimanager;
     private AlarmManager alarmmanager;
-    private List<PendingIntent> alarmList=new LinkedList<>();
     TimeTable table;
     ArrayList<AdaptorDataSet> stickers;
     DSLManager manager;
     AlarmScheduler alarmScheduler = new AlarmScheduler(7);
-    //noti test
-    final int UserId=9999;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -71,14 +64,13 @@ public class Schedule extends AppCompatActivity implements View.OnClickListener 
         findViewById(R.id.movemenu).setOnClickListener(this);
         table=new TimeTable(this,BaseTablePosition,UITablePosition,9);
         alarmmanager= (AlarmManager) getApplicationContext().getSystemService(Context.ALARM_SERVICE);
-        //noti 정상 작동하나 테스트에서는 비활성화
         getServerData();
     }
     private void getServerData(){
         manager=DSLManager.getInstance();
         try {
             JSONObject json=new JSONObject();
-            json.put("userCode",UserId);
+            json.put("userCode",DSLManager.getInstance().getUserCode());
             manager.sendRequest(this, json,"/timeschedule/search",(Result) -> {
                 try{
                     DSLUtil.print(Result.toString());
@@ -118,18 +110,18 @@ public class Schedule extends AppCompatActivity implements View.OnClickListener 
         JSONObject json=new JSONObject();
         try{
             if(stickers!=null&&stickers.size()<3){
-                json.put("userCode",UserId);
+                json.put("userCode",DSLManager.getInstance().getUserCode());
                 manager.sendRequest(this, json, "/timeschedule/delete",null);
                 return;
             }
-            json.put("userCode",UserId);
+            json.put("userCode",DSLManager.getInstance().getUserCode());
             manager.sendRequest(this, json, "/timeschedule/delete", Result -> {
                 AdaptorDataSet dataSet;
                 for(int i=1;i<stickers.size()-1;i++){
                     dataSet=stickers.get(i);
                     JSONObject json1 =new JSONObject();
                     try {
-                        json1.put("userCode",UserId);
+                        json1.put("userCode",DSLManager.getInstance().getUserCode());
                         json1.put("subject",dataSet.subject);
                         json1.put("professor",dataSet.professor);
                         json1.put("day",dataSet.day);

@@ -22,7 +22,7 @@ public class LoginAddActivity extends AppCompatActivity {
 
     EditText editId;
     EditText editPassword;
-    EditText editNickName;
+//    EditText editNickName;
     Button btnRegist;
     ImageButton btnPrev;
     AlertDialog.Builder alertDialog;
@@ -34,7 +34,7 @@ public class LoginAddActivity extends AppCompatActivity {
 
         editId = (EditText)findViewById(R.id.editId);
         editPassword = (EditText)findViewById(R.id.editPassword);
-        editNickName = (EditText)findViewById(R.id.editNickName);
+//        editNickName = (EditText)findViewById(R.id.editNickName);
         btnRegist = (Button)findViewById(R.id.btnRegist);
         btnPrev = (ImageButton)findViewById(R.id.btnPrev);
 
@@ -66,7 +66,7 @@ public class LoginAddActivity extends AppCompatActivity {
                 try {
                     jsonObject.put("Id", editId.getText().toString());
                     jsonObject.put("Password", editPassword.getText().toString());
-                    jsonObject.put("NickName", editNickName.getText().toString());
+//                    jsonObject.put("NickName", editNickName.getText().toString());
                 } catch (JSONException e) {
                 }
                 DSLManager.getInstance().sendRequest(getApplicationContext(), jsonObject, "/User/Insert", new DSLManager.NetListener() {

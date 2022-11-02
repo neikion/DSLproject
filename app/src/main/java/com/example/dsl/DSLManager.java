@@ -21,12 +21,10 @@ import java.io.BufferedOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URL;
-import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.security.KeyStore;
 import java.security.cert.Certificate;
 import java.security.cert.CertificateFactory;
-import java.sql.SQLException;
 import java.util.Iterator;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -71,8 +69,18 @@ public final class DSLManager{
     }
     private ExecutorService exs;
     private ServerConnect Server;
+    private UserInfo userInfo=null;
     public interface NetListener {
         void Result(JSONArray Result);
+    }
+    private final class UserInfo{
+        private final int UserID;
+        private UserInfo(int userID) {
+            UserID = userID;
+        }
+        public int getUserID() {
+            return UserID;
+        }
     }
     private class ServerConnect implements AutoCloseable{
         //debuging
@@ -142,20 +150,21 @@ public final class DSLManager{
         private String ConnectWork(HttpsURLConnection urlConnection, JSONObject parameter){
             urlConnection.setConnectTimeout(5000);
             urlConnection.setReadTimeout(5000);
+            urlConnection.setRequestProperty("Accept","Application/json");
             if(parameter!=null){
                 RequestSend(urlConnection,parameter);
             }
             String Result="";
 
             try{
+                urlConnection.setRequestMethod("POST");
                 if(urlConnection.getResponseCode()==200){
-
                     InputStream in=urlConnection.getInputStream();
                     Result=StreamRead(in);
 
                     in.close();
                 }else{
-                    Log.i("DSL",urlConnection.getResponseMessage());
+                    Log.e("DSL",urlConnection.getResponseMessage());
                 }
             }catch (Exception e){
                 e.printStackTrace();
@@ -183,14 +192,11 @@ public final class DSLManager{
                 con.setDoInput(true);
                 con.setDoOutput(true);
                 con.setRequestMethod("POST");
-                con.setRequestProperty("Accept","Application/json");
 //                나중에 설정하면 좋을 듯
 //                con.setRequestProperty("Content-Type", "Application/json");
                 String param="";
                 OutputStream out=new BufferedOutputStream(con.getOutputStream());
                 param=setParameter(parameter);
-                DSLUtil.print("파라미터 : "+param);
-                //noti main
                 out.write(param.getBytes(StandardCharsets.UTF_8));
                 out.close();
             }catch (Exception e){
@@ -326,6 +332,14 @@ public final class DSLManager{
         Intent i=new Intent(context, MenuActivity.class);
         i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         context.startActivity(i);
+    }
+    public void Login(int UserID){
+        if(userInfo==null){
+            userInfo=new UserInfo(UserID);
+        }
+    }
+    public int getUserCode(){
+        return userInfo.getUserID();
     }
     public LocalDataBase localDB;
     private class LocalDataBase{

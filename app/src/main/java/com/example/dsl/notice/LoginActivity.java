@@ -40,10 +40,6 @@ public class LoginActivity extends AppCompatActivity {
         alertDialog = new AlertDialog.Builder(this);
         alertDialog.setTitle("알림");
         alertDialog.setMessage("로그인에 실패하였습니다.");
-        //noti test
-        editId.setText("test");
-        //noti test
-        editPassword.setText("1234");
 
         alertDialog.setPositiveButton("확인", new DialogInterface.OnClickListener() {
             @Override
@@ -68,6 +64,7 @@ public class LoginActivity extends AppCompatActivity {
                                 JSONObject jsonObject = Result.getJSONObject(0);
                                 String ResultString = jsonObject.getString("result");
                                 if(ResultString.equals("OK")){
+                                    DSLManager.getInstance().Login(jsonObject.getInt("userCode"));
                                     Intent intent = new Intent(getApplicationContext(), NoticeActivity.class);
                                     intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                                     startActivity(intent);
