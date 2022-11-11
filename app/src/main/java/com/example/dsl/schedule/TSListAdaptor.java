@@ -33,27 +33,27 @@ public class TSListAdaptor extends RecyclerView.Adapter<TSListAdaptor.TSListView
         void ChangeListener(ArrayList<AdaptorDataSet> list);
     }
     public class TSListViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener,TextWatcher, CompoundButton.OnCheckedChangeListener {
-        private final View view;
-        EditText sub;
-        EditText pro;
-        TextView today;
-        View daybt;
-        TextView start;
-        TextView end;
-        EditText place;
-        TextView additem;
-        Button del;
-        Switch vibrateSwitch;
-        Switch soundSwitch;
-        Calendar startc=Calendar.getInstance();
-        Calendar endc=Calendar.getInstance();
+        private final View myView;
+        private EditText subject_edit_text;
+        private EditText pro;
+        private TextView today;
+        private View daybt;
+        private TextView start;
+        private TextView end;
+        private EditText place;
+        private TextView additem;
+        private Button del;
+        private Switch vibrateSwitch;
+        private Switch soundSwitch;
+        private Calendar startc=Calendar.getInstance();
+        private Calendar endc=Calendar.getInstance();
         private AlertDialog.Builder daypicker;
         private final TimePickerDialog startpicker;
         private final TimePickerDialog endpicker;
         public TSListViewHolder(@NonNull View itemView) {
             super(itemView);
             initViewID(itemView);
-            view=itemView;
+            myView =itemView;
             createDayPickerDialog(itemView.getContext());
             startpicker=createTimePickerDialog(new TimePickerDialog.OnTimeSetListener() {
                 @Override
@@ -131,7 +131,7 @@ public class TSListAdaptor extends RecyclerView.Adapter<TSListAdaptor.TSListView
         private void initViewID(@NonNull View itemView){
             int id = itemView.getId();
             if (id == R.id.ts_list_first_item_layout) {
-                sub = itemView.findViewById(R.id.subject);
+                subject_edit_text = itemView.findViewById(R.id.subject);
                 pro = itemView.findViewById(R.id.professor);
             } else if (id == R.id.ts_list_item_layout) {
                 daybt=itemView.findViewById(R.id.daybutton);
@@ -159,7 +159,7 @@ public class TSListAdaptor extends RecyclerView.Adapter<TSListAdaptor.TSListView
             datalist.get(position).start=initstartvalue*100;
             datalist.get(position).end=initendvalue*100;
         }
-        public void createDayPickerDialog(Context context){
+        private void createDayPickerDialog(Context context){
             daypicker=new AlertDialog.Builder(context);
             daypicker.setItems(dayarray, (dialog, which) -> {
                 today.setText(dayarray[which]);
@@ -168,16 +168,16 @@ public class TSListAdaptor extends RecyclerView.Adapter<TSListAdaptor.TSListView
             });
         }
         //timepicker 만들기
-        public TimePickerDialog createTimePickerDialog(TimePickerDialog.OnTimeSetListener listener,int hour, int minute){
+        private TimePickerDialog createTimePickerDialog(TimePickerDialog.OnTimeSetListener listener,int hour, int minute){
             TimePickerDialog result= new CustomTimePickerDialog(context, android.R.style.Theme_Holo_Light_Dialog_NoActionBar_MinWidth,listener,hour,minute,true,TIME_PICKER_INTERVAL);
             result.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
             return result;
         }
-        void enableWatcher() {
-            int id = view.getId();
+        public void enableWatcher() {
+            int id = myView.getId();
             if (id == R.id.ts_list_first_item_layout) {
-                sub.setText(datalist.get(0).subject);
-                sub.addTextChangedListener(this);
+                subject_edit_text.setText(datalist.get(0).subject);
+                subject_edit_text.addTextChangedListener(this);
 
                 pro.setText(datalist.get(0).professor);
                 pro.addTextChangedListener(this);
@@ -233,10 +233,10 @@ public class TSListAdaptor extends RecyclerView.Adapter<TSListAdaptor.TSListView
             }
             return null;
         }
-        void disableWatcher() {
-            int id = view.getId();
+        public void disableWatcher() {
+            int id = myView.getId();
             if (id == R.id.ts_list_first_item_layout) {
-                sub.removeTextChangedListener(this);
+                subject_edit_text.removeTextChangedListener(this);
                 pro.removeTextChangedListener(this);
             } else if (id == R.id.ts_list_item_layout) {
                 daybt.setOnClickListener(null);
@@ -286,8 +286,8 @@ public class TSListAdaptor extends RecyclerView.Adapter<TSListAdaptor.TSListView
 
         @Override
         public void afterTextChanged(Editable s) {
-            if(view.getId()==R.id.ts_list_first_item_layout){
-                if (s.hashCode()==sub.getText().hashCode()) {
+            if(myView.getId()==R.id.ts_list_first_item_layout){
+                if (s.hashCode()== subject_edit_text.getText().hashCode()) {
 //                    datalist.get(0).subject=s.toString();
                     setListSubject(s.toString());
                 }else{

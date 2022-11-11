@@ -2,27 +2,18 @@ package com.example.dsl.weather;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import android.annotation.SuppressLint;
-import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.TextView;
 import com.example.dsl.DSLManager;
-import com.example.dsl.DSLUtil;
 import com.example.dsl.R;
-import com.example.dsl.notice.MenuActivity;
 
 import org.json.JSONArray;
-import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
-
-import javax.net.ssl.SSLSocketFactory;
 
 public class WeatherActivity extends AppCompatActivity {
 
@@ -41,33 +32,30 @@ public class WeatherActivity extends AppCompatActivity {
 
         dateView = findViewById(R.id.dateView);
 
-        cityView = findViewById(R.id.cityView);
+        cityView = findViewById(R.id.weather_pos);
         weatherView = findViewById(R.id.weatherView);
         tempView = findViewById(R.id.tempView);
         mainView = findViewById(R.id.mainView);
         mainView2 = findViewById(R.id.mainView2);
-        ImageButton button = findViewById(R.id.imageButton);
         findViewById(R.id.weather_menu).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                DSLManager.gomenu(getApplicationContext());
+                DSLManager.moveMenu(getApplicationContext());
             }
         });
-        button.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
+    }
 
-                //시간데이터와 날씨데이터 활용
-                CurrentCall();
-            }
-        });
+    @Override
+    protected void onStart() {
+        super.onStart();
+        CurrentCall();
     }
 
     private void CurrentCall(){
 
         String url = "https://api.openweathermap.org/data/2.5/weather?q=Seongnam-si&appid=e7569e766bcbd4081766788d906cfe65";
 
-        DSLManager.getInstance().sendRequestforWeather(this, url, new DSLManager.NetListener() {
+        DSLManager.getInstance().sendRequestforObject(this, url, new DSLManager.NetListener() {
             @Override
             public void Result(JSONArray Result) {
                 runOnUiThread(()->{

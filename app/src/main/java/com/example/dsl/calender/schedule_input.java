@@ -69,7 +69,7 @@ public class schedule_input extends AppCompatActivity {
             DSLManager manager=DSLManager.getInstance();
             JSONObject data=new JSONObject();
             data.put("scheduleID",cal.getScheduleID());
-            data.put("userCode",9999);
+            data.put("userCode",DSLManager.getInstance().getUserCode());
             data.put("scheduleYear", cal.getScheduleYear());
             data.put("scheduleMonth", cal.getScheduleMonth());
             data.put("scheduleDay", cal.getScheduleDay());

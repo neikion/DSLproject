@@ -11,8 +11,6 @@ import android.util.Log;
 
 import androidx.annotation.Nullable;
 
-import com.example.dsl.notice.MenuActivity;
-
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -83,10 +81,9 @@ public final class DSLManager{
         }
     }
     private class ServerConnect implements AutoCloseable{
-        //debuging
         private final String targetIP;
         private String BaseURL;
-        private Context cont;
+        private Context context;
 
 
         public ServerConnect(String targetIP){
@@ -103,11 +100,11 @@ public final class DSLManager{
             return null;
         }
         //Only Debuging use
-        private HttpsURLConnection DangerConnect(){
+        private HttpsURLConnection MyServerConnect(){
             try {
                 CertificateFactory cf= CertificateFactory.getInstance("X.509");
                 InputStream cainput;
-                cainput=cont.getResources().openRawResource(R.raw.onlydebugingcrt);
+                cainput= context.getResources().openRawResource(R.raw.onlydebugingcrt);
                 Certificate ca=cf.generateCertificate(cainput);
                 cainput.close();
 
@@ -223,14 +220,14 @@ public final class DSLManager{
         }
         //Only test. must delete
         private HttpsURLConnection Connect(){
-            return DangerConnect();
+            return MyServerConnect();
         }
         public void sendRequest(Context context, JSONObject json,String API_URL, NetListener netListener){
-            if(cont==null){
-                cont=context.getApplicationContext();
+            if(this.context ==null){
+                this.context =context.getApplicationContext();
             }
             BaseURL ="https://"+targetIP+API_URL;
-            DSLUtil.print("target : "+BaseURL);
+//            DSLUtil.print("target : "+BaseURL);
             Runnable task = ()->{
                 JSONArray result;
                 try {
@@ -254,15 +251,15 @@ public final class DSLManager{
             };
             exs.submit(task);
         }
-        public void sendRequestforWeather(Context context,String API_URL, NetListener netListener){
-            if(cont==null){
-                cont=context.getApplicationContext();
+        public void sendRequestforObject(Context context, String API_URL, NetListener netListener){
+            if(this.context ==null){
+                this.context =context.getApplicationContext();
             }
             BaseURL =API_URL;
             Runnable task = ()->{
                 JSONArray result;
                 try {
-                    String resultstr=ConnectWorkforWeather(RightConnect());
+                    String resultstr= ConnectWorkforObject(RightConnect());
                     if(resultstr!=null&&!resultstr.isEmpty()){
                         JSONObject temp=new JSONObject(resultstr);
                         result=new JSONArray();
@@ -284,7 +281,7 @@ public final class DSLManager{
             };
             exs.submit(task);
         }
-        private String ConnectWorkforWeather(HttpsURLConnection urlConnection){
+        private String ConnectWorkforObject(HttpsURLConnection urlConnection){
             urlConnection.setConnectTimeout(5000);
             urlConnection.setReadTimeout(5000);
             String Result="";
@@ -309,7 +306,7 @@ public final class DSLManager{
         @Override
         public void close() {
             exs.shutdown();
-            cont=null;
+            context =null;
             try {
                 if (!exs.awaitTermination(60, TimeUnit.SECONDS)) {
                     exs.shutdownNow();
@@ -325,10 +322,10 @@ public final class DSLManager{
     public void sendRequest(Context context, JSONObject json,String API_URL, NetListener netListener){
         Server.sendRequest(context,json,API_URL,netListener);
     }
-    public void sendRequestforWeather(Context context,String API_URL, NetListener netListener){
-        Server.sendRequestforWeather(context,API_URL,netListener);
+    public void sendRequestforObject(Context context, String API_URL, NetListener netListener){
+        Server.sendRequestforObject(context,API_URL,netListener);
     }
-    public static void gomenu(Context context){
+    public static void moveMenu(Context context){
         Intent i=new Intent(context, MenuActivity.class);
         i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         context.startActivity(i);

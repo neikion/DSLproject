@@ -37,19 +37,14 @@
 
         <activity
             android:name=".schedule.Schedule"
-            android:exported="false"></activity>
+            android:exported="false" />
         <activity
             android:name=".schedule.AlarmActivity"
-            android:exported="false" />
-        <!-- notice -->
+            android:exported="false" /> <!-- notice -->
         <activity
             android:name=".notice.LoginActivity"
             android:exported="true">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
 
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
         </activity>
         <activity
             android:name=".notice.LoginAddActivity"
@@ -76,31 +71,40 @@
             android:name=".notice.ConfMenuActivity"
             android:exported="false" />
         <activity
-            android:name=".notice.MenuActivity"
+            android:name=".MenuActivity"
             android:exported="false" />
         <activity
             android:name=".notice.NoticeActivity"
-            android:exported="false"></activity>
-        <!-- calender -->
+            android:exported="false" /> <!-- calender -->
         <activity
             android:name=".calender.CalenderActivity"
-            android:exported="true">
-
-        </activity>
+            android:exported="true" />
         <activity
             android:name=".calender.schedule_content_viewer"
             android:exported="false" />
         <activity
             android:name=".calender.schedule_input"
-            android:exported="false" />
-        <!-- weather -->
+            android:exported="false" /> <!-- weather -->
         <activity
             android:name=".weather.WeatherActivity"
-            android:exported="false"></activity>
-        <!--bus-->
+            android:exported="false" /> <!-- bus -->
         <activity
             android:name=".bus.BusActivity"
-            android:exported="false">
+            android:exported="false" />
+        <activity
+            android:name=".bus.BusAlarmListActivity"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name=".bus.BusSettingActivity"
+            android:exported="false" />
+        <activity android:name=".bus.ChooseBusActivity"
+            android:exported="true">
 
         </activity>
     </application>

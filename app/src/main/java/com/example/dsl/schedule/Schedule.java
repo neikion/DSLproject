@@ -11,7 +11,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Handler;
 import android.util.Log;
 import android.view.View;
 import android.widget.LinearLayout;
@@ -22,7 +21,6 @@ import androidx.activity.result.ActivityResultCallback;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.app.NotificationCompat;
 
 import com.example.dsl.DSLManager;
 import com.example.dsl.DSLUtil;
@@ -34,19 +32,16 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.LinkedList;
-import java.util.List;
 
 public class Schedule extends AppCompatActivity implements View.OnClickListener {
 
-    LinearLayout BaseTablePosition;
-    LinearLayout UITablePosition;
-    NotificationManager notimanager;
+    private LinearLayout BaseTablePosition;
+    private LinearLayout UITablePosition;
     private AlarmManager alarmmanager;
-    TimeTable table;
-    ArrayList<AdaptorDataSet> stickers;
-    DSLManager manager;
-    AlarmScheduler alarmScheduler = new AlarmScheduler(7);
+    private TimeTable table;
+    private ArrayList<AdaptorDataSet> stickers;
+    private DSLManager manager;
+    private AlarmScheduler alarmScheduler = new AlarmScheduler(7);
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -55,9 +50,9 @@ public class Schedule extends AppCompatActivity implements View.OnClickListener 
         manager=DSLManager.getInstance();
         findViewById(R.id.movemenu).setOnClickListener(this);
         init();
-        initNoti();
+        CreatenotiChannel();
     }
-    public void init(){
+    private void init(){
         BaseTablePosition=findViewById(R.id.BaseTablePosition);
         UITablePosition=findViewById(R.id.UITablePosition);
         findViewById(R.id.AddAlarm).setOnClickListener(this);
@@ -140,12 +135,9 @@ public class Schedule extends AppCompatActivity implements View.OnClickListener 
             e.printStackTrace();
         }
     }
-    public void initNoti(){
-        CreatenotiChannel();
-    }
     private void CreatenotiChannel(){
         if(Build.VERSION.SDK_INT>=Build.VERSION_CODES.O){
-            notimanager=getSystemService(NotificationManager.class);
+            NotificationManager notimanager=getSystemService(NotificationManager.class);
             if(notimanager.getNotificationChannel("TSNC")!=null){
                 notimanager.deleteNotificationChannel("TSNC");
             }
@@ -191,8 +183,8 @@ public class Schedule extends AppCompatActivity implements View.OnClickListener 
         Log.i("DSL","\n\n 현재시각 "+ new Date(System.currentTimeMillis())+"\n 알람 예약 시간 "+new Date(calendar.getTimeInMillis()));
     }
     private void setStickerOnClick(){
-        for(int i=table.TableColCount+table.TableRowCount-2;i<table.UITable.getChildCount();i++){
-            int setid = i-(table.TableColCount+table.TableRowCount-2);
+        for(int i=table.getTableColCount()+table.getTableRowCount()-2;i<table.UITable.getChildCount();i++){
+            int setid = i-(table.getTableColCount()+table.getTableRowCount()-2);
             ((TextView)table.UITable.getChildAt(i)).setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
@@ -218,12 +210,12 @@ public class Schedule extends AppCompatActivity implements View.OnClickListener 
             }
             ActivityLuncher.launch(i);
         } else if (id == R.id.movemenu) {
-            DSLManager.gomenu(getApplicationContext());
+            DSLManager.moveMenu(getApplicationContext());
         }
     }
 
 
-    ActivityResultLauncher<Intent> ActivityLuncher=registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), new ActivityResultCallback<ActivityResult>() {
+    private ActivityResultLauncher<Intent> ActivityLuncher=registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), new ActivityResultCallback<ActivityResult>() {
         @Override
         public void onActivityResult(ActivityResult result) {
             if(result.getResultCode()== Activity.RESULT_OK){
@@ -249,7 +241,7 @@ public class Schedule extends AppCompatActivity implements View.OnClickListener 
         setServerData();
 
     }
-    public void clearAlarm(){
+    private void clearAlarm(){
         Intent sendintent=new Intent(this,TimeScheduleAlarmReceiver.class);
         PendingIntent Alarmintent;
         for(int i=0;i<alarmScheduler.size();i++){
@@ -270,9 +262,5 @@ public class Schedule extends AppCompatActivity implements View.OnClickListener 
             }
             alarmArrays.clear();
         }
-    }
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
     }
 }

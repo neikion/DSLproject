@@ -5,173 +5,251 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
+    android:background="@drawable/weather_back"
     tools:context=".weather.WeatherActivity">
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
+        android:layout_height="match_parent"
         >
+
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
+            android:layout_height="match_parent"
             android:orientation="vertical"
             >
-            <ImageButton
-                android:id="@+id/weather_menu"
-                android:layout_width="53dp"
-                android:layout_height="56dp"
-                android:layout_gravity="left"
-                app:srcCompat="@android:drawable/ic_dialog_dialer" />
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                >
+                <ImageButton
+                    android:layout_marginLeft="10dp"
+                    android:layout_marginTop="10dp"
+                    android:id="@+id/weather_menu"
+                    android:layout_width="53dp"
+                    android:layout_height="56dp"
+                    android:layout_gravity="left"
+                    app:srcCompat="@android:drawable/ic_dialog_dialer" />
+                <LinearLayout
+                    android:id="@+id/weather_update_button"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:orientation="vertical"
+                    >
+
+                </LinearLayout>
+
+            </LinearLayout>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical"
+                android:layout_weight="1">
+
+                <TextView
+                    android:id="@+id/dateView"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:gravity="center"
+                    android:text="2022년 11월 10일\n 10:06"
+                    android:textColor="@color/black"
+                    android:textSize="25dp"
+                    android:textStyle="bold"></TextView>
+            </LinearLayout>
+
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1">
+
+                <TextView
+                    android:id="@+id/tempView"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginLeft="30dp"
+                    android:gravity="left|center"
+                    android:text="11º"
+                    android:textColor="@color/black"
+                    android:textSize="50dp"
+                    android:textStyle="bold"></TextView>
+            </LinearLayout>
+
+
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical"
+                android:layout_weight="1.1">
+                <TextView
+                    android:id="@+id/weather_pos"
+                    android:layout_marginLeft="30dp"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:text="성남시 수정구 장지동"
+                    android:textStyle="bold"
+                    android:textColor="@color/black"
+                    android:textSize="30sp"
+                    />
+            </LinearLayout>
+
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical"
+                android:layout_marginLeft="30dp"
+                android:layout_weight="1">
+                <TextView
+                    android:id="@+id/mainView2"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="11º / 12º  체감온도 11º"
+                    android:textColor="@color/black"
+                    android:textStyle="bold"
+                    android:textSize="25sp">
+                </TextView>
+                <TextView
+                    android:id="@+id/mainView"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="100"
+                    android:text="mist"
+                    android:textColor="@color/black"
+                    android:textStyle="bold"
+                    android:textSize="25sp">
+                </TextView>
+                <TextView
+                    android:id="@+id/weatherView"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textStyle="bold"
+                    android:textColor="@color/black"
+                    android:text="습도 37%"
+                    android:textSize="25sp">
+                </TextView>
+            </LinearLayout>
+
+
+
+
+
+            <ScrollView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical"
+                android:fillViewport="true"
+                android:layout_weight="0.7">
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:orientation="vertical"
+                    >
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="내일의 날씨"
+                        android:textColor="@color/black"
+                        android:layout_marginTop="50dp"
+                        android:layout_marginBottom="30dp"
+                        android:gravity="left"
+                        android:layout_marginLeft="30dp"
+                        android:textSize="40sp"
+                        />
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textColor="@color/black"
+                        android:text="월요일    11º / 12º        맑음 \n강수확률 50%"
+                        android:textSize="25sp"
+                        android:layout_marginTop="10dp"
+                        android:layout_marginBottom="10dp"
+                        android:layout_marginLeft="15dp"
+                        />
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textColor="@color/black"
+                        android:text="월요일    11º / 12º        맑음 \n강수확률 50%"
+                        android:textSize="25sp"
+                        android:layout_marginTop="10dp"
+                        android:layout_marginBottom="10dp"
+                        android:layout_marginLeft="15dp"
+                        />
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textColor="@color/black"
+                        android:text="월요일    11º / 12º        맑음 \n강수확률 50%"
+                        android:textSize="25sp"
+                        android:layout_marginTop="10dp"
+                        android:layout_marginBottom="10dp"
+                        android:layout_marginLeft="15dp"
+                        />
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textColor="@color/black"
+                        android:text="월요일    11º / 12º        맑음 \n강수확률 50%"
+                        android:textSize="25sp"
+                        android:layout_marginTop="10dp"
+                        android:layout_marginBottom="10dp"
+                        android:layout_marginLeft="15dp"
+                        />
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textColor="@color/black"
+                        android:text="월요일    11º / 12º        맑음 \n강수확률 50%"
+                        android:textSize="25sp"
+                        android:layout_marginTop="10dp"
+                        android:layout_marginBottom="10dp"
+                        android:layout_marginLeft="15dp"
+                        />
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textColor="@color/black"
+                        android:text="월요일    11º / 12º        맑음 \n강수확률 50%"
+                        android:textSize="25sp"
+                        android:layout_marginTop="10dp"
+                        android:layout_marginBottom="10dp"
+                        android:layout_marginLeft="15dp"
+                        />
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textColor="@color/black"
+                        android:text="월요일    11º / 12º        맑음 \n강수확률 50%"
+                        android:textSize="25sp"
+                        android:layout_marginTop="10dp"
+                        android:layout_marginBottom="10dp"
+                        android:layout_marginLeft="15dp"
+                        />
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textColor="@color/black"
+                        android:text="월요일    11º / 12º        맑음 \n강수확률 50%"
+                        android:textSize="25sp"
+                        android:layout_marginTop="10dp"
+                        android:layout_marginBottom="10dp"
+                        android:layout_marginLeft="15dp"
+                        />
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textColor="@color/black"
+                        android:text="월요일    11º / 12º        맑음 \n강수확률 50%"
+                        android:textSize="25sp"
+                        android:layout_marginTop="10dp"
+                        android:layout_marginBottom="10dp"
+                        android:layout_marginLeft="15dp"
+                        />
+                </LinearLayout>
+            </ScrollView>
         </LinearLayout>
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:orientation="vertical"
-            >
-            <ImageButton
-                android:id="@+id/imageButton"
-                android:layout_width="53dp"
-                android:layout_height="56dp"
-                android:layout_gravity="center"
-                android:background="@drawable/abe"/>
-        </LinearLayout>
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            />
-
     </LinearLayout>
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="#82EBF8"
-        android:orientation="vertical"
-        android:layout_weight="93">
-        <TextView
-            android:id="@+id/dateView"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_weight="100"
-            android:textStyle="bold"
-            android:textColor="@color/white"
-            android:textSize="25dp">
-            //android:text="시간">
-        </TextView>
-    </LinearLayout>
-
-
-
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="#82EBF8"
-        android:orientation="vertical"
-        android:layout_weight="90">
-        <TextView
-            android:id="@+id/tempView"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_weight="100"
-            android:textStyle="bold"
-            android:textColor="@color/white"
-            android:textSize="55dp">
-            //android:text="현온도">
-        </TextView>
-
-        <TextView
-            android:id="@+id/cityView"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_weight="130"
-            android:textStyle="bold"
-            android:textColor="@color/white"
-            android:textSize="25dp">
-            //android:text="위치">
-        </TextView>
-    </LinearLayout>
-
-
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="#82EBF8"
-        android:orientation="vertical"
-        android:layout_weight="100">
-
-    </LinearLayout>
-
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="#82EBF8"
-        android:orientation="vertical"
-        android:layout_weight="100">
-        <TextView
-            android:id="@+id/mainView2"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_weight="100"
-            android:textStyle="bold"
-            android:textSize="30dp">
-            //android:text="체감온도">
-        </TextView>
-    </LinearLayout>
-
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="#82EBF8"
-        android:orientation="vertical"
-        android:layout_weight="100">
-        <TextView
-            android:id="@+id/weatherView"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_weight="100"
-            android:textStyle="bold"
-            android:textSize="30dp">
-            //android:text="날씨상황">
-        </TextView>
-    </LinearLayout>
-
-
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="#82EBF8"
-        android:orientation="vertical"
-        android:layout_weight="100">
-        <TextView
-            android:id="@+id/mainView"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_weight="100"
-            android:textStyle="bold"
-            android:textSize="30dp">
-            //android:text="습도">
-        </TextView>
-    </LinearLayout>
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="#82EBF8"
-        android:orientation="vertical"
-        android:layout_weight="80">
-
-    </LinearLayout>
-
-
-
-
-
-
 </LinearLayout>

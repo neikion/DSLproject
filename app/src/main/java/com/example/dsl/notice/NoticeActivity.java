@@ -1,9 +1,12 @@
 package com.example.dsl.notice;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.view.GravityCompat;
+import androidx.drawerlayout.widget.DrawerLayout;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.Gravity;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -15,6 +18,9 @@ import android.widget.Spinner;
 
 import com.example.dsl.DSLManager;
 import com.example.dsl.DSLUtil;
+import com.example.dsl.MenuBaseActivity;
+import com.example.dsl.MenuCase1;
+import com.example.dsl.MenuFrame;
 import com.example.dsl.R;
 
 import org.json.JSONArray;
@@ -23,7 +29,7 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 
-public class NoticeActivity extends AppCompatActivity {
+public class NoticeActivity extends MenuBaseActivity {
 
     ImageButton btnMenu;
     Spinner spinSubject;
@@ -32,7 +38,6 @@ public class NoticeActivity extends AppCompatActivity {
     Button btnSearch;
     Button btnWrite;
     ListView listNotice;
-    ImageButton btnPrevious3;
 
     // 과목 스피너용 어댑터
     ArrayList<NoticeItem> subjectItems = null;
@@ -48,6 +53,10 @@ public class NoticeActivity extends AppCompatActivity {
     String SearchName = "";
     String SearchContent = "";
 
+    public NoticeActivity() {
+        super(new MenuCase1(),R.id.menu_root);
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -62,19 +71,9 @@ public class NoticeActivity extends AppCompatActivity {
         }
         System.out.println(SearchSubjectID);
 */
-        btnPrevious3 = (ImageButton)findViewById (R.id.btnPrevious3);
         editSearch = (EditText) findViewById(R.id.editSearch);
         btnSearch = (Button) findViewById(R.id.btnSearch);
         btnWrite = (Button) findViewById(R.id.btnWrite);
-
-        btnPrevious3.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
-                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                startActivity(intent);
-            }
-        });
 
         btnWrite.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -89,7 +88,9 @@ public class NoticeActivity extends AppCompatActivity {
         btnMenu.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                DSLManager.gomenu(getApplicationContext());
+                if(!((DrawerLayout)findViewById(R.id.notice_root)).isDrawerOpen(GravityCompat.START)){
+                    ((DrawerLayout)findViewById(R.id.notice_root)).openDrawer(GravityCompat.START);
+                }
             }
         });
 

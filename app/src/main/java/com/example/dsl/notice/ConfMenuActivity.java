@@ -8,6 +8,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
 
+import com.example.dsl.MenuActivity;
 import com.example.dsl.R;
 
 public class ConfMenuActivity extends AppCompatActivity {

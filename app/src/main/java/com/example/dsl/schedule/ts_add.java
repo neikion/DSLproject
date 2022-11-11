@@ -21,18 +21,18 @@ import java.util.ArrayList;
 import java.util.Calendar;
 
 public class ts_add extends AppCompatActivity implements View.OnClickListener {
-    RecyclerView rv;
-    TSListAdaptor ta;
-    LinearLayout BaseTablePosition;
-    LinearLayout UITablePosition;
-    TimeTable table;
+    private RecyclerView recyclerView;
+    private TSListAdaptor TSadaptor;
+    private LinearLayout BaseTablePosition;
+    private LinearLayout UITablePosition;
+    private TimeTable table;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_ts_add);
         init(9);
     }
-    public void init(int timestart){
+    private void init(int timestart){
         findViewById(R.id.add_cancel).setOnClickListener(this);
         findViewById(R.id.add_accept).setOnClickListener(this);
         UITablePosition=findViewById(R.id.ts_add_ui_table);
@@ -41,7 +41,7 @@ public class ts_add extends AppCompatActivity implements View.OnClickListener {
         Recyclerinit(timestart);
         TempReciveIntent();
     }
-    public void TempReciveIntent(){
+    private void TempReciveIntent(){
         Intent receive=getIntent();
         ArrayList<AdaptorDataSet> list= (ArrayList<AdaptorDataSet>) receive.getSerializableExtra("LegacySticker");
         int modifydatasetindex=receive.getIntExtra("addLegacySticker",-1);
@@ -50,27 +50,27 @@ public class ts_add extends AppCompatActivity implements View.OnClickListener {
             if(modifydatasetindex!=-1){
                 modifydataset=list.get(modifydatasetindex+1);
                 list.remove(modifydatasetindex+1);
-                ta.clearArrayData();
-                ta.setArrayData(0,modifydataset);
-                ta.setArrayData(1,modifydataset);
-                ta.setArrayData(2,list.get(list.size()-1));
-                table.setLegacyStickers(list,ta);
+                TSadaptor.clearArrayData();
+                TSadaptor.setArrayData(0,modifydataset);
+                TSadaptor.setArrayData(1,modifydataset);
+                TSadaptor.setArrayData(2,list.get(list.size()-1));
+                table.setLegacyStickers(list, TSadaptor);
             }else{
-                table.setLegacyStickers(list,ta);
+                table.setLegacyStickers(list, TSadaptor);
             }
         }
     }
-    public void Recyclerinit(int timestart){
-        rv=findViewById(R.id.time_setting);
+    private void Recyclerinit(int timestart){
+        recyclerView =findViewById(R.id.time_setting);
         LinearLayoutManager lm=new LinearLayoutManager(this,RecyclerView.VERTICAL,false);
-        rv.setLayoutManager(lm);
-        ta=new TSListAdaptor(this,0,timestart,timestart+1,table);
-        rv.setAdapter(ta);
-        rv.setHasFixedSize(true);
+        recyclerView.setLayoutManager(lm);
+        TSadaptor =new TSListAdaptor(this,0,timestart,timestart+1,table);
+        recyclerView.setAdapter(TSadaptor);
+        recyclerView.setHasFixedSize(true);
     }
     private boolean checkOverLapSchdule(){
         ArrayList<AdaptorDataSet> legacy=table.getLefacyStickers();
-        ArrayList<AdaptorDataSet> modify=ta.getArrayData();
+        ArrayList<AdaptorDataSet> modify= TSadaptor.getArrayData();
         int mday=0,lday=0;
         Calendar lsc=Calendar.getInstance();
         Calendar lec=Calendar.getInstance();
@@ -93,7 +93,7 @@ public class ts_add extends AppCompatActivity implements View.OnClickListener {
                     if(mday!=lday){
                         continue;
                     }
-                    if(calendercheck(msc,mec,lsc,lec)){
+                    if(checkTimeCalender(msc,mec,lsc,lec)){
                         return true;
                     }
                 }
@@ -110,7 +110,7 @@ public class ts_add extends AppCompatActivity implements View.OnClickListener {
                 if(mday!=lday){
                     continue;
                 }
-                if(calendercheck(msc,mec,lsc,lec)){
+                if(checkTimeCalender(msc,mec,lsc,lec)){
                     return true;
                 }
             }
@@ -118,7 +118,7 @@ public class ts_add extends AppCompatActivity implements View.OnClickListener {
         return false;
     }
     private boolean checkTitle(){
-        ArrayList<AdaptorDataSet> modify=ta.getArrayData();
+        ArrayList<AdaptorDataSet> modify= TSadaptor.getArrayData();
         for(int i=1;i<modify.size()-1;i++){
             AdaptorDataSet checktarget=modify.get(i);
             if(checktarget.subject==null||checktarget.subject.isEmpty()){
@@ -127,7 +127,7 @@ public class ts_add extends AppCompatActivity implements View.OnClickListener {
         }
         return false;
     }
-    private boolean calendercheck(Calendar msc,Calendar mec,Calendar lsc,Calendar lec){
+    private boolean checkTimeCalender(Calendar msc, Calendar mec, Calendar lsc, Calendar lec){
         //msc가 더 작은 경우
         if(msc.compareTo(lsc)<=0){
             if(lsc.compareTo(mec)<0){
@@ -156,7 +156,7 @@ public class ts_add extends AppCompatActivity implements View.OnClickListener {
                     return;
                 }
                 Intent Result=new Intent();
-                if(ta.getArrayData().size()>2){
+                if(TSadaptor.getArrayData().size()>2){
                     if(checkTitle()){
                         Snackbar s= Snackbar.make(BaseTablePosition,R.string.TimeSchdule_Sticker_Empty_Title,Snackbar.LENGTH_SHORT);
                         s.getView().setTranslationY(-DSLUtil.DPtoPX(10,this));
@@ -164,13 +164,13 @@ public class ts_add extends AppCompatActivity implements View.OnClickListener {
                         return;
                     }
                     if(table.getLefacyStickers()!=null){
-                        ArrayList<AdaptorDataSet> all=ta.getArrayData();
+                        ArrayList<AdaptorDataSet> all= TSadaptor.getArrayData();
                         for(int i=1;i<table.getLefacyStickers().size()-1;i++){
                             all.add(all.size()-2,table.getLefacyStickers().get(i));
                         }
                         Result.putExtra("Result_Value",all);
                     }else{
-                        Result.putExtra("Result_Value",ta.getArrayData());
+                        Result.putExtra("Result_Value", TSadaptor.getArrayData());
                     }
                     setResult(Activity.RESULT_OK,Result);
                 }

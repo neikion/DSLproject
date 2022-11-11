@@ -9,18 +9,11 @@ import android.util.Log;
 import java.util.Date;
 
 public class TimeScheduleAlarmReceiver extends BroadcastReceiver {
-    public PendingIntent ContentIntent(Context context){
-        Intent i=new Intent(context, AlarmActivity.class);
-        i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK|Intent.FLAG_ACTIVITY_CLEAR_TASK|Intent.FLAG_ACTIVITY_SINGLE_TOP|Intent.FLAG_ACTIVITY_CLEAR_TOP);
-        PendingIntent pending=PendingIntent.getActivity(context,2,i,PendingIntent.FLAG_IMMUTABLE);
-        return pending;
-    }
     @Override
     public void onReceive(Context context, Intent intent) {
         Log.i("DSL","GetReceive : "+new Date(System.currentTimeMillis()));
         if ("android.intent.action.BOOT_COMPLETED".equals(intent.getAction())) {
             //재부팅시 들어옴
-
         }else{
             if(intent.getBooleanExtra("AP",false)){
                 Intent starts=new Intent(context, TimeScheduleAlarmService.class);

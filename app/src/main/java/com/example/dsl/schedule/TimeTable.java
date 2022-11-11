@@ -21,22 +21,22 @@ import java.util.Calendar;
 import java.util.LinkedList;
 
 public class TimeTable implements ViewTreeObserver.OnGlobalLayoutListener, TSListAdaptor.TSListener {
-    int TableWidth;
-    int TableHeight;
-    int Cell_Height=0;
-    int Cell_Width=0;
-    int TableColCount;
-    int TableRowCount;
-    int CellHeightWeight=0;
-    GridLayout BaseTable;
-    GridLayout UITable;
-    LinearLayout BaseTablePosition;
-    LinearLayout UITablePosition;
-    int TIME_INTERVAL=5;
-    final int DEFALUT_ROW=11;
-    int colstart =0;
-    Context context;
-    LinkedList<TextView> stikerlist = new LinkedList<>();
+    public GridLayout BaseTable;
+    public GridLayout UITable;
+    private int TableWidth;
+    private int TableHeight;
+    private int Cell_Height=0;
+    private int Cell_Width=0;
+    private int TableColCount;
+    private int TableRowCount;
+    private int CellHeightWeight=0;
+    private LinearLayout BaseTablePosition;
+    private LinearLayout UITablePosition;
+    private int TIME_INTERVAL=5;
+    private final int DEFALUT_ROW=11;
+    private int colstart =0;
+    private Context context;
+    private LinkedList<TextView> stikerlist = new LinkedList<>();
     private ArrayList<AdaptorDataSet> initStickers;
     public final String[] dayarray=new String[]{"월요일","화요일","수요일","목요일","금요일","토요일","일요일"};
     private ArrayList<AdaptorDataSet> LegacyStickers;
@@ -68,7 +68,7 @@ public class TimeTable implements ViewTreeObserver.OnGlobalLayoutListener, TSLis
         }
     }
 
-    public void init(int timestart){
+    private void init(int timestart){
         addLayout(11,6,timestart);
     }
     private void addLayout(int rowcount,int colcount,int timestart){
@@ -501,5 +501,10 @@ public class TimeTable implements ViewTreeObserver.OnGlobalLayoutListener, TSLis
         Cell_Width=(TableWidth/TableColCount);
         return Cell_Width;
     }
-
+    public int getTableColCount(){
+        return TableColCount;
+    }
+    public int getTableRowCount(){
+        return TableRowCount;
+    }
 }

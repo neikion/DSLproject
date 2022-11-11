@@ -11,20 +11,18 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
 import android.widget.CalendarView;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.example.dsl.DSLUtil;
 import com.example.dsl.calender.Calender.*;
 import com.example.dsl.DSLManager;
-import com.example.dsl.notice.MenuActivity;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.example.dsl.R;
 import org.json.JSONArray;
-import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
@@ -36,6 +34,7 @@ public class CalenderActivity extends AppCompatActivity {//롱클릭으로 수�
     LinearLayout textViews;
     CalendarView calView;
     ScrollView scrollView;
+    Button button;
     List<TextView> textLists = new ArrayList<>();
     int textViewLength = 0;
     @Override
@@ -128,10 +127,18 @@ public class CalenderActivity extends AppCompatActivity {//롱클릭으로 수�
         scrollView = findViewById(R.id.scrollView);
         textViews = findViewById(R.id.textViewLayout);
         calView = (CalendarView) findViewById(R.id.calender_view);
+        button = findViewById(R.id.btn_add_schedule);
         findViewById(R.id.calender_menu).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                DSLManager.gomenu(getApplicationContext());
+                DSLManager.moveMenu(getApplicationContext());
+            }
+        });
+        button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getApplicationContext(), schedule_input.class);
+                startActivity(intent);
             }
         });
         //end main method
@@ -165,7 +172,7 @@ public class CalenderActivity extends AppCompatActivity {//롱클릭으로 수�
         try {
             DSLManager manager=DSLManager.getInstance();
             JSONObject data=new JSONObject();
-            data.put("userCode",9999);
+            data.put("userCode",DSLManager.getInstance().getUserCode());
             manager.sendRequest(getApplicationContext(), data,"/calender/select", new DSLManager.NetListener() {
                 @Override
                 public void Result(JSONArray Result) {
