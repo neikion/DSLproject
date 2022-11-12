@@ -90,15 +90,16 @@
             android:exported="false" /> <!-- bus -->
         <activity
             android:name=".bus.BusActivity"
-            android:exported="false" />
-        <activity
-            android:name=".bus.BusAlarmListActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+        </activity>
+
+        <activity
+            android:name=".bus.BusAlarmListActivity"
+            android:exported="true">
         </activity>
         <activity
             android:name=".bus.BusSettingActivity"
@@ -106,6 +107,12 @@
         <activity android:name=".bus.ChooseBusActivity"
             android:exported="true">
 
+        </activity>
+
+        <!--room-->
+        <activity android:name=".roompos.RoomPosition"
+            android:exported="false"
+            >
         </activity>
     </application>
 

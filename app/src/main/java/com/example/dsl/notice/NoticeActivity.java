@@ -54,7 +54,7 @@ public class NoticeActivity extends MenuBaseActivity {
     String SearchContent = "";
 
     public NoticeActivity() {
-        super(new MenuCase1(),R.id.menu_root);
+        super(new MenuCase1(),R.id.notice_root);
     }
 
     @Override
@@ -88,9 +88,7 @@ public class NoticeActivity extends MenuBaseActivity {
         btnMenu.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(!((DrawerLayout)findViewById(R.id.notice_root)).isDrawerOpen(GravityCompat.START)){
-                    ((DrawerLayout)findViewById(R.id.notice_root)).openDrawer(GravityCompat.START);
-                }
+                menuLayout.openDrawer(Gravity.LEFT);
             }
         });
 

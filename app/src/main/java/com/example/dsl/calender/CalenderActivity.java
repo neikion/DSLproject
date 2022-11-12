@@ -7,6 +7,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -18,6 +19,9 @@ import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.dsl.MenuBaseActivity;
+import com.example.dsl.MenuCase1;
+import com.example.dsl.MenuFrame;
 import com.example.dsl.calender.Calender.*;
 import com.example.dsl.DSLManager;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -28,7 +32,7 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.List;
 
-public class CalenderActivity extends AppCompatActivity {//롱클릭으로 수정 삭제 진행
+public class CalenderActivity extends MenuBaseActivity {//롱클릭으로 수정 삭제 진행
     //CalenderDataRepository repository = new Repository();//넌 폐기야
     List<Calender> calenderList;
     LinearLayout textViews;
@@ -37,6 +41,11 @@ public class CalenderActivity extends AppCompatActivity {//롱클릭으로 수�
     Button button;
     List<TextView> textLists = new ArrayList<>();
     int textViewLength = 0;
+
+    public CalenderActivity() {
+        super(new MenuCase1(),R.id.calender_root);
+    }
+
     @Override
     protected void onStart() {//화면이 실행 될때마다 보여지는 녀석 서버로 조회기능 -> 리스트 업데이트 -> 업데이트된 리스트 기반으로 일정 재구축 -> 택스트뷰에 리스너 생성
         super.onStart();
@@ -131,7 +140,7 @@ public class CalenderActivity extends AppCompatActivity {//롱클릭으로 수�
         findViewById(R.id.calender_menu).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                DSLManager.moveMenu(getApplicationContext());
+                menuLayout.openDrawer(Gravity.LEFT);
             }
         });
         button.setOnClickListener(new View.OnClickListener() {

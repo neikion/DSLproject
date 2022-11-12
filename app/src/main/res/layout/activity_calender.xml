@@ -1,43 +1,51 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.drawerlayout.widget.DrawerLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
+    android:id="@+id/calender_root"
     tools:context=".calender.CalenderActivity">
-    <ImageButton
-        android:id="@+id/calender_menu"
-        android:layout_width="53dp"
-        android:layout_height="56dp"
-        android:layout_gravity="left"
-        app:srcCompat="@android:drawable/ic_dialog_dialer" />
-    <CalendarView
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:id="@+id/calender_view"
-        android:layout_weight="1"
-        android:layout_margin="5dp"
-        />
-    <ScrollView
-        android:id="@+id/scrollView"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_weight="1.5"
-        android:layout_margin="5dp"
-        android:orientation="vertical">
-        <LinearLayout
+        android:orientation="vertical"
+        >
+        <ImageButton
+            android:id="@+id/calender_menu"
+            android:layout_width="53dp"
+            android:layout_height="56dp"
+            android:layout_gravity="left"
+            app:srcCompat="@android:drawable/ic_dialog_dialer" />
+        <CalendarView
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:orientation="vertical"
-            android:id="@+id/textViewLayout"
-            >
-        </LinearLayout>
-    </ScrollView>
-    <Button
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="일정추가"
-        android:id="@+id/btn_add_schedule"
-        />
-</LinearLayout>
+            android:id="@+id/calender_view"
+            android:layout_weight="1"
+            android:layout_margin="5dp"
+            />
+        <ScrollView
+            android:id="@+id/scrollView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1.5"
+            android:layout_margin="5dp"
+            android:orientation="vertical">
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical"
+                android:id="@+id/textViewLayout"
+                >
+            </LinearLayout>
+        </ScrollView>
+        <Button
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="일정추가"
+            android:id="@+id/btn_add_schedule"
+            />
+    </LinearLayout>
+    <include layout="@layout/activity_menu"/>
+</androidx.drawerlayout.widget.DrawerLayout>

@@ -6,21 +6,28 @@ import android.view.View;
 import androidx.annotation.CallSuper;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.drawerlayout.widget.DrawerLayout;
 
 public class MenuBaseActivity extends AppCompatActivity implements View.OnClickListener {
 
-    MenuFrame menuFrame;
+    protected MenuFrame menuFrame;
+    protected DrawerLayout menuLayout;
     int menu_layout_id;
-    protected MenuBaseActivity(MenuFrame frame,int menu_layout_id){
+    public MenuBaseActivity(){
+
+    }
+
+    public MenuBaseActivity(MenuFrame frame,int root_layout_id){
         menuFrame=frame;
-        this.menu_layout_id=menu_layout_id;
+        this.menu_layout_id=root_layout_id;
     }
 
     @Override
     @CallSuper
     protected void onStart() {
-        super.onStart();
-        menuFrame.onStart(findViewById(menu_layout_id));
+        super.onStart();;
+        menuLayout=findViewById(menu_layout_id);
+        menuFrame.onStart(menuLayout);
     }
 
     @Override

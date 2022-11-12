@@ -3,10 +3,14 @@ package com.example.dsl.weather;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Bundle;
+import android.view.Gravity;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.TextView;
 import com.example.dsl.DSLManager;
+import com.example.dsl.MenuBaseActivity;
+import com.example.dsl.MenuCase1;
+import com.example.dsl.MenuFrame;
 import com.example.dsl.R;
 
 import org.json.JSONArray;
@@ -15,7 +19,7 @@ import org.json.JSONObject;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-public class WeatherActivity extends AppCompatActivity {
+public class WeatherActivity extends MenuBaseActivity {
 
     TextView dateView;
 
@@ -24,6 +28,10 @@ public class WeatherActivity extends AppCompatActivity {
     TextView tempView;
     TextView mainView;
     TextView mainView2;
+
+    public WeatherActivity() {
+        super(new MenuCase1(), R.id.weather_root);
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,7 +48,7 @@ public class WeatherActivity extends AppCompatActivity {
         findViewById(R.id.weather_menu).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                DSLManager.moveMenu(getApplicationContext());
+                menuLayout.openDrawer(Gravity.LEFT);
             }
         });
     }

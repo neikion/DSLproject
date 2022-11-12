@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.drawerlayout.widget.DrawerLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
+    android:id="@+id/bus_root"
     android:layout_height="match_parent"
     tools:context=".bus.BusActivity">
     <LinearLayout
@@ -29,32 +30,12 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:orientation="vertical"
-            android:layout_weight="1">
-            <TextView
-                android:text="복정파출소, 복정 캠퍼스 맛집거리 방면"
-                android:textSize="20sp"
-                android:gravity="center"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_weight="3"
-                />
-            <TextView
-                android:padding="10dp"
-                android:id="@+id/campusDir"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                />
-        </LinearLayout>
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
             android:layout_weight="1">
             <ImageView
                 android:id="@+id/busmap"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
+                android:scaleType="fitXY"
                 android:src="@drawable/map"
                 />
         </LinearLayout>
@@ -63,21 +44,31 @@
             android:layout_height="match_parent"
             android:orientation="vertical"
             android:layout_weight="1">
-            <TextView
-                android:text="복정초등학교 방면"
-                android:textSize="20sp"
-                android:gravity="center"
+            <com.google.android.material.tabs.TabLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_weight="4"
-                />
-            <TextView
-                android:padding="10dp"
-                android:id="@+id/schoolDir"
+                android:layout_weight="3"
+                android:id="@+id/bus_tab_root"
+                >
+                <com.google.android.material.tabs.TabItem
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:id="@+id/bus_tab_first"
+                    android:text="복정 파출소 방면"/>
+                <com.google.android.material.tabs.TabItem
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:id="@+id/bus_tab_last"
+                    android:text="복정 초등학교 방면"/>
+            </com.google.android.material.tabs.TabLayout>
+            <androidx.viewpager2.widget.ViewPager2
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
-                />
+                android:id="@+id/bus_pager_root"
+                >
+            </androidx.viewpager2.widget.ViewPager2>
         </LinearLayout>
     </LinearLayout>
-</FrameLayout>
+    <include layout="@layout/activity_menu"/>
+</androidx.drawerlayout.widget.DrawerLayout>

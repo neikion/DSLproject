@@ -12,6 +12,7 @@ import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -24,6 +25,9 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.dsl.DSLManager;
 import com.example.dsl.DSLUtil;
+import com.example.dsl.MenuBaseActivity;
+import com.example.dsl.MenuCase1;
+import com.example.dsl.MenuFrame;
 import com.example.dsl.R;
 import com.example.dsl.notice.AdaptorDataSet;
 import org.json.JSONException;
@@ -33,7 +37,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 
-public class Schedule extends AppCompatActivity implements View.OnClickListener {
+public class Schedule extends MenuBaseActivity implements View.OnClickListener {
 
     private LinearLayout BaseTablePosition;
     private LinearLayout UITablePosition;
@@ -42,6 +46,11 @@ public class Schedule extends AppCompatActivity implements View.OnClickListener 
     private ArrayList<AdaptorDataSet> stickers;
     private DSLManager manager;
     private AlarmScheduler alarmScheduler = new AlarmScheduler(7);
+
+    public Schedule() {
+        super(new MenuCase1(), R.id.schedule_root);
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -202,6 +211,7 @@ public class Schedule extends AppCompatActivity implements View.OnClickListener 
 
     @Override
     public void onClick(View v) {
+        super.onClick(v);
         int id = v.getId();
         if (id == R.id.AddAlarm) {
             Intent i = new Intent(this, ts_add.class);
@@ -210,7 +220,7 @@ public class Schedule extends AppCompatActivity implements View.OnClickListener 
             }
             ActivityLuncher.launch(i);
         } else if (id == R.id.movemenu) {
-            DSLManager.moveMenu(getApplicationContext());
+            menuLayout.openDrawer(Gravity.LEFT);
         }
     }
 
