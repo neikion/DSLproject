@@ -19,6 +19,9 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
+
 public class BusActivity extends MenuBaseActivity implements TabLayout.OnTabSelectedListener {
 
     DSLManager manager;
@@ -48,7 +51,6 @@ public class BusActivity extends MenuBaseActivity implements TabLayout.OnTabSele
         busPagerAdaptor.addDataSets("tab2");
         findViewById(R.id.busmap).setOnClickListener(v -> getServerData());
         findViewById(R.id.bus_menu).setOnClickListener(v->menuLayout.openDrawer(Gravity.LEFT));
-
     }
 
     public String refineData(JSONArray json) throws JSONException {
@@ -56,7 +58,11 @@ public class BusActivity extends MenuBaseActivity implements TabLayout.OnTabSele
         StringBuilder sb=new StringBuilder();
         for(int i=0;i<json.length();i++){
             data=json.getJSONObject(i);
-            sb.append(data.get("busRouteAbrv")).append(" 버스 ").append(data.get("arrmsg1")).append("분 후 도착\n");
+            try {
+                sb.append(data.get("busRouteAbrv")).append(" 버스 ").append(URLDecoder.decode(data.get("arrmsg1").toString(),"utf-8").toString()).append("\n");
+            } catch (UnsupportedEncodingException e) {
+                e.printStackTrace();
+            }
         }
         return sb.toString();
     }
@@ -84,7 +90,6 @@ public class BusActivity extends MenuBaseActivity implements TabLayout.OnTabSele
     @Override
     public void onTabSelected(TabLayout.Tab tab) {
         if(tab.getPosition()==0){
-
             viewPager2.setCurrentItem(0);
         }else{
             viewPager2.setCurrentItem(1);

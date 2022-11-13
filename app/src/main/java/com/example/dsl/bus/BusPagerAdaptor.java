@@ -1,5 +1,6 @@
 package com.example.dsl.bus;
 
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
@@ -14,6 +15,7 @@ import com.example.dsl.DSLUtil;
 import com.example.dsl.R;
 
 import java.util.ArrayList;
+import java.util.zip.Inflater;
 
 public class BusPagerAdaptor extends RecyclerView.Adapter<BusPagerAdaptor.BusPagerHolder> {
     ArrayList<String> dataSets=new ArrayList<>();
@@ -26,12 +28,12 @@ public class BusPagerAdaptor extends RecyclerView.Adapter<BusPagerAdaptor.BusPag
     }
     public void setDataSets(int pos,String content){
         dataSets.set(pos,content);
-        notifyItemInserted(getItemCount()-1);
+        notifyItemChanged(pos);
     }
     @NonNull
     @Override
     public BusPagerHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        return new BusPagerHolder(new TextView(parent.getContext()));
+        return new BusPagerHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.bus_scroll_page,parent,false));
     }
 
     @Override
@@ -49,10 +51,11 @@ public class BusPagerAdaptor extends RecyclerView.Adapter<BusPagerAdaptor.BusPag
         private TextView tv;
         public BusPagerHolder(@NonNull View itemView) {
             super(itemView);
-            tv=(TextView) itemView;
+            tv=itemView.findViewById(R.id.bus_scroll_page_content);
+            /*tv=(TextView) itemView;
             ViewGroup.LayoutParams params=new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
             tv.setLayoutParams(params);
-            tv.setPadding((int)DSLUtil.DPtoPX(5,tv.getContext()),(int)DSLUtil.DPtoPX(5,tv.getContext()),(int)DSLUtil.DPtoPX(5,tv.getContext()),(int)DSLUtil.DPtoPX(5,tv.getContext()));
+            tv.setPadding((int)DSLUtil.DPtoPX(5,tv.getContext()),(int)DSLUtil.DPtoPX(5,tv.getContext()),(int)DSLUtil.DPtoPX(5,tv.getContext()),(int)DSLUtil.DPtoPX(5,tv.getContext()));*/
         }
         public void setContent(){
             tv.setText(dataSets.get(getAdapterPosition()));

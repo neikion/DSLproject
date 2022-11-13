@@ -105,8 +105,7 @@
             android:name=".bus.BusSettingActivity"
             android:exported="false" />
         <activity android:name=".bus.ChooseBusActivity"
-            android:exported="true">
-
+            android:exported="false">
         </activity>
 
         <!--room-->

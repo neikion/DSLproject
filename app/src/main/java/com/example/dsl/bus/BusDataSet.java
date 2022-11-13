@@ -1,6 +1,9 @@
 package com.example.dsl.bus;
 
-public class BusDataSet {
-    String BusName;
+import java.io.Serializable;
 
+public class BusDataSet implements Serializable {
+    String BusName;
+    String AlarmName;
+    boolean vibe;
 }

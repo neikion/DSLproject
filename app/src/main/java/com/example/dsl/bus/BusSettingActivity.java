@@ -15,6 +15,7 @@ import android.widget.CompoundButton;
 import android.widget.Switch;
 import android.widget.TextView;
 
+import com.example.dsl.DSLUtil;
 import com.example.dsl.R;
 import com.google.android.material.snackbar.Snackbar;
 
@@ -41,11 +42,13 @@ public class BusSettingActivity extends AppCompatActivity {
                 Snackbar.make(settingName,R.string.Bus_Alarm_Setting_Bus_Name_Empty,Snackbar.LENGTH_SHORT).show();
                 return;
             }
-            Intent i=new Intent();
-            i.putExtra("AlarmName",settingName.getText().toString());
-            i.putExtra("vibe",vibe);
-            i.putExtra("choosedBus",choosedBus);
-            setResult(RESULT_OK,i);
+            BusDataSet data=new BusDataSet();
+            data.BusName=choosedBus;
+            data.AlarmName=settingName.getText().toString();
+            data.vibe=vibe;
+            Intent intent=new Intent();
+            intent.putExtra("BusAlarmData",data);
+            setResult(Activity.RESULT_OK,intent);
             finish();
         });
         ((Switch)findViewById(R.id.bus_alarm_vibe)).setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
@@ -57,10 +60,17 @@ public class BusSettingActivity extends AppCompatActivity {
             }
         });
         findViewById(R.id.bus_setting_bus).setOnClickListener(v->{
-            activityResultLauncher.launch(new Intent(getApplicationContext(),ChooseBusActivity.class));
+            activityResultLauncher2.launch(new Intent(getApplicationContext(),ChooseBusActivity.class));
         });
     }
-    ActivityResultLauncher<Intent> activityResultLauncher=registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), new ActivityResultCallback<ActivityResult>() {
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        setResult(RESULT_CANCELED);
+    }
+
+    ActivityResultLauncher<Intent> activityResultLauncher2=registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), new ActivityResultCallback<ActivityResult>() {
         @Override
         public void onActivityResult(ActivityResult result) {
             if(result.getResultCode()== Activity.RESULT_OK){

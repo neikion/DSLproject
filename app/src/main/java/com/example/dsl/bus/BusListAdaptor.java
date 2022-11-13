@@ -20,7 +20,7 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 
 public class BusListAdaptor extends RecyclerView.Adapter<BusListAdaptor.BusListHolder> {
-    ArrayList<BusDataSet> dataSets=new ArrayList<>();
+    ArrayList<String> dataSets=new ArrayList<>();
     @NonNull
     @Override
     public BusListHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
@@ -38,9 +38,7 @@ public class BusListAdaptor extends RecyclerView.Adapter<BusListAdaptor.BusListH
     }
     public void addDataset(JSONObject json) throws Exception {
         //경유 노선 버스 json처리
-        BusDataSet data=new BusDataSet();
-        data.BusName=json.getString("busRouteAbrv");
-        dataSets.add(data);
+        dataSets.add(json.getString("busRouteAbrv"));
         notifyItemInserted(getItemCount()-1);
     }
     public class BusListHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
@@ -48,14 +46,14 @@ public class BusListAdaptor extends RecyclerView.Adapter<BusListAdaptor.BusListH
             super(itemView);
         }
         public void enable(){
-            ((TextView)itemView.findViewById(R.id.choose_bus_name)).setText(dataSets.get(getAdapterPosition()).BusName);
+            ((TextView)itemView.findViewById(R.id.choose_bus_name)).setText(dataSets.get(getAdapterPosition()));
             itemView.findViewById(R.id.choose_bus_name).setOnClickListener(this);
         }
 
         @Override
         public void onClick(View v) {
             Intent i=new Intent();
-            i.putExtra("BusName",dataSets.get(getAdapterPosition()).BusName);
+            i.putExtra("BusName",dataSets.get(getAdapterPosition()));
             ((ChooseBusActivity)v.getContext()).setResult(Activity.RESULT_OK,i);
             ((ChooseBusActivity)v.getContext()).finish();
         }
