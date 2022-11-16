@@ -66,6 +66,7 @@ public class schedule_content_viewer extends AppCompatActivity {//일저의 상�
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
+                finish();
             }
         });
     }

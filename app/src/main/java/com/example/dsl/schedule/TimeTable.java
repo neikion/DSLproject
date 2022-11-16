@@ -14,6 +14,8 @@ import android.widget.GridLayout;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.example.dsl.DSLUtil;
+import com.example.dsl.R;
 import com.example.dsl.notice.AdaptorDataSet;
 
 import java.util.ArrayList;
@@ -272,17 +274,33 @@ public class TimeTable implements ViewTreeObserver.OnGlobalLayoutListener, TSLis
             }
             UITableReset();
         }
+
+        int[] colorary=new int[]{
+                context.getColor(R.color.default_green),
+                context.getColor(R.color.default_green)
+        };
         if(LegacyStickers!=null){
-            addSticker(LegacyStickers,firststart,lastend);
+            addSticker(LegacyStickers,firststart,lastend,colorary);
         }
-        addSticker(list,firststart,lastend);
+        /*colorary=new int[]{
+                context.getColor(R.color.default_green),
+                context.getColor(R.color.default_green)
+        };*/
+        addSticker(list,firststart,lastend,colorary);
         UITimeUpdate(firststart/100);
         BaseTableUpdate();
-/*        for(int i=0;i<UITable.getChildCount();i++){
-            ((TextView)UITable.getChildAt(i)).setBackgroundColor(Color.BLACK);
-        }*/
+        colorary=new int[]{
+                DSLUtil.ScheduleColorList.getColor(context,0),
+                DSLUtil.ScheduleColorList.getColor(context,1),
+                DSLUtil.ScheduleColorList.getColor(context,2),
+                DSLUtil.ScheduleColorList.getColor(context,3),
+                DSLUtil.ScheduleColorList.getColor(context,4)
+        };
+        for(int i=(TableColCount+TableRowCount)-2;i<UITable.getChildCount();i++){
+            (UITable.getChildAt(i)).setBackgroundColor(colorary[i%colorary.length]);
+        }
     }
-    private void addSticker(ArrayList<AdaptorDataSet> list,int firststart, int lastend){
+    private void addSticker(ArrayList<AdaptorDataSet> list,int firststart, int lastend, int[] colorary){
         int day;
         int start;
         int end;
@@ -346,7 +364,7 @@ public class TimeTable implements ViewTreeObserver.OnGlobalLayoutListener, TSLis
             CellStart=(start-firststart)/100;
 //            print("cellminute "+cellminute);
             TextView stiker=new TextView(context);
-            stiker.setBackground(getItemsBGWithoutBorder(getItemsRadius(CellStart+cellgridheight,day),Color.argb(150,163,204,163)));
+            stiker.setBackground(getItemsBGWithoutBorder(getItemsRadius(CellStart+cellgridheight,day),colorary[i%colorary.length]));
 //            print(" Cellstart "+(CellStart+1)+" cellsize "+(cellgridheight)+"");
             GridLayout.LayoutParams params= new GridLayout.LayoutParams(GridLayout.spec(CellStart+1,cellgridheight,GridLayout.CENTER),GridLayout.spec(day,1,GridLayout.CENTER));
             params.width=Cell_Width;

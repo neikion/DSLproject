@@ -1,22 +1,30 @@
 package com.example.dsl.roompos;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.drawerlayout.widget.DrawerLayout;
 
 import android.os.Bundle;
+import android.view.Gravity;
 import android.widget.Button;
+import android.widget.TextView;
 
+import com.example.dsl.MenuBaseActivity;
+import com.example.dsl.MenuCase1;
 import com.example.dsl.R;
 
-public class RoomPosition extends AppCompatActivity {
+public class RoomPosition extends MenuBaseActivity {
     Button[] btnMap;
-    Button[] btnNav;
+    TextView[] btnNav;
     Button beforeBtn = null;
+    public RoomPosition(){
+        super(new MenuCase1(),R.id.room_root);
+    }
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_room);
         btnMap = new Button[12];
-        btnNav = new Button[12];
+        btnNav = new TextView[12];
         bindingButton();
         for (int i = 0; i < btnNav.length; i++) {
             Button btn = btnMap[i];
@@ -28,7 +36,9 @@ public class RoomPosition extends AppCompatActivity {
                 beforeBtn = btn;
             });
         }
-
+        findViewById(R.id.room_menu).setOnClickListener(v -> {
+            menuLayout.openDrawer(Gravity.LEFT);
+        });
     }
 
     private void bindingButton() {

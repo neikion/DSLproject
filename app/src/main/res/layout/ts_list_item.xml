@@ -141,11 +141,14 @@
             android:layout_height="match_parent"
             android:hint="장소"
             android:layout_weight="1"/>
-        <Button
+        <ImageButton
             android:id="@+id/list_delete"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_weight="6"
+            android:scaleType="fitXY"
+            android:background="@color/white"
+            android:src="@android:drawable/ic_menu_delete"
             android:text="삭제"/>
 
     </LinearLayout>

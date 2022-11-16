@@ -6,4 +6,5 @@ public class BusDataSet implements Serializable {
     String BusName;
     String AlarmName;
     boolean vibe;
+    int time;
 }

@@ -40,7 +40,6 @@ public class TimeScheduleAlarmService extends Service {
     @Override
     public void onCreate() {
         super.onCreate();
-        android.util.Log.i("DSL","onCreate");
         initPlayer();
         initVibrator();
     }
@@ -56,9 +55,9 @@ public class TimeScheduleAlarmService extends Service {
     }
     private NotificationCompat.Builder CreateNoti(Context context,Intent intent){
         NotificationCompat.Builder noti=new NotificationCompat.Builder(context,"TSNC");
-        noti.setContentTitle("Alarm Title");
+        noti.setContentTitle("시간표 알람");
         noti.setContentText("알람을 중지하려면 여기를 터치하세요.");
-        noti.setSmallIcon(R.drawable.ic_launcher_foreground);
+        noti.setSmallIcon(R.drawable.logo);
         noti.setFullScreenIntent(getContentIntent(context,intent.getIntExtra("HOUR_OF_DAY",0),intent.getIntExtra("MINUTE",0)),true);
         noti.setCategory(NotificationCompat.CATEGORY_ALARM);
         noti.setContentIntent(getServiceDownIntent(context));
@@ -82,7 +81,6 @@ public class TimeScheduleAlarmService extends Service {
     }
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        Log.i("DSL","onStartCommand");
         if(intent.getExtras().getBoolean("AP")){
             int AlarmGroup=intent.getIntExtra("AlarmGroup",0);
             if(AlarmGroup<1){

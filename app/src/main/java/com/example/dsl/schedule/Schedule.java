@@ -9,6 +9,7 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
@@ -158,8 +159,6 @@ public class Schedule extends MenuBaseActivity implements View.OnClickListener {
             channel.enableLights(true);
             channel.enableVibration(true);
             notimanager.createNotificationChannel(channel);
-
-
         }
     }
     public void setAlarm(AdaptorDataSet dataset){
@@ -186,10 +185,9 @@ public class Schedule extends MenuBaseActivity implements View.OnClickListener {
         sendintent.putExtra("MINUTE",calendar.get(Calendar.MINUTE));
 
         PendingIntent Alarmintent=PendingIntent.getBroadcast(this,alarmScheduler.get(dataset.day).get(dataset.start).request_code,sendintent,PendingIntent.FLAG_IMMUTABLE);
-//        alarmmanager.setRepeating(AlarmManager.RTC_WAKEUP,calendar.getTimeInMillis(),7*24*60*60*1000,Alarmintent);
         alarmmanager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(),Alarmintent);
 
-        Log.i("DSL","\n\n 현재시각 "+ new Date(System.currentTimeMillis())+"\n 알람 예약 시간 "+new Date(calendar.getTimeInMillis()));
+//        Log.i("DSL","\n\n 현재시각 "+ new Date(System.currentTimeMillis())+"\n 알람 예약 시간 "+new Date(calendar.getTimeInMillis()));
     }
     private void setStickerOnClick(){
         for(int i=table.getTableColCount()+table.getTableRowCount()-2;i<table.UITable.getChildCount();i++){
@@ -231,8 +229,6 @@ public class Schedule extends MenuBaseActivity implements View.OnClickListener {
             if(result.getResultCode()== Activity.RESULT_OK){
                 Intent ReIntent=result.getData();
                 setTableChange((ArrayList<AdaptorDataSet>)ReIntent.getSerializableExtra("Result_Value"));
-            }else if(result.getResultCode()==Activity.RESULT_CANCELED){
-                print("RESULT_CANCELED");
             }
         }
     });
@@ -247,7 +243,6 @@ public class Schedule extends MenuBaseActivity implements View.OnClickListener {
                 setAlarm(list.get(i));
             }
         }
-        print(stickers.size()+"");
         setServerData();
 
     }
@@ -259,16 +254,13 @@ public class Schedule extends MenuBaseActivity implements View.OnClickListener {
             for(int foo=0;foo<alarmArrays.size();foo++){
                 AlarmScheduler.Alarmdata alarmdata=alarmArrays.getIndex(foo);
                 if(alarmdata==null){
-                    print("alarm data null");
                     continue;
                 }
                 Alarmintent=PendingIntent.getBroadcast(this,alarmdata.request_code,sendintent,PendingIntent.FLAG_IMMUTABLE);
                 if(Alarmintent==null){
-                    print("alarmintentnull");
                     continue;
                 }
                 alarmmanager.cancel(Alarmintent);
-                print("alarmcancle"+alarmdata);
             }
             alarmArrays.clear();
         }

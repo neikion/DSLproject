@@ -10,6 +10,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.TimePicker;
@@ -42,7 +43,7 @@ public class TSListAdaptor extends RecyclerView.Adapter<TSListAdaptor.TSListView
         private TextView end;
         private EditText place;
         private TextView additem;
-        private Button del;
+        private ImageButton del;
         private Switch vibrateSwitch;
         private Switch soundSwitch;
         private Calendar startc=Calendar.getInstance();

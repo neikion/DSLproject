@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.drawerlayout.widget.DrawerLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -63,7 +63,7 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_weight="1">
+                android:layout_weight="1.1">
 
                 <TextView
                     android:id="@+id/tempView"
@@ -83,13 +83,13 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:orientation="vertical"
-                android:layout_weight="1.1">
+                android:layout_weight="1.15">
                 <TextView
                     android:id="@+id/weather_pos"
                     android:layout_marginLeft="30dp"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:text="성남시 수정구 장지동"
+                    android:text="경기도 성남시 수정구"
                     android:textStyle="bold"
                     android:textColor="@color/black"
                     android:textSize="30sp"
@@ -104,26 +104,25 @@
                 android:layout_marginLeft="30dp"
                 android:layout_weight="1">
                 <TextView
-                    android:id="@+id/mainView2"
+                    android:id="@+id/mainView"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="11º / 12º  체감온도 11º"
+                    android:text="11.69º / 12.71º  체감온도 12.63º"
                     android:textColor="@color/black"
                     android:textStyle="bold"
                     android:textSize="25sp">
                 </TextView>
                 <TextView
-                    android:id="@+id/mainView"
+                    android:id="@+id/mainView2"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_weight="100"
                     android:text="mist"
                     android:textColor="@color/black"
                     android:textStyle="bold"
                     android:textSize="25sp">
                 </TextView>
                 <TextView
-                    android:id="@+id/weatherView"
+                    android:id="@+id/humidityView"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:textStyle="bold"
@@ -160,6 +159,7 @@
                         android:textSize="40sp"
                         />
                     <TextView
+                        android:id="@+id/weather_future1"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:textColor="@color/black"
@@ -170,6 +170,7 @@
                         android:layout_marginLeft="15dp"
                         />
                     <TextView
+                        android:id="@+id/weather_future2"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:textColor="@color/black"
@@ -180,6 +181,7 @@
                         android:layout_marginLeft="15dp"
                         />
                     <TextView
+                        android:id="@+id/weather_future3"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:textColor="@color/black"
@@ -190,6 +192,7 @@
                         android:layout_marginLeft="15dp"
                         />
                     <TextView
+                        android:id="@+id/weather_future4"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:textColor="@color/black"
@@ -200,6 +203,7 @@
                         android:layout_marginLeft="15dp"
                         />
                     <TextView
+                        android:id="@+id/weather_future5"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:textColor="@color/black"
@@ -210,6 +214,7 @@
                         android:layout_marginLeft="15dp"
                         />
                     <TextView
+                        android:id="@+id/weather_future6"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:textColor="@color/black"
@@ -220,26 +225,7 @@
                         android:layout_marginLeft="15dp"
                         />
                     <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:textColor="@color/black"
-                        android:text="월요일    11º / 12º        맑음 \n강수확률 50%"
-                        android:textSize="25sp"
-                        android:layout_marginTop="10dp"
-                        android:layout_marginBottom="10dp"
-                        android:layout_marginLeft="15dp"
-                        />
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:textColor="@color/black"
-                        android:text="월요일    11º / 12º        맑음 \n강수확률 50%"
-                        android:textSize="25sp"
-                        android:layout_marginTop="10dp"
-                        android:layout_marginBottom="10dp"
-                        android:layout_marginLeft="15dp"
-                        />
-                    <TextView
+                        android:id="@+id/weather_future7"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:textColor="@color/black"
@@ -253,4 +239,5 @@
             </ScrollView>
         </LinearLayout>
     </LinearLayout>
-</LinearLayout>
+    <include layout="@layout/activity_menu"/>
+</androidx.drawerlayout.widget.DrawerLayout>

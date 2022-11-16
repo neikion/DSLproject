@@ -16,9 +16,12 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.BufferedOutputStream;
+import java.io.BufferedReader;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.URL;
+import java.net.URLConnection;
 import java.nio.charset.StandardCharsets;
 import java.security.KeyStore;
 import java.security.cert.Certificate;
@@ -47,7 +50,7 @@ public final class DSLManager{
     //awake
     private DSLManager(){
         //exs= new ThreadPoolExecutor(0,20,10, TimeUnit.MINUTES,new SynchronousQueue<Runnable>());
-        exs =Executors.newSingleThreadExecutor(new ThreadFactory() {
+        exs=Executors.newFixedThreadPool(4, new ThreadFactory() {
             @Override
             public Thread newThread(Runnable r) {
                 Thread t=new Thread(r);
@@ -55,6 +58,14 @@ public final class DSLManager{
                 return t;
             }
         });
+/*        exs =Executors.newSingleThreadExecutor(new ThreadFactory() {
+            @Override
+            public Thread newThread(Runnable r) {
+                Thread t=new Thread(r);
+                t.setDaemon(true);
+                return t;
+            }
+        });*/
         Server=new ServerConnect("13.124.33.18");
 //        localDB=new LocalDataBase();
         try{
@@ -63,7 +74,6 @@ public final class DSLManager{
             Close();
             e.printStackTrace();
         }
-
     }
     private ExecutorService exs;
     private ServerConnect Server;
@@ -99,14 +109,27 @@ public final class DSLManager{
             }
             return null;
         }
+        private HttpsURLConnection RightConnecttest(String Burl){
+            try{
+                URL url = new URL(Burl);
+                return (HttpsURLConnection) url.openConnection();
+            }
+            catch (Exception e){
+                e.printStackTrace();
+            }
+            return null;
+        }
+
         //Only Debuging use
-        private HttpsURLConnection MyServerConnect(){
+        private synchronized HttpsURLConnection MyServerConnect(){
             try {
-                CertificateFactory cf= CertificateFactory.getInstance("X.509");
+                CertificateFactory cf = CertificateFactory.getInstance("X.509");
                 InputStream cainput;
                 cainput= context.getResources().openRawResource(R.raw.onlydebugingcrt);
                 Certificate ca=cf.generateCertificate(cainput);
                 cainput.close();
+
+
 
                 String KeyStoreType= KeyStore.getDefaultType();
                 KeyStore keystore=KeyStore.getInstance(KeyStoreType);
@@ -120,10 +143,8 @@ public final class DSLManager{
                 tmf.init(keystore);
 
 
-                SSLContext context=SSLContext.getInstance("TLS");
-                context.init(null,tmf.getTrustManagers(),null);
-
-
+                SSLContext sslContext=SSLContext.getInstance("TLS");
+                sslContext.init(null,tmf.getTrustManagers(),null);
                 URL url = new URL(BaseURL);
                 HttpsURLConnection urlConnection=(HttpsURLConnection)url.openConnection();
                 //안전하지 않아도 연결할지 확인
@@ -134,10 +155,9 @@ public final class DSLManager{
                             return true;
                         }
                         return false;
-
                     }
                 });
-                urlConnection.setSSLSocketFactory(context.getSocketFactory());
+                urlConnection.setSSLSocketFactory(sslContext.getSocketFactory());
                 return urlConnection;
             }catch (Exception e){
                 e.printStackTrace();
@@ -201,7 +221,7 @@ public final class DSLManager{
             }
         }
         private String StreamRead(InputStream in){
-            StringBuilder s= new StringBuilder();
+            StringBuffer s= new StringBuffer();
             int len;
             byte[] buffer=new byte[1024];
             while(true){
@@ -227,7 +247,6 @@ public final class DSLManager{
                 this.context =context.getApplicationContext();
             }
             BaseURL ="https://"+targetIP+API_URL;
-//            DSLUtil.print("target : "+BaseURL);
             Runnable task = ()->{
                 JSONArray result;
                 try {
@@ -251,30 +270,12 @@ public final class DSLManager{
             };
             exs.submit(task);
         }
-        public void sendRequestforObject(Context context, String API_URL, NetListener netListener){
-            if(this.context ==null){
-                this.context =context.getApplicationContext();
-            }
-            BaseURL =API_URL;
+        public void sendtest(Context context, String API_URL, NetListener netListener){
             Runnable task = ()->{
                 JSONArray result;
                 try {
-                    String resultstr= ConnectWorkforObject(RightConnect());
-                    if(resultstr!=null&&!resultstr.isEmpty()){
-                        JSONObject temp=new JSONObject(resultstr);
-                        result=new JSONArray();
-                        result.put(temp);
-                        if(netListener==null){
-                            return;
-                        }
-                        netListener.Result(result);
-                    }else{
-                        if(netListener==null){
-                            return;
-                        }
-                        netListener.Result(null);
-                        return;
-                    }
+                    String resultstr= ConnectWorkforObject(RightConnecttest(API_URL));
+                    DSLUtil.print(resultstr+"\n");
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -282,17 +283,22 @@ public final class DSLManager{
             exs.submit(task);
         }
         private String ConnectWorkforObject(HttpsURLConnection urlConnection){
-            urlConnection.setConnectTimeout(5000);
-            urlConnection.setReadTimeout(5000);
             String Result="";
             try{
                 urlConnection.setRequestMethod("GET");
-                urlConnection.setRequestProperty("Accept","Application/json");
                 if(urlConnection.getResponseCode()==200){
                     InputStream in=urlConnection.getInputStream();
                     Result=StreamRead(in);
-
                     in.close();
+                    /*BufferedReader in=new BufferedReader(new InputStreamReader(urlConnection.getInputStream(),"UTF-8"));
+                    StringBuffer s= new StringBuffer();
+                    String buffer;
+                    while((buffer=in.readLine())!=null){
+                        s.append(buffer);
+                    }
+                    Result=s.toString();
+                    in.close();*/
+
                 }else{
                     Log.i("DSL",urlConnection.getResponseMessage());
                 }
@@ -301,6 +307,7 @@ public final class DSLManager{
             }finally {
                 urlConnection.disconnect();
             }
+
             return Result;
         }
         @Override
@@ -322,18 +329,13 @@ public final class DSLManager{
     public void sendRequest(Context context, JSONObject json,String API_URL, NetListener netListener){
         Server.sendRequest(context,json,API_URL,netListener);
     }
-    public void sendRequestforObject(Context context, String API_URL, NetListener netListener){
-        Server.sendRequestforObject(context,API_URL,netListener);
-    }
-    public static void moveMenu(Context context){
-        Intent i=new Intent(context, MenuActivity.class);
-        i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        context.startActivity(i);
-    }
     public void Login(int UserID){
         if(userInfo==null){
             userInfo=new UserInfo(UserID);
         }
+    }
+    public void LogOut(){
+        userInfo=null;
     }
     public int getUserCode(){
         return userInfo.getUserID();

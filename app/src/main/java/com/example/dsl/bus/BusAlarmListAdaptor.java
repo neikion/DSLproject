@@ -20,9 +20,14 @@ public class BusAlarmListAdaptor extends RecyclerView.Adapter<BusAlarmListAdapto
     public BusAlarmListAdaptor(){
         dataSets=new ArrayList<>();
     }
-    public void addBusDataSet(BusDataSet data){
+    setAction doAction;
+    public void addBusDataSet(BusDataSet data,setAction action){
         dataSets.add(data);
+        this.doAction=action;
         notifyItemInserted(getItemCount()-1);
+    }
+    public interface setAction{
+        public void Action(String str);
     }
     @NonNull
     @Override
@@ -65,6 +70,7 @@ public class BusAlarmListAdaptor extends RecyclerView.Adapter<BusAlarmListAdapto
             bus.setText(dataSets.get(getAdapterPosition()).BusName);
             vibe.setChecked(dataSets.get(getAdapterPosition()).vibe);
             item.setOnLongClickListener(v->{
+                doAction.Action(dataSets.get(getAdapterPosition()).BusName);
                 dataSets.remove(getAdapterPosition());
                 notifyItemRemoved(getAdapterPosition());
                 notifyItemRangeChanged(getAdapterPosition(), 1);

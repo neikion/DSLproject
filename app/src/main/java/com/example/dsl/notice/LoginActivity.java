@@ -26,12 +26,12 @@ public class LoginActivity extends AppCompatActivity {
     Button btnAdd;
     String strUserJson;
     AlertDialog.Builder alertDialog;
-
+    String anser;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
-
+        DSLManager.getInstance().LogOut();
         editId = (EditText)findViewById(R.id.editId);
         editPassword = (EditText)findViewById(R.id.editPassword);
         btnAdd = (Button)findViewById(R.id.btnAdd);
@@ -56,29 +56,26 @@ public class LoginActivity extends AppCompatActivity {
                     jsonObject.put("Password", editPassword.getText().toString());
                 } catch (JSONException e) {
                 }
-                DSLManager.getInstance().sendRequest(getApplicationContext(), jsonObject, "/User/Search", new DSLManager.NetListener() {
-                    @Override
-                    public void Result(JSONArray Result) {
-                        runOnUiThread(()->{
-                            try {
-                                JSONObject jsonObject = Result.getJSONObject(0);
-                                String ResultString = jsonObject.getString("result");
-                                if(ResultString.equals("OK")){
-                                    DSLManager.getInstance().Login(jsonObject.getInt("userCode"));
-                                    Intent intent = new Intent(getApplicationContext(), NoticeActivity.class);
-                                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                                    startActivity(intent);
-                                }else{
-                                    alertDialog.show();
-                                }
-                            } catch (JSONException e) {
-                                e.printStackTrace();
-                            }
-                        });
+                DSLManager.getInstance().sendRequest(getApplicationContext(), jsonObject, "/User/Search", Result -> runOnUiThread(()->{
+                    try {
+                        JSONObject jsonObject1 = Result.getJSONObject(0);
+                        String ResultString = jsonObject1.getString("result");
+                        if(ResultString.equals("OK")){
+                            DSLManager.getInstance().Login(jsonObject1.getInt("userCode"));
+                            Intent intent = new Intent(getApplicationContext(), NoticeActivity.class);
+                            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                            startActivity(intent);
+                        }else{
+                            alertDialog.show();
+                        }
+                    } catch (JSONException e) {
+                        e.printStackTrace();
                     }
-                });
+                }));
+
             }
         });
+
 
         btnAdd.setOnClickListener(new View.OnClickListener() {
             @Override

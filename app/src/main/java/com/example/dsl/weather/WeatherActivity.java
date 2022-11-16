@@ -8,15 +8,18 @@ import android.view.View;
 import android.widget.ImageButton;
 import android.widget.TextView;
 import com.example.dsl.DSLManager;
+import com.example.dsl.DSLUtil;
 import com.example.dsl.MenuBaseActivity;
 import com.example.dsl.MenuCase1;
 import com.example.dsl.MenuFrame;
 import com.example.dsl.R;
 
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 
 public class WeatherActivity extends MenuBaseActivity {
@@ -24,11 +27,12 @@ public class WeatherActivity extends MenuBaseActivity {
     TextView dateView;
 
     TextView cityView;
-    TextView weatherView;
+    TextView humidityView;
     TextView tempView;
     TextView mainView;
     TextView mainView2;
-
+    Calendar weatherCalendar;
+    TextView[] weaterFutureView;
     public WeatherActivity() {
         super(new MenuCase1(), R.id.weather_root);
     }
@@ -37,14 +41,26 @@ public class WeatherActivity extends MenuBaseActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_weather);
-
+        weatherCalendar=Calendar.getInstance();
         dateView = findViewById(R.id.dateView);
+        dateView.setOnClickListener((v)->{
+            CurrentCall();
+        });
 
         cityView = findViewById(R.id.weather_pos);
-        weatherView = findViewById(R.id.weatherView);
+        humidityView = findViewById(R.id.humidityView);
         tempView = findViewById(R.id.tempView);
         mainView = findViewById(R.id.mainView);
         mainView2 = findViewById(R.id.mainView2);
+        weaterFutureView=new TextView[]{
+                findViewById(R.id.weather_future1),
+                findViewById(R.id.weather_future2),
+                findViewById(R.id.weather_future3),
+                findViewById(R.id.weather_future4),
+                findViewById(R.id.weather_future5),
+                findViewById(R.id.weather_future6),
+                findViewById(R.id.weather_future7),
+        };
         findViewById(R.id.weather_menu).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -60,115 +76,38 @@ public class WeatherActivity extends MenuBaseActivity {
     }
 
     private void CurrentCall(){
+        DSLManager.getInstance().sendRequest(this,null,"/weather/select",(result)->{
+            runOnUiThread(()->{
+                try {
+                    JSONObject mainjson=result.getJSONObject(0);
+                    Date date=new Date(mainjson.getLong("time")*1000);
+                    SimpleDateFormat simpleDateFormat=new SimpleDateFormat("YYYY년 MM월 dd일 \n HH:mm");
+                    dateView.setText(simpleDateFormat.format(date));
+                    tempView.setText(mainjson.getInt("temp")+"º");
+                    mainView.setText(mainjson.getInt("minTemp")+"º / "+mainjson.getInt("maxTemp")+"º   체감온도"+mainjson.getInt("feelsLike")+"º");
+                    mainView2.setText(mainjson.getString("weatherState"));
+                    humidityView.setText(mainjson.getString("humidity")+"%");
 
-        String url = "https://api.openweathermap.org/data/2.5/weather?q=Seongnam-si&appid=e7569e766bcbd4081766788d906cfe65";
-
-        DSLManager.getInstance().sendRequestforObject(this, url, new DSLManager.NetListener() {
-            @Override
-            public void Result(JSONArray Result) {
-                runOnUiThread(()->{
-                    long now = System.currentTimeMillis();
-                    Date date = new Date(now);
-                    //년, 월, 일 형식으로. 시,분,초 형식으로 객체화하여 String에 형식대로 넣음
-                    SimpleDateFormat simpleDateFormatDay = new SimpleDateFormat("yyyy-MM-dd");
-                    SimpleDateFormat simpleDateFormatTime = new SimpleDateFormat("HH:mm:ss");
-                    String getDay = simpleDateFormatDay.format(date);
-                    String getTime = simpleDateFormatTime.format(date);
-
-                    //getDate에 개행을 포함한 형식들을 넣은 후 dateView에 text설정
-                    String getDate = getDay + "\n" + getTime;
-                    dateView.setText(getDate);
-                    try{
-                        //api로 받은 파일 jsonobject로 새로운 객체 선언
-                        JSONObject jsonObject = new JSONObject(Result.getJSONObject(0).toString());
-                        JSONObject jsonObject2 = new JSONObject(Result.getJSONObject(0).toString());
-
-
-                        //도시 키값 받기
-                        String city = jsonObject.getString("name");
-
-                        cityView.setText("현재위치 : " + city);
-
-
-
-                        // String clouds = jsonObject.getString("clouds");
-
-                        // cloudsView.setText("구름량 : " + clouds);
-
-
-
-
-
-                        //날씨 키값 받기
-                        JSONArray weatherJson = jsonObject.getJSONArray("weather");
-                        JSONObject weatherObj = weatherJson.getJSONObject(0);
-
-                        String weather = weatherObj.getString("description");
-
-                        weatherView.setText("날씨 상황 : " + weather);
-
-
-
-
-
-
-                        //기온 키값 받기
-                        JSONObject tempK = new JSONObject(jsonObject.getString("main"));
-
-                        //기온 받고 켈빈 온도를 섭씨 온도로 변경
-                        double tempDo = (Math.round((tempK.getDouble("temp")-273.15)*100)/100.0);
-                        tempView.setText(tempDo +  "°C");
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-                        JSONObject tempK1 = new JSONObject(jsonObject.getString("main"));
-
-                        //습도 받기!
-                        int tempDo1 = (Math.round((tempK1.getInt("humidity"))));
-                        mainView.setText("습도 :" + tempDo1 +  "%");
-
-
-
-
-
-
-                        JSONObject tempK2 = new JSONObject(jsonObject.getString("main"));
-
-                        //최고온도 받기!
-                        double tempDo2 = (Math.round((tempK2.getDouble("feels_like")-273.15)*100)/100.0);
-                        mainView2.setText("체감온도 :" + tempDo2 +  "°C");
-
-
-
-                        //JSONObject tempK3 = new JSONObject(jsonObject.getString("main"));
-
-                        // 최소 온도 받기!
-                        // double tempDo3 = (Math.round((tempK3.getDouble("temp_min")-273.15)*100)/100.0);
-                        //mainView3.setText("최소 온도 :" + tempDo3 +  "°C");
-
-
-                        //  JSONObject tempK4 = new JSONObject(jsonObject.getString("main"));
-
-                        //최고 온도 받기!
-                        // double tempDo4 = (Math.round((tempK4.getDouble("temp_max")-273.15)*100)/100.0);
-                        // mainView4.setText("최고 온도 :" + tempDo4 +  "°C");
-                    }catch (Exception e){
-                        e.printStackTrace();
+                    simpleDateFormat=new SimpleDateFormat("E요일");
+                    for(int i=1;i<result.length();i++){
+                        mainjson=result.getJSONObject(i);
+                        date.setTime(mainjson.getLong("time")*1000);
+                        weaterFutureView[i-1].setText(simpleDateFormat.format(date)
+                                +"  "
+                                +(mainjson.getInt("minTemp"))
+                                +"º / "
+                                +(mainjson.getInt("maxTemp"))
+                                +"º  \n"
+                                +mainjson.getString("weatherState")
+                                +"\n"
+                                +"강수확률 "
+                                +mainjson.getString("pop")+"%"
+                        );
                     }
-
-                });
-            }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            });
         });
     }
 }
