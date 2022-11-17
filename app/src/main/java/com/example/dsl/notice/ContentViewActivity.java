@@ -36,8 +36,8 @@ public class ContentViewActivity extends AppCompatActivity {
         SearchSubjectID = intent.getIntExtra("SubjectID", -1);
 
         imageButton1 = (ImageButton) findViewById(R.id.btnPrevious);
-        textName = (TextView) findViewById(R.id.textSubject);
-        textSubject = (TextView) findViewById(R.id.editName);
+        textName = (TextView) findViewById(R.id.editName);
+        textSubject = (TextView) findViewById(R.id.textSubject);
         textContent = (TextView) findViewById(R.id.textContent);
 
         imageButton1.setOnClickListener(new View.OnClickListener(){
