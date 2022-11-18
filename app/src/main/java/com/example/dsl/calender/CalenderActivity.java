@@ -1,142 +1,83 @@
 package com.example.dsl.calender;
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AlertDialog;
-import androidx.appcompat.app.AppCompatActivity;
-
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.Gravity;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewTreeObserver;
 import android.widget.Button;
 import android.widget.CalendarView;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.example.dsl.MenuBaseActivity;
 import com.example.dsl.MenuCase1;
-import com.example.dsl.MenuFrame;
 import com.example.dsl.calender.Calender.*;
 import com.example.dsl.DSLManager;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.example.dsl.R;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
-public class CalenderActivity extends MenuBaseActivity {//롱클릭으로 수정 삭제 진행
-    //CalenderDataRepository repository = new Repository();//넌 폐기야
-    List<Calender> calenderList;
+public class CalenderActivity extends MenuBaseActivity {
     LinearLayout textViews;
     CalendarView calView;
     ScrollView scrollView;
     Button button;
-    List<TextView> textLists = new ArrayList<>();
+    List<TextView> textLists = null;
     int textViewLength = 0;
-
+    LocalDate now = LocalDate.now();
+    static int year,month, day;
+    List<Calender> calenderList;
     public CalenderActivity() {
         super(new MenuCase1(),R.id.calender_root);
     }
 
     @Override
-    protected void onStart() {//화면이 실행 될때마다 보여지는 녀석 서버로 조회기능 -> 리스트 업데이트 -> 업데이트된 리스트 기반으로 일정 재구축 -> 택스트뷰에 리스너 생성
+    protected void onStart() {
         super.onStart();
         getCalenderList();
-        calView.setOnDateChangeListener(new CalendarView.OnDateChangeListener() {
-            @Override
-            public void onSelectedDayChange(@NonNull CalendarView calendarView, int year, int month, int day) {//날짜 변화 리스너 이 기능의 모든것
-                textLists.forEach(textView -> textViews.removeView(textView));//
-                textLists = new ArrayList<>();
-                textViewLength = 0;
-                //칼랜더리스트의 요소를 순회하여 날짜가 일치할경우 textView 를 만들어서 보여줄 예정
-                for (int i = 0; i < calenderList.size(); i++) {
-                    if(calenderList.get(i).getScheduleYear() == year &&
-                            calenderList.get(i).getScheduleMonth() == month+1 &&
-                            calenderList.get(i).getScheduleDay() == day){
-                        //여기는 리스트에서 현재 선택된 날짜와 동일한 녀석만 넘어올수 있음
-                        Calender cal = calenderList.get(i);
-                        textLists.add(createTextView(cal.getTitle()));
-                        textLists.get(textViewLength).setOnClickListener(new View.OnClickListener() {//숏클릭 리스너 터치시 상세 페이지로 넘어간다 돌아오면 다시 onStart가 실행되어 재구축 예정 성능 ? 망 : 망
-                            @Override
-                            public void onClick(View view) {
-                                Intent intent = new Intent(CalenderActivity.this, schedule_content_viewer.class);
-                                intent.putExtra("scheduleContent",cal);//직렬화를 해야 사용자 정의 클래스를 넣을수 있음
-                                startActivity(intent);//액티비티 실행 이 인텐트는 일정 상세 페이지로 넘어간다 이파트는 대화상자로 변경의 가능성이 있음
-                            }
-                        });
-                        textLists.get(textViewLength).setOnLongClickListener(new View.OnLongClickListener() {//롱클릭 리스너 수정과 삭제가 가능하게 만든다 다만 여기서는 수행하지 않고 던질 예정
-                            @Override
-                            public boolean onLongClick(View view) {
-                                String str;
-                                AlertDialog.Builder dlg = new AlertDialog.Builder(getApplicationContext());
-                                dlg.setTitle("일정 편집");
+    }
 
-                                dlg.setPositiveButton("수정", new DialogInterface.OnClickListener() {//수정은 여기서 처리하지 않는다 던진다
-                                    @Override
-                                    public void onClick(DialogInterface dialogInterface, int i) {
-                                        if (cal.getUserCode() == -1) {
-                                            Toast.makeText(getApplicationContext(),"자신의 일정만 수정할수 있습니다",Toast.LENGTH_LONG).show();
-                                            return;
-                                        }
-                                        Intent intent = new Intent(getApplicationContext(), schedule_input.class);
-                                        intent.putExtra("updateSchedule",cal);
-                                        startActivity(intent);
-                                        getCalenderList();
-                                    }
-                                });
-
-                                dlg.setNegativeButton("삭제", new DialogInterface.OnClickListener() {//업데이트는 던졌지만 이녀석은 던질수 없다 여기서 처리한다
-                                    @Override
-                                    public void onClick(DialogInterface dialogInterface, int i) {
-                                        if (cal.getUserCode() == -1) {
-                                            Toast.makeText(getApplicationContext(),"자신의 일정만 삭제할수 있습니다",Toast.LENGTH_LONG).show();
-                                            return;
-                                        }
-                                        try {
-                                            DSLManager manager=DSLManager.getInstance();
-                                            JSONObject data=new JSONObject();
-                                            data.put("scheduleID",cal.getScheduleID());
-                                            data.put("userCode",cal.getUserCode());
-                                            manager.sendRequest(getApplicationContext(), data,"/calender/delete", new DSLManager.NetListener() {
-                                                @Override
-                                                public void Result(JSONArray Result) {
-
-                                                }
-                                            });
-                                        } catch (Exception e) {
-                                            e.printStackTrace();
-                                        }
-                                        getCalenderList();
-                                    }
-                                });
-                                return false;
-                            }
-                        });
-                        textViews.addView(textLists.get(textViewLength++));
-                        //end if
-                    }
-                    //end for loop
-                }
-            }
-        });
+    private void checkScheduleDayAndCreateTextView(int year, int month, int day,List<Calender> calenderList) {
+        if (textLists != null) {
+            textLists.forEach(textView -> textViews.removeView(textView));//
+        }
+        textLists = new ArrayList<>();
+        textViewLength = 0;
+        calenderList.stream()
+                .filter(calender -> calender.getScheduleDay() == day && calender.getScheduleMonth() == month && calender.getScheduleYear() == year)
+                .forEach(calender -> {
+                    textLists.add(createTextView(calender.getScheduleMonth() + "월" + calender.getScheduleDay() + "일 " + calender.getTitle()));
+                    textLists.get(textViewLength).setOnClickListener(v -> {
+                        Intent intent = new Intent(CalenderActivity.this, schedule_content_viewer.class);
+                        intent.putExtra("scheduleContent", calender);
+                        startActivity(intent);
+                    });
+                    textViews.addView(textLists.get(textViewLength++));
+                });
     }
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {//최초 동작 메서드 안씀
+    public void onAttachedToWindow() {
+        super.onAttachedToWindow();
+    }
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_calender);
         scrollView = findViewById(R.id.scrollView);
         textViews = findViewById(R.id.textViewLayout);
         calView = (CalendarView) findViewById(R.id.calender_view);
         button = findViewById(R.id.btn_add_schedule);
+        year = now.getYear();
+        month = now.getMonthValue();
+        day = now.getDayOfMonth();
         findViewById(R.id.calender_menu).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -150,34 +91,11 @@ public class CalenderActivity extends MenuBaseActivity {//롱클릭으로 수정
                 startActivity(intent);
             }
         });
-        //end main method
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(@NonNull Menu menu) {//메뉴 화면 생성기
-        super.onCreateOptionsMenu(menu);
-        MenuInflater menuInflater = getMenuInflater();
-        menuInflater.inflate(R.menu.menu_calender,menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(@NonNull MenuItem item) {//메뉴 를 사용하여서 add intent
-        super.onOptionsItemSelected(item);
-        switch (item.getItemId()) {
-            case R.id.insert:
-                Intent intent = new Intent(getApplicationContext(), schedule_input.class);
-                startActivity(intent);
-                getCalenderList();
-        }
-        return false;
+        calView.setOnDateChangeListener((view, year, month, dayOfMonth) -> checkScheduleDayAndCreateTextView(year, month + 1, dayOfMonth, calenderList));
     }
 
     void getCalenderList() {//여기서 조회기능을 구현 해당 클래스의 전역공간의 calenderList 를 업데이트 하여준다
-        ObjectMapper objectMapper = new ObjectMapper();
         List<Calender> list = new ArrayList<>();
-
-//멀티쓰레드
         try {
             DSLManager manager=DSLManager.getInstance();
             JSONObject data=new JSONObject();
@@ -194,17 +112,19 @@ public class CalenderActivity extends MenuBaseActivity {//롱클릭으로 수정
                     }catch (Exception e){
                         e.printStackTrace();
                     }
+                    runOnUiThread(() -> {
+                        checkScheduleDayAndCreateTextView(year,month,day,calenderList);
+                    });
                 }
+
             });
         } catch (Exception e) {
-
+            e.printStackTrace();
         }
-
-
         this.calenderList = list;
     }
 
-    TextView createTextView(String title) {//동적으로 생성되는 텍스트뷰를 생성하여 리턴하여 주는 메서드 아름다움을 추구한다면 수정 해야지
+    TextView createTextView(String title) {
         TextView textView = new TextView(getApplicationContext());
         textView.setText(title);
         textView.setTextSize(15);
@@ -213,6 +133,5 @@ public class CalenderActivity extends MenuBaseActivity {//롱클릭으로 수정
 
         return textView;
     }
-
 
 }

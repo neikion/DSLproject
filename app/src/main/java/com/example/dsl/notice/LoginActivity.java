@@ -31,7 +31,6 @@ public class LoginActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
-        DSLManager.getInstance().LogOut();
         editId = (EditText)findViewById(R.id.editId);
         editPassword = (EditText)findViewById(R.id.editPassword);
         btnAdd = (Button)findViewById(R.id.btnAdd);
@@ -61,7 +60,7 @@ public class LoginActivity extends AppCompatActivity {
                         JSONObject jsonObject1 = Result.getJSONObject(0);
                         String ResultString = jsonObject1.getString("result");
                         if(ResultString.equals("OK")){
-                            DSLManager.getInstance().Login(jsonObject1.getInt("userCode"));
+                            DSLManager.getInstance().Login(jsonObject1.getInt("userCode"),jsonObject1.getInt("grade"));
                             Intent intent = new Intent(getApplicationContext(), NoticeActivity.class);
                             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                             startActivity(intent);

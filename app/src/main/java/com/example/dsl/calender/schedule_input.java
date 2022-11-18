@@ -18,6 +18,8 @@ import com.example.dsl.DSLManager;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import java.time.LocalDate;
+
 public class schedule_input extends AppCompatActivity {
     CalendarView calenderView;
     EditText editTitle,editContent;
@@ -25,7 +27,7 @@ public class schedule_input extends AppCompatActivity {
     int year,month,day;
     String title;
     String content;
-
+    LocalDate now = LocalDate.now();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,6 +39,9 @@ public class schedule_input extends AppCompatActivity {
         editContent = (EditText) findViewById(R.id.content_input);
         submitButton = (Button) findViewById(R.id.submit);
         calenderView = (CalendarView) findViewById(R.id.date_picker);
+        year = now.getYear();
+        month = now.getMonthValue() -  1;
+        day = now.getDayOfMonth();
         calenderView.setOnDateChangeListener(new CalendarView.OnDateChangeListener() {
             @Override
             public void onSelectedDayChange(@NonNull CalendarView calendarView, int methodYear, int methodMonth, int methodDay) {
@@ -51,12 +56,10 @@ public class schedule_input extends AppCompatActivity {
                 content = editContent.getText().toString();
                 Calender cal = null;
                 if (intentCalender == null) {//insert
-                    cal = new Calender(DSLManager.getInstance().getUserCode(), year,month,day,title,content,0);
-                    sendServer("insert",cal);
+                    sendServer("insert",new Calender(DSLManager.getInstance().getUserCode(), year,month,day,title,content,0));
                 }
                 else{//update
-                    cal = new Calender(DSLManager.getInstance().getUserCode(), year,month,day,title,content,intentCalender.getScheduleID());
-                    sendServer("update",cal);
+                    sendServer("update",new Calender(DSLManager.getInstance().getUserCode(), year,month,day,title,content,intentCalender.getScheduleID()));
                 }
                 finish();
             }
@@ -71,7 +74,7 @@ public class schedule_input extends AppCompatActivity {
             data.put("scheduleID",cal.getScheduleID());
             data.put("userCode",DSLManager.getInstance().getUserCode());
             data.put("scheduleYear", cal.getScheduleYear());
-            data.put("scheduleMonth", cal.getScheduleMonth());
+            data.put("scheduleMonth", cal.getScheduleMonth() + 1);
             data.put("scheduleDay", cal.getScheduleDay());
             data.put("title", cal.getTitle());
             data.put("scheduleContent", cal.getScheduleContent());

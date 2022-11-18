@@ -1,4 +1,4 @@
-package com.example.dsl.notice;
+package com.example.dsl.schedule;
 
 
 

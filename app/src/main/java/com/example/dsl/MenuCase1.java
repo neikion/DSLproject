@@ -53,6 +53,7 @@ public class MenuCase1 implements MenuFrame {
         }else if(id==R.id.btnbus){
             i = new Intent(v.getContext(), BusActivity.class);
         }else if(id==R.id.btnlogout){
+            DSLManager.getInstance().LogOut();
             i = new Intent(v.getContext(), LoginActivity.class);
         }else if(id==R.id.btnRoomPos){
             i = new Intent(v.getContext(), RoomPosition.class);

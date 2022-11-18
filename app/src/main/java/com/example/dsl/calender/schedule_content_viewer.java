@@ -32,42 +32,78 @@ public class schedule_content_viewer extends AppCompatActivity {//일저의 상�
 
         title.setText(calender.getTitle());
         content.setText(calender.getScheduleContent());
-        update.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (calender.getUserCode() == -1) {
-                    Toast.makeText(getApplicationContext(),"자신의 일정만 수정할수 있습니다",Toast.LENGTH_LONG).show();
-                    return;
-                }
-                Intent intent = new Intent(getApplicationContext(),schedule_input.class);
-                intent.putExtra("updateSchedule", calender);
-                startActivity(intent);
+
+        update.setOnClickListener(v -> {
+            if (DSLManager.getInstance().getUserCode() != calender.getUserCode()) {
+                Toast.makeText(getApplicationContext(),"자신의 일정만 수정할수 있습니다",Toast.LENGTH_LONG).show();
+                return;
             }
+            Intent modifyIntent = new Intent(getApplicationContext(),schedule_input.class);
+            modifyIntent.putExtra("updateSchedule", calender);
+            startActivity(modifyIntent);
+            finish();
         });
 
-        delete.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (calender.getUserCode() == -1) {
-                    Toast.makeText(getApplicationContext(),"자신의 일정만 삭제할수 있습니다",Toast.LENGTH_LONG).show();
-                    return;
-                }
-                try {
-                    DSLManager manager=DSLManager.getInstance();
-                    JSONObject data=new JSONObject();
-                    data.put("scheduleID",calender.getScheduleID());
-                    data.put("userCode",calender.getUserCode());
-                    manager.sendRequest(getApplicationContext(), data,"/calender/delete", new DSLManager.NetListener() {
-                        @Override
-                        public void Result(JSONArray Result) {
-                            //Result로 결과값이 옵니다.
-                        }
-                    });
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-                finish();
+        delete.setOnClickListener(v -> {
+            if (DSLManager.getInstance().getUserCode() != calender.getUserCode()) {
+                Toast.makeText(getApplicationContext(),"자신의 일정만 삭제할수 있습니다",Toast.LENGTH_LONG).show();
+                return;
             }
+            try {
+                DSLManager manager=DSLManager.getInstance();
+                JSONObject data=new JSONObject();
+                data.put("scheduleID",calender.getScheduleID());
+                data.put("userCode",calender.getUserCode());
+                manager.sendRequest(getApplicationContext(), data,"/calender/delete", new DSLManager.NetListener() {
+                    @Override
+                    public void Result(JSONArray Result) {
+                        //Result로 결과값이 옵니다.
+                    }
+                });
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            finish();
         });
+
+//        update.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                if (DSLManager.getInstance().getUserCode() != calender.getUserCode()) {
+//                    Toast.makeText(getApplicationContext(),"자신의 일정만 수정할수 있습니다",Toast.LENGTH_LONG).show();
+//                    return;
+//                }
+//                Intent intent = new Intent(getApplicationContext(),schedule_input.class);
+//                intent.putExtra("updateSchedule", calender);
+//                startActivity(intent);
+//                finish();
+//            }
+//        });
+
+//        delete.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                if (DSLManager.getInstance().getUserCode() != calender.getUserCode()) {
+//                    Toast.makeText(getApplicationContext(),"자신의 일정만 삭제할수 있습니다",Toast.LENGTH_LONG).show();
+//                    return;
+//                }
+//                try {
+//                    DSLManager manager=DSLManager.getInstance();
+//                    JSONObject data=new JSONObject();
+//                    data.put("scheduleID",calender.getScheduleID());
+//                    data.put("userCode",calender.getUserCode());
+//                    manager.sendRequest(getApplicationContext(), data,"/calender/delete", new DSLManager.NetListener() {
+//                        @Override
+//                        public void Result(JSONArray Result) {
+//                            //Result로 결과값이 옵니다.
+//                        }
+//                    });
+//                } catch (Exception e) {
+//                    e.printStackTrace();
+//                }
+//                finish();
+//            }
+//        });
+
     }
 }

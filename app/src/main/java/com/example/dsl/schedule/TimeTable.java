@@ -366,7 +366,7 @@ public class TimeTable implements ViewTreeObserver.OnGlobalLayoutListener, TSLis
             TextView stiker=new TextView(context);
             stiker.setBackground(getItemsBGWithoutBorder(getItemsRadius(CellStart+cellgridheight,day),colorary[i%colorary.length]));
 //            print(" Cellstart "+(CellStart+1)+" cellsize "+(cellgridheight)+"");
-            GridLayout.LayoutParams params= new GridLayout.LayoutParams(GridLayout.spec(CellStart+1,cellgridheight,GridLayout.CENTER),GridLayout.spec(day,1,GridLayout.CENTER));
+            GridLayout.LayoutParams params= new GridLayout.LayoutParams(GridLayout.spec(CellStart+1,cellgridheight,GridLayout.TOP),GridLayout.spec(day,1,GridLayout.CENTER));
             params.width=Cell_Width;
             params.height=(int)Customcellsize;
 //            print("margin "+(((start%100)/TIME_INTERVAL)*cellbasic));

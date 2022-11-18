@@ -1,27 +1,16 @@
 package com.example.dsl;
 
-import android.content.ContentValues;
 import android.content.Context;
-import android.content.Intent;
-import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
-import android.database.sqlite.SQLiteOpenHelper;
-import android.provider.BaseColumns;
 import android.util.Log;
-
-import androidx.annotation.Nullable;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.BufferedOutputStream;
-import java.io.BufferedReader;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.URL;
-import java.net.URLConnection;
 import java.nio.charset.StandardCharsets;
 import java.security.KeyStore;
 import java.security.cert.Certificate;
@@ -82,13 +71,16 @@ public final class DSLManager{
         void Result(JSONArray Result);
     }
     private final class UserInfo{
-        private final int UserID;
-        private UserInfo(int userID) {
-            UserID = userID;
+        private int userID;
+        private int userGrade;
+        private UserInfo(int userID,int userGrade) {
+            this.userID = userID;
+            this.userGrade=userGrade;
         }
         public int getUserID() {
-            return UserID;
+            return userID;
         }
+        public int getUserGrade(){return userGrade;}
     }
     private class ServerConnect implements AutoCloseable{
         private final String targetIP;
@@ -329,9 +321,9 @@ public final class DSLManager{
     public void sendRequest(Context context, JSONObject json,String API_URL, NetListener netListener){
         Server.sendRequest(context,json,API_URL,netListener);
     }
-    public void Login(int UserID){
+    public void Login(int userID,int userGrade){
         if(userInfo==null){
-            userInfo=new UserInfo(UserID);
+            userInfo=new UserInfo(userID,userGrade);
         }
     }
     public void LogOut(){
@@ -340,8 +332,9 @@ public final class DSLManager{
     public int getUserCode(){
         return userInfo.getUserID();
     }
-    public LocalDataBase localDB;
-    private class LocalDataBase{
+    public int getUserGrade(){return userInfo.getUserGrade();}
+//    public LocalDataBase localDB;
+    /*private class LocalDataBase{
         private DBopen DBopener;
         private SQLiteDatabase DB;
         public void CreateDataBase(Context context){
@@ -406,10 +399,10 @@ public final class DSLManager{
                 onCreate(db);
             }
         }
-    }
+    }*/
     public void Close() {
         Server.close();
-        localDB.close();
+//        localDB.close();
         Server=null;
 
     }
