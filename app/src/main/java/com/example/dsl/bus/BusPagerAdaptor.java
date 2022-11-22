@@ -52,10 +52,6 @@ public class BusPagerAdaptor extends RecyclerView.Adapter<BusPagerAdaptor.BusPag
         public BusPagerHolder(@NonNull View itemView) {
             super(itemView);
             tv=itemView.findViewById(R.id.bus_scroll_page_content);
-            /*tv=(TextView) itemView;
-            ViewGroup.LayoutParams params=new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
-            tv.setLayoutParams(params);
-            tv.setPadding((int)DSLUtil.DPtoPX(5,tv.getContext()),(int)DSLUtil.DPtoPX(5,tv.getContext()),(int)DSLUtil.DPtoPX(5,tv.getContext()),(int)DSLUtil.DPtoPX(5,tv.getContext()));*/
         }
         public void setContent(){
             tv.setText(dataSets.get(getAdapterPosition()));

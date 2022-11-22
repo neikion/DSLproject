@@ -5,12 +5,19 @@ import android.util.DisplayMetrics;
 import android.util.Log;
 import android.util.TypedValue;
 
+import java.util.ArrayList;
+
 public class DSLUtil {
     public static void print(String s){
         Log.i("DSL",s);
     }
     public static void print(Object s){
         Log.i("DSL",s.toString());
+    }
+    public static void print(ArrayList<Object> s){
+        for(int i=0;i<s.size();i++){
+            Log.i("DSL",s.toString());
+        }
     }
     public static float DPtoPX(float dipValue, Context context) {
         DisplayMetrics metrics = context.getResources().getDisplayMetrics();

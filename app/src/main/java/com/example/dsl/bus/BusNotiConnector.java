@@ -14,6 +14,9 @@ public class BusNotiConnector implements ServiceConnection {
     public BusNotiService getService(){
         return binder.getService();
     }
+    public boolean readyService(){
+        return binder!=null;
+    }
     @Override
     public void onServiceDisconnected(ComponentName name) {
         binder=null;

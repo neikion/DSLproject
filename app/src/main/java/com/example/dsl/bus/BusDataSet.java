@@ -7,4 +7,14 @@ public class BusDataSet implements Serializable {
     String AlarmName;
     boolean vibe;
     int time;
+
+    @Override
+    public String toString() {
+        return "BusDataSet{" +
+                "BusName='" + BusName + '\'' +
+                ", AlarmName='" + AlarmName + '\'' +
+                ", vibe=" + vibe +
+                ", time=" + time +
+                '}';
+    }
 }

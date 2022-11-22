@@ -95,7 +95,7 @@ public class BusActivity extends MenuBaseActivity implements TabLayout.OnTabSele
                 timeindex=datastr.indexOf("분");
                 if(timeindex!=-1){
                     datastr=datastr.substring(0,timeindex);
-                    datastr=datastr.replaceAll("[^1-9]*","");
+                    datastr=datastr.replaceAll("[^0-9]*","");
                     Busdata.time=Integer.parseInt(datastr);
                     result.add(Busdata);
                 }else{
@@ -111,7 +111,6 @@ public class BusActivity extends MenuBaseActivity implements TabLayout.OnTabSele
     protected void onStart() {
         super.onStart();
         getServerData();
-
     }
 
     private void getServerData(){
@@ -146,7 +145,7 @@ public class BusActivity extends MenuBaseActivity implements TabLayout.OnTabSele
                         });
                         try {
                             BusConnector.getService().setBusState(refineDatatoBusDataSet(Result.getJSONArray(0)));
-                            BusConnector.getService().runable();
+                            BusConnector.getService().startAlarm();
                         } catch (Exception e) {
                             e.printStackTrace();
                         }
@@ -182,7 +181,15 @@ public class BusActivity extends MenuBaseActivity implements TabLayout.OnTabSele
     }
 
     @Override
+    protected void onRestart() {
+        super.onRestart();
+//        BusConnector.getService().startAlarm();
+    }
+
+
+    @Override
     protected void onDestroy() {
+        BusConnector.getService().closeService();
         unbindService(BusConnector);
         super.onDestroy();
     }

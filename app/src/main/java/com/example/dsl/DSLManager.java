@@ -55,7 +55,8 @@ public final class DSLManager{
                 return t;
             }
         });*/
-        Server=new ServerConnect("13.124.33.18");
+//        Server=new ServerConnect("13.124.33.18");
+        Server=new ServerConnect("192.168.0.6");
 //        localDB=new LocalDataBase();
         try{
             Runtime.getRuntime().addShutdownHook(new Thread(()-> Close()));

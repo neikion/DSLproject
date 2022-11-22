@@ -22,46 +22,34 @@ public class LoginAddActivity extends AppCompatActivity {
 
     EditText editId;
     EditText editPassword;
-//    EditText editNickName;
+    EditText editPasswordCheck;
     Button btnRegist;
     ImageButton btnPrev;
     AlertDialog.Builder alertDialog;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login_add);
 
-        editId = (EditText)findViewById(R.id.editId);
-        editPassword = (EditText)findViewById(R.id.editPassword);
-//        editNickName = (EditText)findViewById(R.id.editNickName);
-        btnRegist = (Button)findViewById(R.id.btnRegist);
-        btnPrev = (ImageButton)findViewById(R.id.btnPrev);
+        editId = findViewById(R.id.editId);
+        editPassword = findViewById(R.id.editPassword);
+        editPasswordCheck = findViewById(R.id.editPasswordCheck);
+        btnRegist = findViewById(R.id.btnRegist);
+        btnPrev = findViewById(R.id.btnPrev);
 
         alertDialog = new AlertDialog.Builder(this);
         alertDialog.setTitle("알림");
-        alertDialog.setMessage("성공적으로 등록되었습니다.");
-        alertDialog.setPositiveButton("확인", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
-                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK|Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                startActivity(intent);
-            }
+        btnPrev.setOnClickListener(v -> {
+            Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+            startActivity(intent);
         });
 
-        btnPrev.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
-                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                startActivity(intent);
-            }
-        });
 
-        btnRegist.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
+        btnRegist.setOnClickListener(v -> {
+            if(editPassword.getText().toString().equals(editPasswordCheck.getText().toString())){
                 JSONObject jsonObject = new JSONObject();
                 try {
                     jsonObject.put("Id", editId.getText().toString());
@@ -69,23 +57,32 @@ public class LoginAddActivity extends AppCompatActivity {
 //                    jsonObject.put("NickName", editNickName.getText().toString());
                 } catch (JSONException e) {
                 }
-                DSLManager.getInstance().sendRequest(getApplicationContext(), jsonObject, "/User/Insert", new DSLManager.NetListener() {
-                    @Override
-                    public void Result(JSONArray Result) {
-                        runOnUiThread(()->{
-                            try {
-                                JSONObject jsonObject = Result.getJSONObject(0);
-                                String ResultString = jsonObject.getString("result");
-                                if(ResultString.equals("OK")){
-                                    alertDialog.show();
+                DSLManager.getInstance().sendRequest(getApplicationContext(), jsonObject, "/User/Insert", Result -> runOnUiThread(()->{
+                    try {
+                        JSONObject jsonObject1 = Result.getJSONObject(0);
+                        String ResultString = jsonObject1.getString("result");
+                        if(ResultString.equals("OK")){
+                            alertDialog.setMessage("성공적으로 등록되었습니다.");
+                            alertDialog.setPositiveButton("확인", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
+                                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK|Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                                    startActivity(intent);
                                 }
-                            } catch (JSONException e) {
-                                e.printStackTrace();
-                            }
-                        });
+                            });
+                            alertDialog.show();
+                        }else{
+                            alertDialog.setTitle("알림").setMessage("중복되는 아이디가 있습니다.").setPositiveButton("확인",null).show();
+                        }
+                    } catch (JSONException e) {
+                        e.printStackTrace();
                     }
-                });
+                }));
+            }else{
+                alertDialog.setMessage("비밀번호가 일치하지 않습니다.").setPositiveButton("확인",null).show();
             }
+
         });
     }
 }

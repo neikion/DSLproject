@@ -32,7 +32,7 @@ public class BusAlarmListActivity extends AppCompatActivity {
                 busAlarmAdaptor.addBusDataSet(dataSet,(str)->{
                     BusConnector.getService().removeConstraintBusData(str);
                 });
-                BusConnector.getService().addConstraintBusData(dataSet.BusName);
+                BusConnector.getService().addConstraintBusData(dataSet);
                 Intent i=new Intent();
                 i.putExtra("dataSets",busAlarmAdaptor.dataSets);
                 resultOK=true;
