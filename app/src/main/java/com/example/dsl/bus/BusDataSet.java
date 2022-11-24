@@ -5,6 +5,7 @@ import java.io.Serializable;
 public class BusDataSet implements Serializable {
     String BusName;
     String AlarmName;
+    String arsId;
     boolean vibe;
     int time;
 

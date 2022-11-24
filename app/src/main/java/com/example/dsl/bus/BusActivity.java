@@ -7,10 +7,7 @@ import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.viewpager2.widget.ViewPager2;
 
 import android.app.Activity;
-import android.app.NotificationChannel;
-import android.app.NotificationManager;
 import android.content.Intent;
-import android.os.Build;
 import android.os.Bundle;
 import android.view.Gravity;
 
@@ -37,6 +34,7 @@ public class BusActivity extends MenuBaseActivity implements TabLayout.OnTabSele
     BusPagerAdaptor busPagerAdaptor;
     BusNotiConnector BusConnector;
     ArrayList<BusDataSet> AlarmList;
+    int SelectedTab=0;
     public BusActivity() {
         super(new MenuCase1(), R.id.bus_root);
     }
@@ -56,15 +54,20 @@ public class BusActivity extends MenuBaseActivity implements TabLayout.OnTabSele
             if(AlarmList!=null){
                 i.putExtra("dataSets",AlarmList);
             }
+            i.putExtra("arsId",busPagerAdaptor.getPosId(SelectedTab));
             resultLauncher.launch(i);
         });
-        busPagerAdaptor.addDataSets("tab1");
-        busPagerAdaptor.addDataSets("tab2");
         findViewById(R.id.busmap).setOnClickListener(v -> getServerData());
         findViewById(R.id.bus_menu).setOnClickListener(v->menuLayout.openDrawer(Gravity.LEFT));
         BusConnector=new BusNotiConnector();
         bindService(new Intent(this, BusNotiService.class),BusConnector,BIND_AUTO_CREATE);
-
+        findViewById(R.id.bus_go_set_station).setOnClickListener((v -> {
+            Intent i=new Intent(BusActivity.this,SetBusStationActivity.class);
+            i.putExtra("dataSets",busPagerAdaptor.dataSets);
+            stationresult.launch(i);
+        }));
+        busPagerAdaptor.addDataSets("48065", "tab1", tabLayout,"동서울대학교 복정 파출소 방면");
+        busPagerAdaptor.addDataSets("48066", "tab2", tabLayout,"동서울대학교 복정 초등학교 방면");
     }
 
     public String refineData(JSONArray json) throws JSONException {
@@ -73,7 +76,7 @@ public class BusActivity extends MenuBaseActivity implements TabLayout.OnTabSele
         for(int i=0;i<json.length();i++){
             data=json.getJSONObject(i);
             try {
-                sb.append(data.get("busRouteAbrv")).append(" 버스 ").append(URLDecoder.decode(data.get("arrmsg1").toString(),"utf-8").toString()).append("\n");
+                sb.append(data.get("busRouteAbrv")).append(" 버스 ").append(URLDecoder.decode(data.get("arrmsg1").toString(),"utf-8")).append("\n");
             } catch (UnsupportedEncodingException e) {
                 e.printStackTrace();
             }
@@ -114,13 +117,19 @@ public class BusActivity extends MenuBaseActivity implements TabLayout.OnTabSele
     }
 
     private void getServerData(){
-        manager.sendRequest(getApplicationContext(), null, "/getBusPosition", new DSLManager.NetListener() {
+        String Id=busPagerAdaptor.getPosId(SelectedTab);
+        JSONObject json=new JSONObject();
+        try {
+            json.put("Id",Id);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        manager.sendRequest(getApplicationContext(), json, "/getBusPosition", new DSLManager.NetListener() {
             @Override
             public void Result(JSONArray Result) {
                 runOnUiThread(()->{
                     try {
-                        busPagerAdaptor.setDataSets(0, refineData(Result.getJSONArray(0)));
-                        busPagerAdaptor.setDataSets(1, refineData(Result.getJSONArray(1)));
+                        busPagerAdaptor.setDataSets(Id,refineData(Result));
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
@@ -128,23 +137,41 @@ public class BusActivity extends MenuBaseActivity implements TabLayout.OnTabSele
             }
         });
     }
-    ActivityResultLauncher<Intent> resultLauncher=registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), new ActivityResultCallback<ActivityResult>() {
+    ActivityResultLauncher<Intent> stationresult=registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), new ActivityResultCallback<ActivityResult>() {
+            @Override
+            public void onActivityResult(ActivityResult result) {
+                if(result.getResultCode()==RESULT_OK){
+                    SelectedTab=0;
+                    viewPager2.setCurrentItem(SelectedTab);
+                    ArrayList<StationDataSet> dataSets= (ArrayList<StationDataSet>) result.getData().getSerializableExtra("dataSets");
+                    busPagerAdaptor.setDataSets(dataSets,tabLayout);
+                }
+            }
+        }
+    );
+    ActivityResultLauncher < Intent > resultLauncher = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), new ActivityResultCallback<ActivityResult>() {
         @Override
         public void onActivityResult(ActivityResult result) {
-            if(result.getResultCode()== Activity.RESULT_OK){
-                manager.sendRequest(BusActivity.this, null, "/getBusPosition", new DSLManager.NetListener() {
+            if (result.getResultCode() == Activity.RESULT_OK) {
+                String Id=busPagerAdaptor.getPosId(SelectedTab);
+                JSONObject json=new JSONObject();
+                try {
+                    json.put("Id",Id);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+                manager.sendRequest(BusActivity.this, json, "/getBusPosition", new DSLManager.NetListener() {
                     @Override
                     public void Result(JSONArray Result) {
-                        runOnUiThread(()->{
+                        runOnUiThread(() -> {
                             try {
-                                busPagerAdaptor.setDataSets(0, refineData(Result.getJSONArray(0)));
-                                busPagerAdaptor.setDataSets(1, refineData(Result.getJSONArray(1)));
+                                busPagerAdaptor.setDataSets(Id,refineData(Result));
                             } catch (Exception e) {
                                 e.printStackTrace();
                             }
                         });
                         try {
-                            BusConnector.getService().setBusState(refineDatatoBusDataSet(Result.getJSONArray(0)));
+                            BusConnector.getService().setBusState(refineDatatoBusDataSet(Result));
                             BusConnector.getService().startAlarm();
                         } catch (Exception e) {
                             e.printStackTrace();
@@ -152,9 +179,9 @@ public class BusActivity extends MenuBaseActivity implements TabLayout.OnTabSele
                     }
                 });
             }
-            if(result.getData()!=null){
-                if(result.getData().hasExtra("dataSets")){
-                    AlarmList=(ArrayList<BusDataSet>) result.getData().getSerializableExtra("dataSets");
+            if (result.getData() != null) {
+                if (result.getData().hasExtra("dataSets")) {
+                    AlarmList = (ArrayList<BusDataSet>) result.getData().getSerializableExtra("dataSets");
                 }
             }
         }
@@ -162,10 +189,10 @@ public class BusActivity extends MenuBaseActivity implements TabLayout.OnTabSele
 
     @Override
     public void onTabSelected(TabLayout.Tab tab) {
-        if(tab.getPosition()==0){
-            viewPager2.setCurrentItem(0);
-        }else{
-            viewPager2.setCurrentItem(1);
+        SelectedTab=tab.getPosition();
+        viewPager2.setCurrentItem(tab.getPosition());
+        if(busPagerAdaptor.getIdCount()>0){
+            getServerData();
         }
 
     }

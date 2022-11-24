@@ -60,6 +60,7 @@ public class BusAlarmListActivity extends AppCompatActivity {
         });
         findViewById(R.id.bus_addalarm).setOnClickListener(v->{
             Intent i=new Intent(BusAlarmListActivity.this,BusSettingActivity.class);
+            i.putExtra("arsId",getIntent().getStringExtra("arsId"));
             resultLauncher.launch(i);
         });
         rv=findViewById(R.id.bus_alarm_list);

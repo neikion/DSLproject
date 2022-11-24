@@ -8,7 +8,7 @@
         android:padding="10dp"
         android:textColor="@color/black"
         android:textStyle="bold"
-        android:id="@+id/choose_bus_name"
+        android:id="@+id/choose_item_name"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:textSize="20sp"

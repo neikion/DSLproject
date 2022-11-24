@@ -95,7 +95,8 @@ public class BusNotiService extends Service {
     }
     private void runable(){
         if(constraintList !=null&& constraintList.size()>0){
-            DSLUtil.print(constraintList);
+            //todo id need
+
             DSLManager.getInstance().sendRequest(this,null,"/getBusPosition",(Result)->{
                 try {
                     setBusState(refineDatatoBusDataSet(Result.getJSONArray(0)));

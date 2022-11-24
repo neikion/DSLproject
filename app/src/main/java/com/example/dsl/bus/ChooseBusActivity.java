@@ -31,8 +31,7 @@ public class ChooseBusActivity extends AppCompatActivity {
         busListAdaptor=new BusListAdaptor();
         JSONObject getStationRoute=new JSONObject();
         try {
-            getStationRoute.put("ID","48066");
-
+            getStationRoute.put("ID",getIntent().getStringExtra("arsId"));
         } catch (Exception e) {
             e.printStackTrace();
         }

@@ -22,11 +22,28 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:src="@android:drawable/ic_dialog_dialer" />
+
             <Button
+                android:layout_marginLeft="3dp"
+                android:layout_marginRight="3dp"
+                android:layout_weight="2"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:text="go bus setting"
+                android:src="@android:drawable/ic_menu_manage"
+                android:scaleType="center"
+                android:text="버스 설정"
                 android:id="@+id/go_bus_setting"/>
+            <Button
+                android:id="@+id/bus_go_set_station"
+                android:layout_marginLeft="3dp"
+                android:layout_marginRight="3dp"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="2"
+                android:text="정류장 설정"
+                android:scaleType="center"
+                android:src="@android:drawable/ic_menu_mylocation"
+                />
         </LinearLayout>
         <LinearLayout
             android:layout_width="match_parent"
@@ -51,7 +68,7 @@
                 android:layout_weight="3"
                 android:id="@+id/bus_tab_root"
                 >
-                <com.google.android.material.tabs.TabItem
+                <!--<com.google.android.material.tabs.TabItem
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:id="@+id/bus_tab_first"
@@ -60,7 +77,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:id="@+id/bus_tab_last"
-                    android:text="복정 초등학교 방면"/>
+                    android:text="복정 초등학교 방면"/>-->
             </com.google.android.material.tabs.TabLayout>
             <androidx.viewpager2.widget.ViewPager2
                 android:layout_width="match_parent"

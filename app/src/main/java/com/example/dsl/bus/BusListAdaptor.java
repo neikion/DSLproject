@@ -10,11 +10,8 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.dsl.DSLUtil;
 import com.example.dsl.R;
 
-import org.json.JSONArray;
-import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
@@ -24,7 +21,7 @@ public class BusListAdaptor extends RecyclerView.Adapter<BusListAdaptor.BusListH
     @NonNull
     @Override
     public BusListHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        return new BusListHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.bus_choose_bus,parent,false));
+        return new BusListHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.bus_choose_item,parent,false));
     }
 
     @Override
@@ -46,8 +43,8 @@ public class BusListAdaptor extends RecyclerView.Adapter<BusListAdaptor.BusListH
             super(itemView);
         }
         public void enable(){
-            ((TextView)itemView.findViewById(R.id.choose_bus_name)).setText(dataSets.get(getAdapterPosition()));
-            itemView.findViewById(R.id.choose_bus_name).setOnClickListener(this);
+            ((TextView)itemView.findViewById(R.id.choose_item_name)).setText(dataSets.get(getAdapterPosition()));
+            itemView.findViewById(R.id.choose_item_name).setOnClickListener(this);
         }
 
         @Override

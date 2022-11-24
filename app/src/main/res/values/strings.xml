@@ -4,6 +4,10 @@
     <string name="ScheduleNotiChannelDescription">Time_Schedule_Notification_Channel</string>
     <string name="TimeSchdule_Sticker_Overlap_Toast">겹치는 일정이 있습니다.</string>
     <string name="TimeSchdule_Sticker_Empty_Title">제목을 입력해주세요.</string>
-    <string name="Bus_Alarm_Setting_Name_Empty">이름을 입력해주세요</string>
-    <string name="Bus_Alarm_Setting_Bus_Name_Empty">버스를 선택해주세요</string>
+    <string name="Bus_Alarm_Setting_Name_Empty">이름을 입력해주세요.</string>
+    <string name="Bus_Alarm_Setting_Bus_Name_Empty">버스를 선택해주세요.</string>
+    <string name="Bus_Station_Add_guide">정류장 추가</string>
+    <string name="Bus_Station_Add_hint">검색할 정류장 이름을 입력해주세요.</string>
+    <string name="BackButton">뒤로가기</string>
+    <string name="DeleteMassage">삭제되었습니다.</string>
 </resources>

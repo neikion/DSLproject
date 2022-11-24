@@ -15,10 +15,17 @@
         android:label="@string/app_name"
         android:supportsRtl="true"
         android:theme="@style/Theme.DSL">
+        <activity
+            android:name=".bus.ChooseBusStationActivity"
+            android:exported="false" />
+        <activity
+            android:name=".bus.SetBusStationActivity"
+            android:exported="false" />
+
         <service
             android:name=".bus.BusNotiService"
             android:enabled="true"
-            android:exported="true"></service>
+            android:exported="true" />
 
         <activity
             android:name=".schedule.ts_add"

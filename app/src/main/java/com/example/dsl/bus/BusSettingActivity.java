@@ -46,6 +46,7 @@ public class BusSettingActivity extends AppCompatActivity {
             data.BusName=choosedBus;
             data.AlarmName=settingName.getText().toString();
             data.vibe=vibe;
+            data.arsId=getIntent().getStringExtra("arsId");
             Intent intent=new Intent();
             intent.putExtra("BusAlarmData",data);
             setResult(Activity.RESULT_OK,intent);
@@ -60,7 +61,9 @@ public class BusSettingActivity extends AppCompatActivity {
             }
         });
         findViewById(R.id.bus_setting_bus).setOnClickListener(v->{
-            activityResultLauncher2.launch(new Intent(getApplicationContext(),ChooseBusActivity.class));
+            Intent i=new Intent(getApplicationContext(),ChooseBusActivity.class);
+            i.putExtra("arsId",getIntent().getStringExtra("arsId"));
+            activityResultLauncher2.launch(i);
         });
     }
 

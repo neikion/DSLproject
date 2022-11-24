@@ -6,29 +6,54 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentActivity;
 import androidx.recyclerview.widget.RecyclerView;
-import androidx.viewpager2.adapter.FragmentStateAdapter;
 
-import com.example.dsl.DSLUtil;
 import com.example.dsl.R;
+import com.google.android.material.tabs.TabLayout;
 
 import java.util.ArrayList;
-import java.util.zip.Inflater;
 
 public class BusPagerAdaptor extends RecyclerView.Adapter<BusPagerAdaptor.BusPagerHolder> {
-    ArrayList<String> dataSets=new ArrayList<>();
+    ArrayList<StationDataSet> dataSets=new ArrayList<>();
     public BusPagerAdaptor(){
 
     }
-    public void addDataSets(String content){
-        dataSets.add(content);
+    public void addDataSets(String id, String content, TabLayout tabLayout, String tabname){
+        tabLayout.addTab(tabLayout.newTab().setText(tabname));
+        dataSets.add(new StationDataSet(id, tabname,content));
         notifyItemInserted(getItemCount()-1);
     }
-    public void setDataSets(int pos,String content){
-        dataSets.set(pos,content);
-        notifyItemChanged(pos);
+    public void setDataSets(String id,String content){
+        for(int i=0;i<dataSets.size();i++){
+            if(dataSets.get(i).arsID.equals(id)){
+                dataSets.get(i).BusData=content;
+//                dataSets.set(i,new StationDataSet(id, content));
+                notifyItemChanged(i);
+            }
+        }
+    }
+    public void setDataSets(ArrayList<StationDataSet> Sets,TabLayout tabLayout){
+        dataSets.clear();
+        notifyItemRangeRemoved(0,getItemCount()-1);
+        tabLayout.removeAllTabs();
+        dataSets=Sets;
+        for(int i=tabLayout.getTabCount();i<dataSets.size();i++){
+            tabLayout.addTab(tabLayout.newTab().setText(dataSets.get(i).stationName));
+        }
+        notifyItemRangeChanged(0,getItemCount()-1);
+    }
+    public ArrayList<String> getIdList(){
+        ArrayList<String> result=new ArrayList<>();
+        for(int i=0;i<dataSets.size();i++){
+            result.add(dataSets.get(i).arsID);
+        }
+        return result;
+    }
+    public String getPosId(int listPos){
+        return dataSets.get(listPos).arsID;
+    }
+    public int getIdCount(){
+        return dataSets.size();
     }
     @NonNull
     @Override
@@ -52,9 +77,10 @@ public class BusPagerAdaptor extends RecyclerView.Adapter<BusPagerAdaptor.BusPag
         public BusPagerHolder(@NonNull View itemView) {
             super(itemView);
             tv=itemView.findViewById(R.id.bus_scroll_page_content);
+            tv.setText("dd");
         }
         public void setContent(){
-            tv.setText(dataSets.get(getAdapterPosition()));
+            tv.setText(dataSets.get(getAdapterPosition()).BusData);
         }
     }
 
