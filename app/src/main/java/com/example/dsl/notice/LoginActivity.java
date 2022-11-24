@@ -61,8 +61,11 @@ public class LoginActivity extends AppCompatActivity {
                         String ResultString = jsonObject1.getString("result");
                         if(ResultString.equals("OK")){
                             DSLManager.getInstance().Login(jsonObject1.getInt("userCode"),jsonObject1.getInt("grade"));
+                            // by cys
+                            int UserGrade = DSLManager.getInstance().getUserGrade();
                             Intent intent = new Intent(getApplicationContext(), NoticeActivity.class);
                             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                            intent.putExtra("Grade", UserGrade);
                             startActivity(intent);
                         }else{
                             alertDialog.show();

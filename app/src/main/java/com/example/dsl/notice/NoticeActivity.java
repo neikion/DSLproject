@@ -37,7 +37,12 @@ public class NoticeActivity extends MenuBaseActivity {
     EditText editSearch;
     Button btnSearch;
     Button btnWrite;
+    Button btnModify;
+    Button btnDelete;
     ListView listNotice;
+
+    // by cys
+    int UserGrade=DSLManager.getInstance().getUserGrade();
 
     // 과목 스피너용 어댑터
     ArrayList<NoticeItem> subjectItems = null;
@@ -61,6 +66,7 @@ public class NoticeActivity extends MenuBaseActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_notice);
+//        UserGrade = getIntent().getIntExtra("Grade", 3);
 /*
         if(savedInstanceState != null)
         {
@@ -74,6 +80,12 @@ public class NoticeActivity extends MenuBaseActivity {
         editSearch = (EditText) findViewById(R.id.editSearch);
         btnSearch = (Button) findViewById(R.id.btnSearch);
         btnWrite = (Button) findViewById(R.id.btnWrite);
+        btnModify = (Button) findViewById(R.id.btnModify);
+        btnDelete = (Button) findViewById(R.id.btnDelete);
+
+        // by cys
+        if( UserGrade == 3 )
+            btnWrite.setVisibility(View.INVISIBLE);
 
         btnWrite.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -234,6 +246,7 @@ public class NoticeActivity extends MenuBaseActivity {
                 Intent intent = new Intent(getApplicationContext(), ContentViewActivity.class);
                 intent.putExtra("ID", SearchID);
                 intent.putExtra("SubjectID", SearchSubjectID);
+                intent.putExtra("Grade", UserGrade);
                 startActivity(intent);
             }
         });
