@@ -27,7 +27,7 @@ public class BusAlarmListAdaptor extends RecyclerView.Adapter<BusAlarmListAdapto
         notifyItemInserted(getItemCount()-1);
     }
     public interface setAction{
-        public void Action(String str);
+        void Action(BusDataSet str);
     }
     @NonNull
     @Override
@@ -70,7 +70,7 @@ public class BusAlarmListAdaptor extends RecyclerView.Adapter<BusAlarmListAdapto
             bus.setText(dataSets.get(getAdapterPosition()).BusName);
             vibe.setChecked(dataSets.get(getAdapterPosition()).vibe);
             item.setOnLongClickListener(v->{
-                doAction.Action(dataSets.get(getAdapterPosition()).BusName);
+                doAction.Action(dataSets.get(getAdapterPosition()));
                 dataSets.remove(getAdapterPosition());
                 notifyItemRemoved(getAdapterPosition());
                 notifyItemRangeChanged(getAdapterPosition(), 1);

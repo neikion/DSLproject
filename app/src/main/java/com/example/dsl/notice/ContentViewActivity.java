@@ -5,7 +5,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.text.method.ScrollingMovementMethod;
 import android.view.View;
@@ -60,12 +59,12 @@ public class ContentViewActivity extends AppCompatActivity {
         UserGrade = intent.getIntExtra("Grade", 3);
 
         imageButton1 = (ImageButton) findViewById(R.id.btnPrevious);
-        textName = (TextView) findViewById(R.id.editName);
+        textName = (TextView) findViewById(R.id.editText);
         textSubject = (TextView) findViewById(R.id.textSubject);
         textContent = (TextView) findViewById(R.id.textContent);
         editContent = (TextInputEditText) findViewById(R.id.editContent);
         btnModify = (Button) findViewById(R.id.btnModify);
-        btnDelete = (Button) findViewById(R.id.btnDelete);
+        btnDelete = (Button) findViewById(R.id.btnDelete2);
 
         // by cys
         if( UserGrade == 3 )

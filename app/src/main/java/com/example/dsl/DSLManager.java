@@ -1,6 +1,9 @@
 package com.example.dsl;
 
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
 import android.content.Context;
+import android.os.Build;
 import android.util.Log;
 
 import org.json.JSONArray;
@@ -334,6 +337,22 @@ public final class DSLManager{
         return userInfo.getUserID();
     }
     public int getUserGrade(){return userInfo.getUserGrade();}
+    public void CreatenotiChannel(Context context){
+        if(Build.VERSION.SDK_INT>=Build.VERSION_CODES.O){
+            NotificationManager notimanager=context.getSystemService(NotificationManager.class);
+            if(notimanager.getNotificationChannel("TSNC")!=null){
+                notimanager.deleteNotificationChannel("TSNC");
+            }
+            CharSequence name=context.getString(R.string.ScheduleNotiChannelName);
+            String description=context.getString(R.string.ScheduleNotiChannelDescription);
+            int importance= NotificationManager.IMPORTANCE_HIGH;
+            NotificationChannel channel = new NotificationChannel("TSNC",name,importance);
+            channel.setDescription(description);
+            channel.enableLights(true);
+            channel.enableVibration(true);
+            notimanager.createNotificationChannel(channel);
+        }
+    }
 //    public LocalDataBase localDB;
     /*private class LocalDataBase{
         private DBopen DBopener;

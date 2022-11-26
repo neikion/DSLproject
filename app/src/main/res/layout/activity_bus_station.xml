@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".bus.SetBusStationActivity">
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/bus_station_list"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        />
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_weight="9"
+        android:orientation="horizontal"
+
+        >
+        <Button
+            android:layout_margin="3dp"
+            android:layout_weight="1"
+            android:id="@+id/bus_go_main"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:text="@string/BackButton"/>
+        <Button
+            android:layout_margin="3dp"
+            android:id="@+id/bus_add_station"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:text="@string/Bus_Station_Add_guide"/>
+    </LinearLayout>
+</LinearLayout>

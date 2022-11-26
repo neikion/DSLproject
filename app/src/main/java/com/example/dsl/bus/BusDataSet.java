@@ -14,6 +14,7 @@ public class BusDataSet implements Serializable {
         return "BusDataSet{" +
                 "BusName='" + BusName + '\'' +
                 ", AlarmName='" + AlarmName + '\'' +
+                ", arsId='" + arsId + '\'' +
                 ", vibe=" + vibe +
                 ", time=" + time +
                 '}';

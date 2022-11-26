@@ -19,8 +19,6 @@ public class BusStationSettingAdaptor extends RecyclerView.Adapter<BusStationSet
         void action(int position, ArrayList<StationDataSet> list);
     }
     public BusStationSettingAdaptor(ArrayList<StationDataSet> list,action listner){
-
-//        notifyItemRangeRemoved(0,getItemCount()-1);
         if(list!=null){
             dataSets.clear();
             this.listner=listner;

@@ -68,6 +68,7 @@ public class BusActivity extends MenuBaseActivity implements TabLayout.OnTabSele
         }));
         busPagerAdaptor.addDataSets("48065", "tab1", tabLayout,"동서울대학교 복정 파출소 방면");
         busPagerAdaptor.addDataSets("48066", "tab2", tabLayout,"동서울대학교 복정 초등학교 방면");
+        manager.CreatenotiChannel(this);
     }
 
     public String refineData(JSONArray json) throws JSONException {
@@ -171,7 +172,6 @@ public class BusActivity extends MenuBaseActivity implements TabLayout.OnTabSele
                             }
                         });
                         try {
-                            BusConnector.getService().setBusState(refineDatatoBusDataSet(Result));
                             BusConnector.getService().startAlarm();
                         } catch (Exception e) {
                             e.printStackTrace();

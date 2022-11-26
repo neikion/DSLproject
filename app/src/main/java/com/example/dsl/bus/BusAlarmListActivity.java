@@ -30,7 +30,7 @@ public class BusAlarmListActivity extends AppCompatActivity {
                 Intent ReIntent=result.getData();
                 BusDataSet dataSet=(BusDataSet) ReIntent.getSerializableExtra("BusAlarmData");
                 busAlarmAdaptor.addBusDataSet(dataSet,(str)->{
-                    BusConnector.getService().removeConstraintBusData(str);
+                    BusConnector.getService().removeConstraintBusData(str.arsId,str.BusName);
                 });
                 BusConnector.getService().addConstraintBusData(dataSet);
                 Intent i=new Intent();
@@ -71,7 +71,7 @@ public class BusAlarmListActivity extends AppCompatActivity {
             ArrayList<BusDataSet> list=(ArrayList<BusDataSet>) getIntent().getSerializableExtra("dataSets");
             for(int i=0;i<list.size();i++){
                 busAlarmAdaptor.addBusDataSet(list.get(i),(str)->{
-                    BusConnector.getService().removeConstraintBusData(str);
+                    BusConnector.getService().removeConstraintBusData(str.arsId,str.BusName);
                 });
             }
         }
