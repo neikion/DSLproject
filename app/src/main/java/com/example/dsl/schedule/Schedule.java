@@ -9,10 +9,8 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.widget.LinearLayout;
@@ -22,21 +20,18 @@ import androidx.activity.result.ActivityResult;
 import androidx.activity.result.ActivityResultCallback;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
-import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.dsl.DSLManager;
 import com.example.dsl.DSLUtil;
 import com.example.dsl.MenuBaseActivity;
 import com.example.dsl.MenuCase1;
-import com.example.dsl.MenuFrame;
 import com.example.dsl.R;
-import com.example.dsl.notice.AdaptorDataSet;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Date;
 
 public class Schedule extends MenuBaseActivity implements View.OnClickListener {
 

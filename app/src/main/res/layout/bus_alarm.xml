@@ -17,13 +17,5 @@
         android:layout_height="wrap_content"
         android:textSize="20sp"
         android:text="bus"/>
-    <Switch
-        android:id="@+id/alarmlist_vibe"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="vibe"
-        android:textSize="20sp"
-        android:clickable="false"
-        />
 
 </LinearLayout>

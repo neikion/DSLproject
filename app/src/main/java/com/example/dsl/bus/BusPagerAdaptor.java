@@ -8,6 +8,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.dsl.DSLUtil;
 import com.example.dsl.R;
 import com.google.android.material.tabs.TabLayout;
 
@@ -32,15 +33,25 @@ public class BusPagerAdaptor extends RecyclerView.Adapter<BusPagerAdaptor.BusPag
             }
         }
     }
+    public ArrayList<StationDataSet> getdataSets(){
+        return new ArrayList<StationDataSet>(dataSets);
+    }
+    
     public void setDataSets(ArrayList<StationDataSet> Sets,TabLayout tabLayout){
+        int deleteSize=dataSets.size();
         dataSets.clear();
-        notifyItemRangeRemoved(0,getItemCount()-1);
+        notifyItemRangeRemoved(0,deleteSize);
         tabLayout.removeAllTabs();
-        dataSets=Sets;
+        dataSets=new ArrayList<>(Sets);
         for(int i=tabLayout.getTabCount();i<dataSets.size();i++){
             tabLayout.addTab(tabLayout.newTab().setText(dataSets.get(i).stationName));
         }
-        notifyItemRangeChanged(0,getItemCount()-1);
+        if(getItemCount()>1){
+            notifyItemRangeInserted(0,getItemCount());
+        }else{
+            notifyItemInserted(0);
+        }
+
     }
     public ArrayList<String> getIdList(){
         ArrayList<String> result=new ArrayList<>();

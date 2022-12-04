@@ -45,8 +45,7 @@ public class TimeScheduleAlarmService extends Service {
     }
     private void initPlayer(){
         player=MediaPlayer.create(this, R.raw.music);
-        //todo audio foucus와 audio manager를 통해 볼륨 조절
-        //noti 현재 볼륨은 사용자가 설정한 볼륨을 기반으로 재생됨
+        //미디어 플레이어 설정 볼륨
         player.setVolume(1,1);
     }
     private void initVibrator(){

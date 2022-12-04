@@ -85,7 +85,6 @@ public class BusNotiService extends Service {
 
     public void startAlarm(){
         if(!runService){
-            runService=true;
             runable2();
         }else{
             cancleAlarm();
@@ -102,6 +101,7 @@ public class BusNotiService extends Service {
         return "응답없음";
     }
     private void runable2(){
+        runService=true;
         if(constraintStationList.size()>0){
             List ResultValue=Collections.synchronizedList(new ArrayList<String>());
             final int workingcount=constraintStationList.size();
@@ -134,7 +134,6 @@ public class BusNotiService extends Service {
         int SearchBus;
         StringBuilder sb=new StringBuilder();
         String busTime;
-        DSLUtil.print(result.size());
         try{
             //설정한 정류장 검색
             for(int conStationIndex=0;conStationIndex<constraintStationList.size();conStationIndex++){
@@ -147,7 +146,7 @@ public class BusNotiService extends Service {
                         for(int i3=0;i3<json.length();i3++){
                             selectBus=json.getJSONObject(i3).getString("busRouteAbrv");
                             busTime=refineDatatoMinuet(json.getJSONObject(i3).getString("arrmsg1"));
-                            if(Integer.parseInt(busTime)<=4){
+                            if(!busTime.equals("응답없음")&&Integer.parseInt(busTime)<=4){
                                 //시간이 맞음. 전체 리스트 검색 전 확인
                                 SearchBus=constraintStationList.get(conStationIndex).getBus(selectBus);
                                 if(SearchBus>-1){
@@ -171,10 +170,9 @@ public class BusNotiService extends Service {
             notiBuilder.setStyle(style);
             notimanager.notify(1,notiBuilder.build());
         }else{
-            DSLUtil.print("sb string"+sb.toString());
+            //알림 울릴 것이 없음
         }
         setAlarm();
-        //todo 버스 정류장 제거도 지원할 것
     }
     private void setAlarm(){
         Calendar calendar=Calendar.getInstance();
@@ -218,17 +216,12 @@ public class BusNotiService extends Service {
             }
         }
     }
-    public void updateConstraintStation(ArrayList<StationDataSet> dataSets){
+    public void removeConstraintStation(String stationId){
         for(int i=0;i<constraintStationList.size();i++){
-            for(int i2=0;i2<dataSets.size();i2++){
-                if(constraintStationList.get(i).stationId.equals(dataSets.get(i2).arsID)){
-
-                }
+            if(constraintStationList.get(i).stationId.equals(stationId)){
+                constraintStationList.remove(i);
             }
         }
-    }
-    public void remoceConstraintStation(String stationId){
-
     }
     private NotificationCompat.Builder CreateNoti(Context context){
         NotificationCompat.Builder noti=new NotificationCompat.Builder(context,"TSNC");

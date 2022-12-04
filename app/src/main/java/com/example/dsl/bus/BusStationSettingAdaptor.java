@@ -13,10 +13,13 @@ import com.example.dsl.R;
 import java.util.ArrayList;
 
 public class BusStationSettingAdaptor extends RecyclerView.Adapter<BusStationSettingAdaptor.BusStationHolder> {
-    ArrayList<StationDataSet> dataSets=new ArrayList<>();
+    private ArrayList<StationDataSet> dataSets=new ArrayList<>();
     action listner;
     interface action{
         void action(int position, ArrayList<StationDataSet> list);
+    }
+    public BusStationSettingAdaptor(){
+        dataSets=new ArrayList<>();
     }
     public BusStationSettingAdaptor(ArrayList<StationDataSet> list,action listner){
         if(list!=null){
@@ -30,15 +33,13 @@ public class BusStationSettingAdaptor extends RecyclerView.Adapter<BusStationSet
             }
         }
     }
+    public ArrayList<StationDataSet> getDataSets(){
+        return new ArrayList<>(dataSets);
+    }
     public void add(StationDataSet data,action listner){
         dataSets.add(data);
         this.listner=listner;
         notifyItemInserted(getItemCount()-1);
-    }
-    public void test(StationDataSet data){
-        dataSets.add(data);
-        notifyItemInserted(getItemCount()-1);
-        notifyItemRangeInserted(0,getItemCount()-1);
     }
     @NonNull
     @Override

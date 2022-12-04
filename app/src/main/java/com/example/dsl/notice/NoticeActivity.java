@@ -134,7 +134,6 @@ public class NoticeActivity extends MenuBaseActivity {
                         e.printStackTrace();
                     }
                 });
-                //noti 서버에서 비동기 처리가 안되어서 강제 동기 처리
                 JSONObject jsonObject2 = new JSONObject();
                 try {
                     jsonObject2.put("Id", SearchID);
@@ -143,6 +142,7 @@ public class NoticeActivity extends MenuBaseActivity {
                     jsonObject2.put("Content", SearchContent);
                 } catch (JSONException e) {
                 }
+                //강제 동기처리
                 DSLManager.getInstance().sendRequest(getApplicationContext(), jsonObject2, "/Notice/Search", new DSLManager.NetListener() {
                     @Override
                     public void Result(JSONArray Result) {
@@ -210,34 +210,6 @@ public class NoticeActivity extends MenuBaseActivity {
             SearchName = "";
             SearchContent = "";
         }
-        //noti 서버에서 비동기로 보낼 시 처리가 안되서 비활성화
-/*        JSONObject jsonObject2 = new JSONObject();
-        try {
-            jsonObject2.put("Id", SearchID);
-            jsonObject2.put("SubjectId", SearchSubjectID);
-            jsonObject2.put("Name", SearchName);
-            jsonObject2.put("Content", SearchContent);
-        } catch (JSONException e) {
-        }
-        DSLManager.getInstance().sendRequest(getApplicationContext(), jsonObject2, "/Notice/Search", new DSLManager.NetListener() {
-            @Override
-            public void Result(JSONArray Result) {
-                runOnUiThread(()->{
-                    noticeAdapter.clear();
-                    try {
-                        for (int i = 0; i < Result.length(); i++) {
-                            JSONObject jsonObject = Result.getJSONObject(i);
-                            int ID = jsonObject.getInt("ID");
-                            String Name = jsonObject.getString("Name");
-                            NoticeItem item = new NoticeItem(ID, Name);
-                            noticeAdapter.add(item);
-                        }
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }
-                });
-            }
-        });*/
         listNotice.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {

@@ -3,9 +3,9 @@ package com.example.dsl.bus;
 import java.io.Serializable;
 
 public class StationDataSet implements Serializable {
-    String stationName;
-    String arsID;
-    String BusData;
+    public String stationName;
+    public String arsID;
+    public String BusData;
     public StationDataSet(){
 
     }
@@ -17,6 +17,11 @@ public class StationDataSet implements Serializable {
         arsID=ID;
         stationName=name;
         this.BusData=BusData;
+    }
+    public StationDataSet(StationDataSet copy){
+        stationName=copy.stationName;
+        arsID=copy.arsID;
+        BusData=copy.BusData;
     }
 
     @Override

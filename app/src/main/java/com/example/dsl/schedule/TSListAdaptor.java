@@ -19,7 +19,6 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.dsl.R;
-import com.example.dsl.notice.AdaptorDataSet;
 
 import java.util.ArrayList;
 import java.util.Calendar;

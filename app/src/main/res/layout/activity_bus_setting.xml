@@ -37,14 +37,6 @@
         android:layout_height="wrap_content"
         android:text="버스 선택"
         />
-    <Switch
-        android:layout_marginTop="5dp"
-        android:layout_marginBottom="5dp"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/bus_alarm_vibe"
-        android:text="진동"
-        />
     <LinearLayout
         android:layout_marginTop="5dp"
         android:layout_marginBottom="10dp"

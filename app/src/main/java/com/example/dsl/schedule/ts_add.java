@@ -14,7 +14,6 @@ import android.widget.LinearLayout;
 
 import com.example.dsl.DSLUtil;
 import com.example.dsl.R;
-import com.example.dsl.notice.AdaptorDataSet;
 import com.google.android.material.snackbar.Snackbar;
 
 import java.util.ArrayList;

@@ -16,13 +16,13 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_weight="1"
-            android:text="main"/>
+            android:text="메인 화면"/>
         <Button
             android:id="@+id/bus_addalarm"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_weight="1"
-            android:text="add alarm"/>
+            android:text="알람 추가"/>
 
     </LinearLayout>
     <androidx.recyclerview.widget.RecyclerView

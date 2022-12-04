@@ -21,9 +21,8 @@ import com.google.android.material.snackbar.Snackbar;
 
 public class BusSettingActivity extends AppCompatActivity {
 
-    boolean vibe=false;
-    String choosedBus="";
-    TextView settingName;
+    private String choosedBus="";
+    private TextView settingName;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -45,20 +44,11 @@ public class BusSettingActivity extends AppCompatActivity {
             BusDataSet data=new BusDataSet();
             data.BusName=choosedBus;
             data.AlarmName=settingName.getText().toString();
-            data.vibe=vibe;
             data.arsId=getIntent().getStringExtra("arsId");
             Intent intent=new Intent();
             intent.putExtra("BusAlarmData",data);
             setResult(Activity.RESULT_OK,intent);
             finish();
-        });
-        ((Switch)findViewById(R.id.bus_alarm_vibe)).setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                if(buttonView.isPressed()){
-                    vibe=!vibe;
-                }
-            }
         });
         findViewById(R.id.bus_setting_bus).setOnClickListener(v->{
             Intent i=new Intent(getApplicationContext(),ChooseBusActivity.class);
@@ -73,7 +63,7 @@ public class BusSettingActivity extends AppCompatActivity {
         setResult(RESULT_CANCELED);
     }
 
-    ActivityResultLauncher<Intent> activityResultLauncher2=registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), new ActivityResultCallback<ActivityResult>() {
+    private ActivityResultLauncher<Intent> activityResultLauncher2=registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), new ActivityResultCallback<ActivityResult>() {
         @Override
         public void onActivityResult(ActivityResult result) {
             if(result.getResultCode()== Activity.RESULT_OK){

@@ -10,4 +10,5 @@
     <string name="Bus_Station_Add_hint">검색할 정류장 이름을 입력해주세요.</string>
     <string name="BackButton">뒤로가기</string>
     <string name="DeleteMassage">삭제되었습니다.</string>
+    <string name="NeedBusStation">버스 정류장이 필요합니다.</string>
 </resources>

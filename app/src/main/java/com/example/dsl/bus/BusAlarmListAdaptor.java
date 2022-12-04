@@ -16,18 +16,21 @@ import com.google.android.material.snackbar.Snackbar;
 import java.util.ArrayList;
 
 public class BusAlarmListAdaptor extends RecyclerView.Adapter<BusAlarmListAdaptor.BusListViewHolder>{
-    public ArrayList<BusDataSet> dataSets;
+    private ArrayList<BusDataSet> dataSets;
+    setAction doAction;
+    public interface setAction{
+        void Action(int position,ArrayList<BusDataSet> list);
+    }
     public BusAlarmListAdaptor(){
         dataSets=new ArrayList<>();
     }
-    setAction doAction;
     public void addBusDataSet(BusDataSet data,setAction action){
         dataSets.add(data);
         this.doAction=action;
         notifyItemInserted(getItemCount()-1);
     }
-    public interface setAction{
-        void Action(BusDataSet str);
+    public ArrayList<BusDataSet> getDataSets(){
+        return new ArrayList<>(dataSets);
     }
     @NonNull
     @Override
@@ -56,21 +59,19 @@ public class BusAlarmListAdaptor extends RecyclerView.Adapter<BusAlarmListAdapto
     }
     public class BusListViewHolder extends RecyclerView.ViewHolder{
         TextView name,bus;
-        Switch vibe;
         View item;
         public BusListViewHolder(@NonNull View itemView) {
             super(itemView);
             item=itemView;
             name=item.findViewById(R.id.alarmlist_title);
-            vibe=item.findViewById(R.id.alarmlist_vibe);
             bus=item.findViewById(R.id.alarmlist_bus);
         }
         public void enable(){
             name.setText(dataSets.get(getAdapterPosition()).AlarmName);
             bus.setText(dataSets.get(getAdapterPosition()).BusName);
-            vibe.setChecked(dataSets.get(getAdapterPosition()).vibe);
             item.setOnLongClickListener(v->{
-                doAction.Action(dataSets.get(getAdapterPosition()));
+//                doAction.Action(dataSets.get(getAdapterPosition()));
+                doAction.Action(getAdapterPosition(),getDataSets());
                 dataSets.remove(getAdapterPosition());
                 notifyItemRemoved(getAdapterPosition());
                 notifyItemRangeChanged(getAdapterPosition(), 1);

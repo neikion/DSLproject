@@ -6,7 +6,6 @@ public class BusDataSet implements Serializable {
     String BusName;
     String AlarmName;
     String arsId;
-    boolean vibe;
     int time;
 
     @Override
@@ -15,7 +14,6 @@ public class BusDataSet implements Serializable {
                 "BusName='" + BusName + '\'' +
                 ", AlarmName='" + AlarmName + '\'' +
                 ", arsId='" + arsId + '\'' +
-                ", vibe=" + vibe +
                 ", time=" + time +
                 '}';
     }

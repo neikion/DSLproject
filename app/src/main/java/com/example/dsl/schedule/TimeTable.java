@@ -16,7 +16,6 @@ import android.widget.TextView;
 
 import com.example.dsl.DSLUtil;
 import com.example.dsl.R;
-import com.example.dsl.notice.AdaptorDataSet;
 
 import java.util.ArrayList;
 import java.util.Calendar;
