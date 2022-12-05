@@ -41,6 +41,7 @@ public class schedule_content_viewer extends AppCompatActivity {//일저의 상�
             Intent modifyIntent = new Intent(getApplicationContext(),schedule_input.class);
             modifyIntent.putExtra("updateSchedule", calender);
             startActivity(modifyIntent);
+            setResult(RESULT_OK);
             finish();
         });
 
@@ -63,6 +64,7 @@ public class schedule_content_viewer extends AppCompatActivity {//일저의 상�
             } catch (Exception e) {
                 e.printStackTrace();
             }
+            setResult(RESULT_OK);
             finish();
         });
 

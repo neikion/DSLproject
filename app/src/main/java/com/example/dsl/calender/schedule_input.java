@@ -61,6 +61,7 @@ public class schedule_input extends AppCompatActivity {
                 else{//update
                     sendServer("update",new Calender(DSLManager.getInstance().getUserCode(), year,month,day,title,content,intentCalender.getScheduleID()));
                 }
+                setResult(RESULT_OK);
                 finish();
             }
         });

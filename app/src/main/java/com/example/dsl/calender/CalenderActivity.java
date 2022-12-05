@@ -11,6 +11,8 @@ import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
+import androidx.annotation.Nullable;
+
 import com.example.dsl.MenuBaseActivity;
 import com.example.dsl.MenuCase1;
 import com.example.dsl.calender.Calender.*;
@@ -43,7 +45,13 @@ public class CalenderActivity extends MenuBaseActivity {
         getCalenderList();
     }
 
-    private void checkScheduleDayAndCreateTextView(int year, int month, int day,List<Calender> calenderList) {
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        getCalenderList();
+    }
+
+    private void checkScheduleDayAndCreateTextView(int year, int month, int day, List<Calender> calenderList) {
         if (textLists != null) {
             textLists.forEach(textView -> textViews.removeView(textView));//
         }
@@ -56,11 +64,13 @@ public class CalenderActivity extends MenuBaseActivity {
                     textLists.get(textViewLength).setOnClickListener(v -> {
                         Intent intent = new Intent(CalenderActivity.this, schedule_content_viewer.class);
                         intent.putExtra("scheduleContent", calender);
-                        startActivity(intent);
+//                        startActivity(intent);
+                        startActivityForResult(intent,0);
                     });
                     textViews.addView(textLists.get(textViewLength++));
                 });
     }
+
 
     @Override
     public void onAttachedToWindow() {
@@ -88,7 +98,8 @@ public class CalenderActivity extends MenuBaseActivity {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(getApplicationContext(), schedule_input.class);
-                startActivity(intent);
+                startActivityForResult(intent,0);
+//                startActivity(intent);
             }
         });
         calView.setOnDateChangeListener((view, year, month, dayOfMonth) -> checkScheduleDayAndCreateTextView(year, month + 1, dayOfMonth, calenderList));

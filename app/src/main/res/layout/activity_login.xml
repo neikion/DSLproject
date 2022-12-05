@@ -59,7 +59,6 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="30dp"
                 android:ems="10"
-                android:text="admin"
                 android:inputType="textEmailAddress"
                 android:minHeight="48dp" />
         </LinearLayout>
@@ -86,7 +85,6 @@
                 android:layout_marginStart="10dp"
                 android:ems="10"
                 android:inputType="textPassword"
-                android:text="admin"
                 android:minHeight="48dp" />
         </LinearLayout>
     </LinearLayout>
