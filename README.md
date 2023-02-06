@@ -24,6 +24,16 @@ this project don't used public SSL certification file. but I made a way to use a
 
 music file don't upload because of copyright.
 
+
+
+
+------------------------------------------------------------
+
+
+
+
+
+
 이 프로젝트는 제가 팀 easy하조에 소속되어 만들었습니다.
 
 이 앱은 시간표, 버스 정보 제공, 날씨 정보 제공, 캘린더, 게시판, 대학 건물 위치 정보 기능을 제공합니다.
